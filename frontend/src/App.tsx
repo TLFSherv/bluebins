@@ -1,10 +1,11 @@
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import Home from './Recyclers/Pages/Home'
 
 function App() {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+    </Routes>
   )
 }
 

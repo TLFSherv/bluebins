@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './Recyclers/Pages/Home'
-import SignUp from './Recyclers/Pages/Signup'
-import SignIn from './Recyclers/Pages/Signin'
+import SignUp from './Recyclers/Pages/SignUp'
+import SignIn from './Recyclers/Pages/SignIn'
 import Layout from './Recyclers/Layout'
 
 function App() {

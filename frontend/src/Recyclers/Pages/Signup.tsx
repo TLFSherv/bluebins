@@ -1,8 +1,8 @@
 
 export default function SignUp() {
     return (
-        <form className="flex flex-col space-y-6 p-4" method="post">
-            <h1 className="text-center text-4xl">Create Account</h1>
+        <form className="space-y-6 p-4" method="post">
+            <h1 className="text-center text-4xl">Sign Up</h1>
             <h2>
                 To create an account enter a valid email and password in the fields below.
             </h2>
@@ -19,7 +19,7 @@ export default function SignUp() {
                 <label className="form-label">Confirm password</label>
             </div>
             <button id="login-submit" type="submit" className="form-btn">
-                Sign up
+                Create Account
             </button>
         </form>
     )

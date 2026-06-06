@@ -1,8 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
-import Home from './Recyclers/Pages/Home'
-import SignUp from './Recyclers/Pages/SignUp'
-import SignIn from './Recyclers/Pages/SignIn'
-import Layout from './Recyclers/Layout'
+import Home from './Pages/Home'
+import SignUp from './Pages/SignUp'
+import SignIn from './Pages/SignIn'
+import Error from './Pages/Error'
+import Layout from './Layout'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/error" element={<Error />} />
       </Routes>
     </Layout>
   )

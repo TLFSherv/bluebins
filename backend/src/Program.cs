@@ -15,13 +15,21 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
         {
-            policy.WithOrigins("http://localhost:5173");
+            policy.WithOrigins("http://localhost:5173")
+             .AllowAnyHeader()
+             .AllowAnyMethod();
         });
 });
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();

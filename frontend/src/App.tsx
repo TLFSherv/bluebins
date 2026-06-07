@@ -1,21 +1,32 @@
-import { Routes, Route } from 'react-router-dom'
-import Home from './Pages/Home'
-import SignUp from './Pages/SignUp'
-import SignIn from './Pages/SignIn'
-import Error from './Pages/Error'
-import Layout from './Layout'
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider
+} from 'react-router';
+import Home from './Home'
+import SignIn from './Recyclers/Pages/Auth/SignIn'
+import SignUp from './Recyclers/Pages/Auth/SignUp'
+import Layout from './Components/Layout'
+import Dashboard from './Recyclers/Pages/Portal/Dashboard'
+import { ErrorBoundary } from './Components/ErrorBoundary';
 
-function App() {
-  return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/error" element={<Error />} />
-      </Routes>
-    </Layout>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
+      <Route index element={<Home />} />
+      <Route path='auth'>
+        <Route path='sign-in' element={<SignIn />} />
+        <Route path='sign-up' element={<SignUp />} />
+      </Route>
+      <Route path='portal'>
+        <Route path='dashboard' element={<Dashboard />} />
+      </Route>
+    </Route >
   )
+)
+function App() {
+  return <RouterProvider router={router} />
 }
 
 export default App

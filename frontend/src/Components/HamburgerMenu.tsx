@@ -1,5 +1,6 @@
 
 import { useState, useRef, useEffect } from "react"
+import { Link } from "react-router";
 
 export default function HamburgerMenu() {
     const [isActive, setIsActive] = useState(false);
@@ -23,8 +24,8 @@ export default function HamburgerMenu() {
                 {isActive ?
                     (
                         <ol className="space-y-2">
-                            <li><a href="/sign-up">Sign up</a></li>
-                            <li><a href="/sign-in">Sign in</a></li>
+                            <li><Link to="/auth/sign-up">Sign up</Link></li>
+                            <li><Link to="/auth/sign-in">Sign in</Link></li>
                         </ol>
 
                     ) :

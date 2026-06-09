@@ -20,5 +20,6 @@ export type SignInError = AuthError | null
 
 export interface IAuthService {
     signIn(prevState: SignInResponse, request: FormData, navigate: (path: string) => void): Promise<SignInResponse | undefined>,
-    signUp(prevState: SignUpResponse, request: FormData, navigate: (path: string) => void): Promise<SignUpResponse | undefined>
+    signUp(prevState: SignUpResponse, request: FormData, navigate: (path: string) => void): Promise<SignUpResponse | undefined>,
+    signOut(navigate: (path: string) => void): void
 }

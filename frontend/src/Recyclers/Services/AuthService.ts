@@ -42,98 +42,141 @@ const parseError = (errorData: any): AuthError => {
 
 export const authService: IAuthService = {
     async signIn(prevState, formData, navigate) {
-        const request = {
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
-        };
+        try {
+            const request = {
+                email: formData.get("email") as string,
+                password: formData.get("password") as string,
+            };
 
-        const validationResult = SignInSchema.safeParse(request);
-        if (!validationResult.success) {
-            const zodError = z.flattenError(validationResult.error);
+            const validationResult = SignInSchema.safeParse(request);
+            if (!validationResult.success) {
+                const zodError = z.flattenError(validationResult.error);
+                return {
+                    success: false,
+                    message: "Validation error",
+                    error: {
+                        email: zodError.fieldErrors.email ?? [],
+                        password: zodError.fieldErrors.password ?? [],
+                        other: []
+                    }
+                }
+            }
+
+            const response = await fetch(`${backendUrl}/login?useCookies=true`,
+                {
+                    method: "Post",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(request),
+                    credentials: "include"
+                });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status == 400) {
+                    return {
+                        success: false,
+                        message: errorData.title,
+                        error: parseError(errorData)
+                    }
+                }
+                else if (response.status == 401) {
+                    throw new Error("Incorrect username or password");
+                }
+                throw new Error(errorData.detail || "Sign in failed");
+            }
+
+            navigate("/portal/dashboard");
+
+        } catch (error: any) {
+            if (error.message.includes("Server error")) {
+                throw error;
+            }
             return {
                 success: false,
-                message: "Validation error",
-                error: {
-                    email: zodError.fieldErrors.email ?? [],
-                    password: zodError.fieldErrors.password ?? [],
-                    other: []
-                }
+                message: error.message,
+                error: null
             }
         }
 
-        const response = await fetch(`${backendUrl}/login`,
-            {
+    },
+    async signUp(prevState, formData, navigate) {
+        try {
+            const request = {
+                email: formData.get("email") as string,
+                password: formData.get("password") as string,
+                confirmPassword: formData.get("confirmPassword") as string,
+                useCookies: true,
+            };
+
+            const validationResult = SignUpSchema.safeParse(request);
+            if (!validationResult.success) {
+                const zodError = z.flattenError(validationResult.error);
+                return {
+                    success: false,
+                    message: "Validation error",
+                    error: {
+                        email: zodError.fieldErrors.email ?? [],
+                        password: zodError.fieldErrors.password ?? [],
+                        confirmPassword: zodError.fieldErrors.confirmPassword ?? [],
+                        other: []
+                    }
+                }
+            }
+
+            const response = await fetch(`${backendUrl}/register?useCookies=true`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(request)
+                body: JSON.stringify(request),
+                credentials: "include"
             });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            if (response.status == 400) {
-                return {
-                    success: false,
-                    message: errorData.title,
-                    error: parseError(errorData)
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = parseError(errorData);
+                if (response.status == 400) {
+                    return {
+                        success: false,
+                        message: errorData.title,
+                        error: {
+                            ...error,
+                            confirmPassword: []
+                        }
+                    }
                 }
+                throw new Error(errorData.detail || "Sign up failed");
             }
-            throw new Error(errorData.detail || "Sign in failed");
-        }
-        throw new Error("Sign in failed");
-        // successful response is just a 200 status code
-        await response.json();
-        navigate("/portal/dashboard");
 
-    },
-    async signUp(prevState, formData, navigate) {
-        const request = {
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
-            confirmPassword: formData.get("confirmPassword") as string
-        };
-
-        const validationResult = SignUpSchema.safeParse(request);
-        if (!validationResult.success) {
-            const zodError = z.flattenError(validationResult.error);
+            await response.json();
+            navigate("/portal/dashboard");
+        } catch (error: any) {
+            if (error.message.includes("Server error")) {
+                throw error;
+            }
             return {
                 success: false,
-                message: "Validation error",
-                error: {
-                    email: zodError.fieldErrors.email ?? [],
-                    password: zodError.fieldErrors.password ?? [],
-                    confirmPassword: zodError.fieldErrors.confirmPassword ?? [],
-                    other: []
-                }
+                message: error.message,
+                error: null
             }
         }
-
-        const response = await fetch(`${backendUrl}/register`, {
+    },
+    async signOut(navigate) {
+        const response = await fetch(`${backendUrl}/logout`, {
             method: "Post",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "text"
             },
-            body: JSON.stringify(request)
+            credentials: "include",
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            const error = parseError(errorData);
-            if (response.status == 400) {
-                return {
-                    success: false,
-                    message: errorData.title,
-                    error: {
-                        ...error,
-                        confirmPassword: []
-                    }
-                }
-            }
-            throw new Error(errorData.detail || "Sign in failed");
+            return new Error(errorData ?? "Problem with signing out");
         }
 
-        await response.json();
-        navigate("/portal/dashboard");
-    }
+        navigate("/");
+    },
 }

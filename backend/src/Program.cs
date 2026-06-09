@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:5173")
              .AllowAnyHeader()
-             .AllowAnyMethod();
+             .AllowAnyMethod()
+             .AllowCredentials();
         });
 });
 
@@ -29,8 +31,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
-})
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+}).AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 
@@ -38,5 +39,11 @@ app.UseCors(MyAllowSpecificOrigins);
 app.MapIdentityApi<ApplicationUser>();
 
 app.MapGet("/", () => "Hello World!");
+
+app.MapPost("/logout", async ([FromServices] SignInManager<ApplicationUser> signInManager) =>
+{
+    await signInManager.SignOutAsync();
+    return Results.Ok();
+}).RequireAuthorization();
 
 app.Run();

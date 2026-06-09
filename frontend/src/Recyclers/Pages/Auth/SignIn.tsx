@@ -1,14 +1,22 @@
-import { useActionState } from "react"
+import { useActionState, useContext } from "react"
 import { authService } from "../../Services/AuthService"
 import type { SignInResponse } from "../../Types/AuthTypes";
 import { useNavigate } from "react-router";
+import { UserContext } from "../../../Store/UserContext";
 
 export default function SignIn() {
     const navigate = useNavigate();
+    const { setIsSignedIn } = useContext(UserContext);
+
     const initState = { success: false, message: "", error: null };
     const [state, formAction, isPending] = useActionState(
         async (prevState: SignInResponse, formData: FormData) => {
-            return await authService.signIn(prevState, formData, navigate) ?? initState;
+            const result = await authService.signIn(prevState, formData) ?? initState;
+            if (result.success) {
+                setIsSignedIn(true);
+                navigate("/portal/dashboard");
+            }
+            return result;
         }, initState);
 
     return (

@@ -46,4 +46,12 @@ app.MapPost("/logout", async ([FromServices] SignInManager<ApplicationUser> sign
     return Results.Ok();
 }).RequireAuthorization();
 
+app.MapGet("/isSignedIn", (HttpContext context, [FromServices] SignInManager<ApplicationUser> signInManager) =>
+{
+    // Invoke the method by passing the current user
+    bool signedIn = signInManager.IsSignedIn(context.User);
+
+    return Results.Ok(new { IsSignedIn = signedIn });
+});
+
 app.Run();

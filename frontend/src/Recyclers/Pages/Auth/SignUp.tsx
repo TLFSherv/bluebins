@@ -1,14 +1,22 @@
-import { useActionState } from "react"
+import { useActionState, useContext } from "react"
 import { authService } from "../../Services/AuthService"
 import { useNavigate } from "react-router";
 import type { SignUpResponse } from "../../Types/AuthTypes";
+import { UserContext } from "../../../Store/UserContext";
 
 export default function SignUp() {
     const navigate = useNavigate();
+    const { setIsSignedIn } = useContext(UserContext);
+
     const initState = { success: false, message: "", error: null };
     const [state, formAction, isPending] = useActionState(
         async (prevState: SignUpResponse, formData: FormData) => {
-            return await authService.signUp(prevState, formData, navigate) ?? initState;
+            const result = await authService.signUp(prevState, formData) ?? initState;
+            if (result.success) {
+                setIsSignedIn(true);
+                navigate("/portal/dashboard");
+            }
+            return result;
         }, initState);
 
     return (

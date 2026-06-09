@@ -41,7 +41,7 @@ const parseError = (errorData: any): AuthError => {
 }
 
 export const authService: IAuthService = {
-    async signIn(prevState, formData, navigate) {
+    async signIn(prevState, formData) {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -86,8 +86,11 @@ export const authService: IAuthService = {
                 }
                 throw new Error(errorData.detail || "Sign in failed");
             }
-
-            navigate("/portal/dashboard");
+            return {
+                success: true,
+                message: "Signed in successfully",
+                error: null
+            };
 
         } catch (error: any) {
             if (error.message.includes("Server error")) {
@@ -101,7 +104,7 @@ export const authService: IAuthService = {
         }
 
     },
-    async signUp(prevState, formData, navigate) {
+    async signUp(prevState, formData) {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -151,7 +154,12 @@ export const authService: IAuthService = {
             }
 
             await response.json();
-            navigate("/portal/dashboard");
+            return {
+                success: true,
+                message: "Signed up succesfully",
+                error: null
+            };
+
         } catch (error: any) {
             if (error.message.includes("Server error")) {
                 throw error;
@@ -165,7 +173,7 @@ export const authService: IAuthService = {
     },
     async signOut(navigate) {
         const response = await fetch(`${backendUrl}/logout`, {
-            method: "Post",
+            method: "POST",
             headers: {
                 "Content-Type": "text"
             },
@@ -178,5 +186,27 @@ export const authService: IAuthService = {
         }
 
         navigate("/");
+    },
+    async isSignedIn() {
+        try {
+            const response = await fetch(`${backendUrl}/isSignedIn`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData ?? "Error verifying if user is signed in");
+            }
+
+            const data = await response.json();
+            return data.isSignedIn;
+        } catch (error: any) {
+            console.log(error.message);
+            return false;
+        }
     },
 }

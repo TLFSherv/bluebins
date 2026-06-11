@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebPWrecover.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,10 +35,16 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     options.Password.RequireNonAlphanumeric = false;
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseCors(MyAllowSpecificOrigins);
 app.MapIdentityApi<ApplicationUser>();
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.MapGet("/", () => "Hello World!");
 

@@ -153,9 +153,9 @@ export const authService: IAuthService = {
                 throw new Error(errorData.detail || "Sign up failed");
             }
 
-            await response.json();
             return {
                 success: true,
+                data: request.email,
                 message: "Signed up succesfully",
                 error: null
             };
@@ -209,4 +209,9 @@ export const authService: IAuthService = {
             return false;
         }
     },
+    async resendConfirmationEmail(email: string) {
+        // put a limit on the number of confirmation emails that can be sent
+        console.log(`Resend email confirmation to ${email}`);
+
+    }
 }

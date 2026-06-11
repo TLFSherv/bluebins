@@ -6,8 +6,9 @@ export type SignInResponse = {
 
 export type SignUpResponse = {
     success: boolean,
+    data?: string,
     message: string,
-    error: SignUpError
+    error: SignUpError,
 }
 
 export type AuthError = {
@@ -22,5 +23,6 @@ export interface IAuthService {
     signIn(prevState: SignInResponse, request: FormData): Promise<SignInResponse | undefined>,
     signUp(prevState: SignUpResponse, request: FormData): Promise<SignUpResponse | undefined>,
     signOut(navigate: (path: string) => void): void,
-    isSignedIn(): Promise<boolean>
+    isSignedIn(): Promise<boolean>,
+    resendConfirmationEmail(email: string): void
 }

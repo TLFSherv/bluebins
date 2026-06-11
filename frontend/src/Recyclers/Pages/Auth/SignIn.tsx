@@ -20,7 +20,7 @@ export default function SignIn() {
         }, initState);
 
     return (
-        <form method="post" action={formAction} className="space-y-6 p-4">
+        <form action={formAction} className="space-y-6 p-4">
             <h1 className="text-4xl text-center">Sign In</h1>
             <h2>
                 To sign into your account enter your credentials in the fields below.
@@ -33,7 +33,7 @@ export default function SignIn() {
                 }
             </div>
             <div className="form-floating">
-                <input type="password" name="password" className="form-control" autoComplete="current-password" placeholder="password" minLength={6} required />
+                <input type="password" name="password" className="form-control" placeholder="password" minLength={6} required />
                 <label className="form-label">Password</label>
                 {state.error?.password &&
                     state.error.password.map((error, i) => <span key={i} className="text-danger">{error}</span>)

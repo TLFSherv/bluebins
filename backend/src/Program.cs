@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins("https://localhost:5173")
              .AllowAnyHeader()
              .AllowAnyMethod()
              .AllowCredentials();
         });
 });
 
-
+builder.Services.AddProblemDetails();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
 {
@@ -38,28 +39,62 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Path = "/";
+
+    // This tells the backend: "Only require HTTPS if the request came from HTTPS, 
+    // but don't force the cookie to be strictly HTTPS-only in the browser."
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+    // Alternatively, to completely force it off for local dev testing:
+    // options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+
+    // CRITICAL: When Secure is None/SameAsRequest, SameSite CANNOT be 'None'.
+    // It must be Lax or Strict.
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
+
+builder.Services.AddAuthentication()
+.AddOpenIdConnect("Google", options =>
+{
+    options.Authority = "https://accounts.google.com";
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    options.CallbackPath = "/signin-google";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.SignInScheme = IdentityConstants.ExternalScheme;
+
+    // --- CRUCIAL COOKIE OVERRIDES FOR DECOUPLED DEV ---
+    options.CorrelationCookie.HttpOnly = true;
+    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.CorrelationCookie.SameSite = SameSiteMode.None;
+
+    options.NonceCookie.HttpOnly = true;
+    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.NonceCookie.SameSite = SameSiteMode.None;
+});
+
 var app = builder.Build();
 
-app.UseCors(MyAllowSpecificOrigins);
-app.MapIdentityApi<ApplicationUser>();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();
+}
 
 app.UseHttpsRedirection();
+app.UseCors(MyAllowSpecificOrigins);
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseStaticFiles();
+app.UseStatusCodePages();
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapPost("/logout", async ([FromServices] SignInManager<ApplicationUser> signInManager) =>
-{
-    await signInManager.SignOutAsync();
-    return Results.Ok();
-}).RequireAuthorization();
-
-app.MapGet("/isSignedIn", (HttpContext context, [FromServices] SignInManager<ApplicationUser> signInManager) =>
-{
-    // Invoke the method by passing the current user
-    bool signedIn = signInManager.IsSignedIn(context.User);
-
-    return Results.Ok(new { IsSignedIn = signedIn });
-});
+app.AddAccountRoutes();
 
 app.Run();

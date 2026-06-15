@@ -213,5 +213,9 @@ export const authService: IAuthService = {
         // put a limit on the number of confirmation emails that can be sent
         console.log(`Resend email confirmation to ${email}`);
 
-    }
+    },
+    async signInWithGoogle() {
+        const returnUrl = encodeURIComponent("https://localhost:5173/portal/dashboard");
+        window.location.href = `${backendUrl}/login/google?returnUrl=${returnUrl}`;
+    },
 }

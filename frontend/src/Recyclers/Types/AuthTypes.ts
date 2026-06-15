@@ -24,5 +24,6 @@ export interface IAuthService {
     signUp(prevState: SignUpResponse, request: FormData): Promise<SignUpResponse | undefined>,
     signOut(navigate: (path: string) => void): void,
     isSignedIn(): Promise<boolean>,
-    resendConfirmationEmail(email: string): void
+    resendConfirmationEmail(email: string): void,
+    signInWithGoogle(): void
 }

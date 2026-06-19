@@ -8,6 +8,7 @@ import { UserContext } from "../Store/UserContext";
 export default function HamburgerMenu() {
     const [isActive, setIsActive] = useState(false);
     const hamburgerRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef
     const { isSignedIn, setIsSignedIn } = useContext(UserContext);
 
     const handleClick = () => {
@@ -31,7 +32,7 @@ export default function HamburgerMenu() {
                     if (!isActive) setIsActive(true);
                 }}
                 className={`flex flex-col justify-center items-center space-y-1.5 bg-[#DDDDDD]/30 backdrop-blur-lg shadow-lg border border-white/30 transition-[width,height] duration-300 cursor-pointer
-                    ${isActive ? 'rounded-2xl size-40 m-8' : 'm-4 rounded-full size-14'}`}>
+                    ${isActive ? 'rounded-2xl size-50 m-8' : 'm-4 rounded-full size-14'}`}>
                 {isActive ? <AuthNav {...{ isSignedIn, setIsSignedIn }} /> :
                     (
                         <>
@@ -77,22 +78,36 @@ function AuthNav(props: { isSignedIn: boolean, setIsSignedIn: React.Dispatch<Rea
         )
     }
     return (
-        <ol className="space-y-2 text-center text-lg">
-            {signingOut ?
-                <li className="flex justify-center">
-                    <svg className="animate-spin -ml-6 mt-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="black" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <button type="button" onClick={() => cancelSignOut()} className="font-medium">
-                        Cancel
+        <div className="space-y-2 text-center p-2 h-full">
+            <form className="p-1">
+                <input name="accountName" type="text" placeholder={"Find page"} className="w-full px-2 py-[2px] border rounded-md border-gray-300 text-sm text-center" />
+            </form>
+            <ol className="space-y-2 h-full">
+                <li>
+                    <Link to={"portal/collection"}> Collection</Link>
+                </li>
+                <li>
+                    <Link to={"portal/dashboard"}>Dashboard</Link>
+                </li>
+                <li>
+                    Account
+                </li>
+                {signingOut ?
+                    <li className="flex justify-center">
+                        <svg className="animate-spin -ml-6 mt-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="black" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <button type="button" onClick={() => cancelSignOut()} className="font-medium">
+                            Cancel
+                        </button>
+                    </li> :
+                    <button type="button" onClick={() => startSignOut()} >
+                        Sign out
                     </button>
-                </li> :
-                <button type="button" onClick={() => startSignOut()} >
-                    Sign out
-                </button>
-            }
-        </ol>
+                }
+            </ol>
+        </div>
     );
 }
 

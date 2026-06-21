@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 public class Location
 {
     [Required]
-    public int LocationId { get; set; }
+    public int Id { get; set; }
     public string? MapsId { get; set; }
     [Required]
     public string? AddressLine1 { get; set; }
@@ -12,5 +12,4 @@ public class Location
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }
     public string? Details { get; set; }
-
 }

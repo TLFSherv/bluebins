@@ -1,6 +1,6 @@
 public class Schedule
 {
-    public int ScheduleId { get; set; }
+    public int Id { get; set; }
     public DateOnly StartDate { get; set; }
     public FrequencyTypes Frequency { get; set; }
     public bool IsActive { get; set; }

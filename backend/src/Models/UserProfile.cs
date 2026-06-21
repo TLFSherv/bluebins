@@ -1,10 +1,15 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-public class UserSetting
+public class UserProfile
 {
     [Required]
-    public int UserId { get; set; }
+    public int Id { get; set; }
     public int? DefaultLocationId { get; set; }
     public int? DefaultScheduleId { get; set; }
     public bool IsDeleted { get; set; }
+    public Location? DefaultLocation { get; set; }
+
+    public Schedule? DefaultSchedule { get; set; }
+
 }

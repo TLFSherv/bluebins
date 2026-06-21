@@ -3,19 +3,23 @@ using System.ComponentModel.DataAnnotations;
 public class Booking
 {
     [Required]
-    public int? BookingId { get; set; }
+    public int Id { get; set; }
     [Required]
-    public int? UserId { get; set; }
+    public int UserProfileId { get; set; }
     [Required]
-    public int? LocationId { get; set; }
+    public int LocationId { get; set; }
     [Required]
-    public int? ScheduleId { get; set; }
+    public int ScheduleId { get; set; }
     [Required]
     public BookingStatus Status { get; set; }
     [Required]
     public DateTime CollectionDate { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime DateModified { get; set; }
+
+    public required UserProfile UserProfile { get; set; }
+    public required Location Location { get; set; }
+    public required Schedule Schedule { get; set; }
 }
 
 public enum BookingStatus

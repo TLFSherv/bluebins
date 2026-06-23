@@ -7,7 +7,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
         base(options)
     { }
-    public virtual DbSet<UserProfile> UserSettings { get; set; }
+    public virtual DbSet<UserProfile> UserProfiles { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<Location> Locations { get; set; }
     public virtual DbSet<RecyclingItem> RecyclingItems { get; set; }

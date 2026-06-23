@@ -95,6 +95,8 @@ app.UseStatusCodePages();
 
 app.MapGet("/", () => "Hello World!");
 
+// add api endpoints
 app.AddAccountRoutes();
+app.AddBookingRoutes();
 
 app.Run();

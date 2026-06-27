@@ -6,10 +6,10 @@ public class RecyclingItem
     public int Id { get; set; }
     [Required]
     public int BookingId { get; set; }
-    public MaterialTypes? MaterialType { get; set; }
-    public decimal? WeightKg { get; set; }
-    public decimal? VolumeLiters { get; set; }
-    public decimal? ContaminationPercent { get; set; }
+    public MaterialTypes MaterialType { get; set; }
+    public decimal WeightKg { get; set; }
+    public decimal VolumeLiters { get; set; }
+    public decimal ContaminationPercent { get; set; } // add default
 
     public Booking? Booking { get; set; }
 }
@@ -17,5 +17,6 @@ public enum MaterialTypes
 {
     tin = 1,
     aluminum = 2,
-    glass = 3
+    glass = 3,
+    mixture = 4
 }

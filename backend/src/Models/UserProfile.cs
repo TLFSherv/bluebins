@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 public class UserProfile
 {
     [Required]
-    public int Id { get; set; }
+    [MaxLength(80)]
+    public string Id { get; set; }
     public int? DefaultLocationId { get; set; }
     public int? DefaultScheduleId { get; set; }
     public bool IsDeleted { get; set; }

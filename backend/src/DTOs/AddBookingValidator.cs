@@ -1,0 +1,23 @@
+using FluentValidation;
+public class AddBookingValidator : AbstractValidator<BookingDTO>
+{
+    public AddBookingValidator()
+    {
+        RuleFor(x => x.Status).IsInEnum();
+        RuleFor(x => x.CollectionDate).GreaterThan(DateTime.Now);
+
+        RuleFor(x => x.Location).NotNull();
+        RuleFor(x => x.Location.Address).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(6).MaximumLength(40);
+        RuleFor(x => x.Location.Postcode).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(3).MaximumLength(6);
+        RuleFor(x => x.Location.Latitude).NotEqual(0);
+        RuleFor(x => x.Location.Longitude).NotEqual(0);
+        RuleFor(x => x.Location.Details).MaximumLength(100);
+
+        RuleFor(x => x.RecyclingItems).NotNull();
+        RuleForEach(x => x.RecyclingItems).ChildRules(item =>
+        {
+            item.RuleFor(x => x.MaterialType).IsInEnum();
+            item.RuleFor(x => x.ItemCount).GreaterThan(0);
+        });
+    }
+}

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebPWrecover.Services;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,12 @@ builder.Services.AddAuthentication()
     options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
     options.NonceCookie.SameSite = SameSiteMode.None;
 });
+
+// add auto mapper
+builder.Services.AddAutoMapper(typeof(BookingProfile));
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<BookingService>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 

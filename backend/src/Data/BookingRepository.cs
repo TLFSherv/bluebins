@@ -1,100 +1,159 @@
+using System.Transactions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 public class BookingRepository : IBookingRepository
 {
     private readonly ApplicationDbContext _context;
-    public BookingRepository(ApplicationDbContext context)
+    private readonly IMapper _mapper;
+    public BookingRepository(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
-    public async Task<int> AddBooking(AddBookingRequest request)
+    public async Task<int?> AddBooking(AddBookingRequest request)
     {
-        var booking = new Booking()
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
         {
-            UserProfileId = request.UserProfileId,
-            LocationId = request.LocationId,
-            ScheduleId = request.ScheduleId,
-            Status = request.Status,
-            CollectionDate = request.CollectionDate,
-            DateCreated = request.DateCreated,
-            DateModified = request.DateModified
-        };
-        await _context.Bookings.AddAsync(booking);
-        await _context.SaveChangesAsync();
-        return booking.Id;
+            var locationId = request.Location?.LocationId;
+            // if there's no location id create the location
+            // if there is a location id then the user has selected their default location
+            // and in that case it already exists in the database
+            if (locationId is null)
+            {
+                Location newLocation = new()
+                {
+                    MapsId = request.Location.MapsId,
+                    AddressLine1 = request.Location.Address,
+                    Postcode = request.Location.Postcode,
+                    Latitude = request.Location.Latitude,
+                    Longitude = request.Location.Longitude,
+                    Details = request.Location.Details
+                };
+                _context.Add(newLocation);
+                await _context.SaveChangesAsync();
+                locationId = newLocation.Id;
+            }
+
+            Booking newBooking = new()
+            {
+                UserId = request.UserId,
+                LocationId = locationId,
+                ScheduleId = request.ScheduleId,
+                Status = request.Status,
+                CollectionDate = request.CollectionDate,
+                DateCreated = request.DateCreated,
+                DateModified = request.DateModified
+            };
+            _context.Add(newBooking);
+            await _context.SaveChangesAsync();
+
+            if (request.RecyclingItems is not null)
+            {
+                List<RecyclingItem> newRecyclingItems = new();
+                foreach (var item in request.RecyclingItems)
+                {
+                    newRecyclingItems.Add(new RecyclingItem()
+                    {
+                        BookingId = newBooking.Id,
+                        MaterialType = item.MaterialType,
+                        WeightKg = item.WeightKg,
+                        VolumeLiters = item.VolumeLiters
+                    });
+                }
+                _context.AddRange(newRecyclingItems);
+                await _context.SaveChangesAsync();
+            }
+
+            await transaction.CommitAsync();
+            return newBooking.Id;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
     }
 
-    public async Task<int> AddLocation(AddLocationRequest request)
+    public async Task<int?> AddLocation(AddLocationRequest request)
     {
-        var location = new Location()
-        {
-            MapsId = request.MapsId,
-            AddressLine1 = request.Address,
-            Postcode = request.Postcode,
-            Latitude = request.Latitude,
-            Longitude = request.Longitude,
-            Details = request.Details
-        };
-        await _context.AddAsync(location);
+        var location = _mapper.Map<AddLocationRequest, Location>(request);
+        _context.Add(location);
         await _context.SaveChangesAsync();
         return location.Id;
     }
 
-    public async Task<int> AddRecyclingItem(AddRecyclingItemRequest request)
+    public async Task<int?> AddRecyclingItem(AddRecyclingItemRequest request)
     {
-        var recyclingItem = new RecyclingItem()
-        {
-            BookingId = request.BookingId,
-            MaterialType = request.MaterialType,
-            WeightKg = request.WeightKg,
-            VolumeLiters = request.VolumeLiters,
-            ContaminationPercent = request.ContaminationPercent
-        };
-        await _context.AddAsync(recyclingItem);
+        var recyclingItem = _mapper.Map<AddRecyclingItemRequest, RecyclingItem>(request);
+        _context.Add(recyclingItem);
         await _context.SaveChangesAsync();
         return recyclingItem.Id;
     }
 
-    public async Task<int> AddSchedule(AddScheduleRequest request)
+    public async Task<int?> AddSchedule(AddScheduleRequest request)
     {
-        var schedule = new Schedule()
-        {
-            StartDate = request.StartDate,
-            Frequency = request.Frequency,
-            IsActive = request.IsActive
-        };
-        await _context.AddAsync(schedule);
+        var schedule = _mapper.Map<AddScheduleRequest, Schedule>(request);
+        _context.Add(schedule);
         await _context.SaveChangesAsync();
         return schedule.Id;
     }
 
-    public async Task<int> AddUserProfile(AddUserProfileRequest request)
+    public async Task<string?> AddUserProfile(AddUserProfileRequest request)
     {
-        var userProfile = new UserProfile()
-        {
-            DefaultLocationId = request.DefaultLocationId,
-            DefaultScheduleId = request.DefaultScheduleId,
-            IsDeleted = request.IsDeleted,
-        };
-        await _context.AddAsync(userProfile);
+        var userProfile = _mapper.Map<AddUserProfileRequest, UserProfile>(request);
+        _context.Add(userProfile);
         await _context.SaveChangesAsync();
         return userProfile.Id;
     }
 
-    public async Task<BookingView?> GetBooking(int bookingId)
+    public async Task<BookingView?> GetUserBooking(string userId, int bookingId)
     {
-        return await _context.Bookings
-        .Where(x => x.Id == bookingId)
-        .Select(x => new BookingView
+        // utilise navigation properties to access data from tables with fk rather than joins
+        var result = await _context.Bookings
+        .Where(b => b.UserId == userId && b.Id == bookingId)
+        .Select(b =>
+        new BookingView
         {
-            UserProfileId = x.UserProfileId,
-            LocationId = x.LocationId,
-            ScheduleId = x.ScheduleId,
-            Status = x.Status,
-            CollectionDate = x.CollectionDate,
-            DateCreated = x.DateCreated,
-            DateModified = x.DateModified
+            Status = b.Status,
+            CollectionDate = b.CollectionDate,
+            DateCreated = b.DateCreated,
+            DateModified = b.DateModified,
+            Location = b.Location != null ? new LocationView
+            {
+                MapsId = b.Location.MapsId,
+                Address = b.Location.AddressLine1,
+                Latitude = b.Location.Latitude,
+                Longitude = b.Location.Longitude,
+                Details = b.Location.Details
+            } : null,
+            Schedule = b.Schedule != null ? new ScheduleView
+            {
+                StartDate = b.Schedule.StartDate,
+                Frequency = b.Schedule.Frequency,
+                IsActive = b.Schedule.IsActive
+            } : null
         }).SingleOrDefaultAsync();
+
+        if (result != null)
+        {
+            var recyclingItems = await _context.RecyclingItems
+            .Where(r => r.BookingId == bookingId)
+            .Select(r => new RecyclingItemView
+            {
+                BookingId = r.BookingId,
+                MaterialType = r.MaterialType,
+                WeightKg = r.WeightKg,
+                VolumeLiters = r.VolumeLiters,
+                ContaminationPercent = r.ContaminationPercent
+            }).ToListAsync();
+            result.RecyclingItems = recyclingItems;
+        }
+
+        return result;
     }
 
     public async Task<LocationView?> GetLocation(int locationId)
@@ -137,10 +196,10 @@ public class BookingRepository : IBookingRepository
         }).SingleOrDefaultAsync();
     }
 
-    public async Task<UserProfileView?> GetUserProfile(int userProfileId)
+    public async Task<UserProfileView?> GetUserProfile(string userId)
     {
         return await _context.UserProfiles
-        .Where(x => x.Id == userProfileId)
+        .Where(x => x.Id == userId)
         .Select(x => new UserProfileView
         {
             DefaultLocationId = x.DefaultLocationId,
@@ -149,7 +208,7 @@ public class BookingRepository : IBookingRepository
         }).SingleOrDefaultAsync();
     }
 
-    public async Task<int> UpdateBooking(UpdateBookingRequest request)
+    public async Task<int?> UpdateBooking(UpdateBookingRequest request)
     {
         var booking = await _context.Bookings.FindAsync(request.Id);
 
@@ -158,20 +217,13 @@ public class BookingRepository : IBookingRepository
             throw new Exception("Unable to find the booking");
         }
 
-        booking.CollectionDate = request.CollectionDate;
-        booking.UserProfileId = request.UserProfileId;
-        booking.LocationId = request.LocationId;
-        booking.ScheduleId = request.ScheduleId;
-        booking.Status = request.Status;
-        booking.CollectionDate = request.CollectionDate;
-        booking.DateCreated = request.DateCreated;
-        booking.DateModified = request.DateModified;
+        _mapper.Map<UpdateBookingRequest, Booking>(request);
 
         await _context.SaveChangesAsync();
         return booking.Id;
     }
 
-    public async Task<int> UpdateLocation(UpdateLocationRequest request)
+    public async Task<int?> UpdateLocation(UpdateLocationRequest request)
     {
         var location = await _context.Locations.FindAsync(request.LocationId);
 
@@ -180,29 +232,51 @@ public class BookingRepository : IBookingRepository
             throw new Exception("Unable to find location");
         }
 
-        location.MapsId = request.MapsId;
-        location.AddressLine1 = request.Address;
-        location.Postcode = request.Postcode;
-        location.Latitude = request.Latitude;
-        location.Longitude = request.Longitude;
-        location.Details = request.Details;
+        _mapper.Map<UpdateLocationRequest, Location>(request);
 
         await _context.SaveChangesAsync();
         return location.Id;
     }
 
-    public Task<int> UpdateRecyclingItem(UpdateRecyclingItemRequest request)
+    public async Task<int?> UpdateRecyclingItem(UpdateRecyclingItemRequest request)
     {
-        throw new NotImplementedException();
+        var recyclingItem = await _context.RecyclingItems.FindAsync(request.Id);
+
+        if (recyclingItem is null)
+        {
+            throw new Exception("Unable to find recycling item");
+        }
+
+        _mapper.Map<UpdateRecyclingItemRequest, RecyclingItem>(request);
+        await _context.SaveChangesAsync();
+        return recyclingItem.Id;
     }
 
-    public Task<int> UpdateSchedule(UpdateScheduleRequest request)
+    public async Task<int?> UpdateSchedule(UpdateScheduleRequest request)
     {
-        throw new NotImplementedException();
+        var schedule = await _context.Schedules.FindAsync(request.ScheduleId);
+
+        if (schedule is null)
+        {
+            throw new Exception("Unable to find schedule");
+        }
+
+        _mapper.Map<UpdateScheduleRequest, Schedule>(request);
+        await _context.SaveChangesAsync();
+        return schedule.Id;
     }
 
-    public Task<int> UpdateUserProfile(UpdateUserProfileRequest request)
+    public async Task<string?> UpdateUserProfile(UpdateUserProfileRequest request)
     {
-        throw new NotImplementedException();
+        var userProfile = await _context.UserProfiles.FindAsync(request.Id);
+
+        if (userProfile is null)
+        {
+            throw new Exception("Unable to find user profile");
+        }
+
+        _mapper.Map<UpdateUserProfileRequest, UserProfile>(request);
+        await _context.SaveChangesAsync();
+        return userProfile.Id;
     }
 }

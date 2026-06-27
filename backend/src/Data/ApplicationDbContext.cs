@@ -25,7 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("user_profile_pkey");
 
             entity.ToTable("user_profile", "booking");
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedNever(); ;
             entity.Property(e => e.DefaultLocationId).HasColumnName("default_location_id");
             entity.Property(e => e.DefaultScheduleId).HasColumnName("default_schedule_id");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
@@ -49,7 +49,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Id)
             .ValueGeneratedOnAdd()
             .HasColumnName("id");
-            entity.Property(e => e.UserProfileId).HasColumnName("user_profile_id");
+            entity.Property(e => e.UserId).HasColumnName("user_profile_id");
             entity.Property(e => e.LocationId).HasColumnName("location_id");
             entity.Property(e => e.ScheduleId).HasColumnName("schedule_id");
             entity.Property(e => e.Status)
@@ -66,7 +66,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasOne(d => d.UserProfile) // a booking has one user
             .WithMany()                 // a user can have many bookings
-            .HasForeignKey(d => d.UserProfileId)
+            .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(d => d.Location) // a booking can have one location

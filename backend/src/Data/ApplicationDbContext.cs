@@ -57,11 +57,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasColumnName("status");
             entity.Property(e => e.CollectionDate).HasColumnName("collection_date");
             entity.Property(e => e.DateCreated)
-            .HasDefaultValueSql("now()")
+            // .HasDefaultValueSql("now()")
             .HasColumnName("date_created");
             entity.Property(e => e.DateModified)
             .ValueGeneratedOnAddOrUpdate()
-            .HasDefaultValueSql("now()")
+            // .HasDefaultValueSql("now()")
             .HasColumnName("date_modified");
 
             entity.HasOne(d => d.UserProfile) // a booking has one user

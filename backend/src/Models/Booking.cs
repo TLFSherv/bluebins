@@ -8,7 +8,6 @@ public class Booking
     public string UserId { get; set; }
     [Required]
     public int? LocationId { get; set; }
-    [Required]
     public int? ScheduleId { get; set; }
     [Required]
     public BookingStatus Status { get; set; }

@@ -1,4 +1,4 @@
-public class BookingService
+public class BookingService : IBookingService
 {
     private readonly IBookingRepository _repository;
     public BookingService(IBookingRepository repository)

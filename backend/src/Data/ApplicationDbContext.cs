@@ -77,6 +77,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(d => d.Schedule) // a booking can have one schedule
             .WithMany()                     // a schedule can have many bookings
             .HasForeignKey(d => d.ScheduleId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
         });
 

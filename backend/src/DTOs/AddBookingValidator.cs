@@ -3,9 +3,10 @@ public class AddBookingValidator : AbstractValidator<BookingDTO>
 {
     public AddBookingValidator()
     {
-        RuleFor(x => x.Status).IsInEnum();
+        RuleFor(x => x.Status).IsInEnum().Equals(BookingStatus.Draft);
         RuleFor(x => x.CollectionDate).GreaterThan(DateTime.Now);
 
+        // validate location
         RuleFor(x => x.Location).NotNull();
         RuleFor(x => x.Location.Address).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(6).MaximumLength(40);
         RuleFor(x => x.Location.Postcode).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(3).MaximumLength(6);
@@ -13,6 +14,9 @@ public class AddBookingValidator : AbstractValidator<BookingDTO>
         RuleFor(x => x.Location.Longitude).NotEqual(0);
         RuleFor(x => x.Location.Details).MaximumLength(100);
 
+        // validate schedule
+
+        // validate recycling items
         RuleFor(x => x.RecyclingItems).NotNull();
         RuleForEach(x => x.RecyclingItems).ChildRules(item =>
         {
@@ -20,4 +24,5 @@ public class AddBookingValidator : AbstractValidator<BookingDTO>
             item.RuleFor(x => x.ItemCount).GreaterThan(0);
         });
     }
+
 }

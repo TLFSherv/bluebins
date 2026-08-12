@@ -100,33 +100,29 @@ namespace backend.Migrations
                         .HasColumnName("collection_date");
 
                     b.Property<DateTime>("DateCreated")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("date_created");
 
                     b.Property<DateTime?>("DateModified")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_modified")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("date_modified");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("integer")
                         .HasColumnName("location_id");
 
-                    b.Property<int>("ScheduleId")
+                    b.Property<int?>("ScheduleId")
                         .HasColumnType("integer")
                         .HasColumnName("schedule_id");
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(1)
+                        .HasDefaultValue(2)
                         .HasColumnName("status");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("character varying(80)")
                         .HasColumnName("user_profile_id");
 
@@ -416,20 +412,17 @@ namespace backend.Migrations
                     b.HasOne("Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Schedule", "Schedule")
                         .WithMany()
                         .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Location");
 

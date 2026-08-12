@@ -11,7 +11,7 @@ public static class BookingRoutes
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory)
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory);
 
-            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDto, HttpContext context, [FromServices] BookingService bookingService, LinkGenerator linker) =>
+            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDto, HttpContext context, [FromServices] BookingService service, LinkGenerator linker) =>
             {
                 try
                 {
@@ -21,7 +21,7 @@ public static class BookingRoutes
                         return Results.Unauthorized();
                     }
 
-                    var result = await bookingService.AddBooking(userId, bookingDto);
+                    var result = await service.AddBooking(userId, bookingDto);
                     if (result is null)
                     {
                         Results.BadRequest();

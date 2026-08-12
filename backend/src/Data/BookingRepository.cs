@@ -18,30 +18,35 @@ public class BookingRepository : IBookingRepository
         try
         {
             var locationId = request.Location?.LocationId;
-            // if there's no location id create the location
-            // if there is a location id then the user has selected their default location
-            // and in that case it already exists in the database
+            // If there's no location id create the location
             if (locationId is null)
             {
-                Location newLocation = new()
+                AddLocationRequest newLocation = new()
                 {
-                    MapsId = request.Location.MapsId,
-                    AddressLine1 = request.Location.Address,
+                    MapsId = request.Location!.MapsId,
+                    Address = request.Location.Address,
                     Postcode = request.Location.Postcode,
                     Latitude = request.Location.Latitude,
                     Longitude = request.Location.Longitude,
                     Details = request.Location.Details
                 };
-                _context.Add(newLocation);
-                await _context.SaveChangesAsync();
-                locationId = newLocation.Id;
+                locationId = await AddLocation(newLocation);
             }
+
+            // check that schedule exists, if it doesn't create
+            var scheduleId = request?.Schedule?.ScheduleId;
+            if (request?.Schedule is not null && scheduleId is null)
+            {
+                AddScheduleRequest addScheduleRequest = new() { StartDate = request.Schedule.StartDate, Frequency = request.Schedule.Frequency, IsActive = request.Schedule.IsActive };
+                scheduleId = await AddSchedule(addScheduleRequest);
+            }
+            var userSchedule = await _context.Schedules.Where(x => x.Id == scheduleId).FirstOrDefaultAsync();
 
             Booking newBooking = new()
             {
                 UserId = request.UserId,
                 LocationId = locationId,
-                ScheduleId = request.ScheduleId,
+                ScheduleId = scheduleId,
                 Status = request.Status,
                 CollectionDate = request.CollectionDate,
                 DateCreated = request.DateCreated,
@@ -50,7 +55,7 @@ public class BookingRepository : IBookingRepository
             _context.Add(newBooking);
             await _context.SaveChangesAsync();
 
-            if (request.RecyclingItems is not null)
+            if (request.RecyclingItems != null)
             {
                 List<RecyclingItem> newRecyclingItems = new();
                 foreach (var item in request.RecyclingItems)
@@ -70,12 +75,12 @@ public class BookingRepository : IBookingRepository
             await transaction.CommitAsync();
             return newBooking.Id;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             await transaction.RollbackAsync();
+            Console.WriteLine(ex.Message);
             throw;
         }
-
     }
 
     public async Task<int?> AddLocation(AddLocationRequest request)
@@ -126,6 +131,7 @@ public class BookingRepository : IBookingRepository
             {
                 MapsId = b.Location.MapsId,
                 Address = b.Location.AddressLine1,
+                Postcode = b.Location.Postcode,
                 Latitude = b.Location.Latitude,
                 Longitude = b.Location.Longitude,
                 Details = b.Location.Details
@@ -150,7 +156,8 @@ public class BookingRepository : IBookingRepository
                 VolumeLiters = r.VolumeLiters,
                 ContaminationPercent = r.ContaminationPercent
             }).ToListAsync();
-            result.RecyclingItems = recyclingItems;
+
+            result.RecyclingItems = recyclingItems.Any() ? recyclingItems : null;
         }
 
         return result;

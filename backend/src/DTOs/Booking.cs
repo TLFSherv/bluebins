@@ -2,19 +2,19 @@ using System.ComponentModel.DataAnnotations;
 
 public record BookingDTO
 {
-    public int? ScheduleId { get; set; }
     public BookingStatus Status { get; set; }
     public DateTime CollectionDate { get; set; }
-    public LocationDTO Location { get; set; }
-    public List<RecyclingItemDTO> RecyclingItems { get; set; }
+    public required LocationDTO Location { get; set; }
+    public required List<RecyclingItemDTO> RecyclingItems { get; set; }
+    public ScheduleDTO? Schedule { get; set; }
 }
 public record AddBookingRequest
 {
-    public string? UserId { get; set; }
-    public int? ScheduleId { get; set; }
-    public BookingStatus Status { get; set; }
+    public required string UserId { get; set; }
+    public required BookingStatus Status { get; set; }
     public DateTime CollectionDate { get; set; }
-    public LocationDTO Location { get; set; }
+    public required LocationDTO Location { get; set; }
+    public ScheduleDTO? Schedule { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
     public List<AddRecyclingItemRequest>? RecyclingItems { get; set; }

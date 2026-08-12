@@ -80,7 +80,7 @@ builder.Services.AddAuthentication()
 // add auto mapper
 builder.Services.AddAutoMapper(typeof(BookingProfile));
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<BookingService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();

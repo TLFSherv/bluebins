@@ -7,8 +7,7 @@ public record RecyclingItemDTO
 }
 public record AddRecyclingItemRequest
 {
-    [Required]
-    public int BookingId { get; set; }
+    public int? BookingId { get; set; }
     public MaterialTypes MaterialType { get; set; }
     public decimal WeightKg { get; set; }
     public decimal VolumeLiters { get; set; }

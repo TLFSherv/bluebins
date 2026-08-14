@@ -62,6 +62,11 @@ public class IntegrationTest : IntegrationTestBase
         context.AddRange(recyclingItems);
         context.SaveChanges();
 
+        var recyclingData = await context.RecyclingItems.Where(x => x.Id == 1).ToListAsync();
+        var bookingData = await context.Bookings
+            .Include(x => x.RecyclingItems)
+            .FirstOrDefaultAsync(x => x.Id == 1);
+
         var mapperMock = new Mock<IMapper>();
         var repository = new BookingRepository(context, mapperMock.Object);
         // Act

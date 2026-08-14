@@ -11,7 +11,7 @@ public static class BookingRoutes
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory)
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory);
 
-            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDto, HttpContext context, [FromServices] BookingService service, LinkGenerator linker) =>
+            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDto, HttpContext context, [FromServices] IBookingService service, [FromServices] LinkGenerator linker) =>
             {
                 try
                 {
@@ -36,7 +36,7 @@ public static class BookingRoutes
                 }
             }).WithName("AddBooking");
 
-            bookingApi.MapGet("/{id:int}", async (int id, HttpContext context, BookingService service) =>
+            bookingApi.MapGet("/{id:int}", async ([FromRoute] int id, HttpContext context, [FromServices] IBookingService service) =>
             {
                 try
                 {

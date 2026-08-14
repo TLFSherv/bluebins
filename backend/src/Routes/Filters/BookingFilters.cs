@@ -54,7 +54,7 @@ public class BookingFilters
             return next;
         }
 
-        var logger = context.ApplicationServices.GetRequiredService<ILogger>();
+        var logger = context.ApplicationServices.GetRequiredService<ILogger<BookingFilters>>();
         return async (invocationContext) =>
         {
             switch (routeName)

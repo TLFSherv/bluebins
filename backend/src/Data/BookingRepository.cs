@@ -11,6 +11,7 @@ public class BookingRepository : IBookingRepository
         _context = context;
         _mapper = mapper;
     }
+    // Creates a new booking and returns the booking id
     public async Task<int?> AddBooking(AddBookingRequest request)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -18,7 +19,11 @@ public class BookingRepository : IBookingRepository
         try
         {
             var locationId = request.Location?.LocationId;
-            // If there's no location id create the location
+            /* 
+            conditions (location is not nullable): 
+            - location id is null => create new location
+            - location id not null => location already exists
+            */
             if (locationId is null)
             {
                 AddLocationRequest newLocation = new()
@@ -33,7 +38,12 @@ public class BookingRepository : IBookingRepository
                 locationId = await AddLocation(newLocation);
             }
 
-            // check that schedule exists, if it doesn't create
+            /* 
+            conditions (schedule is nullable): 
+            - schedule is not null and schedule id is null => create new schedule
+            - schedule is null => there's no schedule
+            - both schedule and schedule id not null => schedule already exists
+            */
             var scheduleId = request?.Schedule?.ScheduleId;
             if (request?.Schedule is not null && scheduleId is null)
             {
@@ -50,11 +60,11 @@ public class BookingRepository : IBookingRepository
                 Status = request.Status,
                 CollectionDate = request.CollectionDate,
                 DateCreated = request.DateCreated,
-                DateModified = request.DateModified
+                DateModified = request.DateModified,
             };
             _context.Add(newBooking);
             await _context.SaveChangesAsync();
-
+            // add recycling items for booking
             if (request.RecyclingItems != null)
             {
                 List<RecyclingItem> newRecyclingItems = new();
@@ -118,7 +128,7 @@ public class BookingRepository : IBookingRepository
     public async Task<BookingView?> GetUserBooking(string userId, int bookingId)
     {
         // utilise navigation properties to access data from tables with fk rather than joins
-        var result = await _context.Bookings
+        return await _context.Bookings
         .Where(b => b.UserId == userId && b.Id == bookingId)
         .Select(b =>
         new BookingView
@@ -127,40 +137,31 @@ public class BookingRepository : IBookingRepository
             CollectionDate = b.CollectionDate,
             DateCreated = b.DateCreated,
             DateModified = b.DateModified,
-            Location = b.Location != null ? new LocationView
+            Location = new LocationView
             {
-                MapsId = b.Location.MapsId,
+                MapsId = b.Location!.MapsId,
                 Address = b.Location.AddressLine1,
                 Postcode = b.Location.Postcode,
                 Latitude = b.Location.Latitude,
                 Longitude = b.Location.Longitude,
                 Details = b.Location.Details
-            } : null,
+            },
             Schedule = b.Schedule != null ? new ScheduleView
             {
                 StartDate = b.Schedule.StartDate,
                 Frequency = b.Schedule.Frequency,
                 IsActive = b.Schedule.IsActive
-            } : null
-        }).SingleOrDefaultAsync();
-
-        if (result != null)
-        {
-            var recyclingItems = await _context.RecyclingItems
-            .Where(r => r.BookingId == bookingId)
-            .Select(r => new RecyclingItemView
+            } : null,
+            RecyclingItems = b.RecyclingItems != null ?
+            b.RecyclingItems.Select(r => new RecyclingItemView
             {
                 BookingId = r.BookingId,
                 MaterialType = r.MaterialType,
                 WeightKg = r.WeightKg,
                 VolumeLiters = r.VolumeLiters,
                 ContaminationPercent = r.ContaminationPercent
-            }).ToListAsync();
-
-            result.RecyclingItems = recyclingItems.Any() ? recyclingItems : null;
-        }
-
-        return result;
+            }).ToList() : null
+        }).FirstOrDefaultAsync();
     }
 
     public async Task<LocationView?> GetLocation(int locationId)

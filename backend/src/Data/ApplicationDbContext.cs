@@ -79,6 +79,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(d => d.ScheduleId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasMany(b => b.RecyclingItems)
+            .WithOne(r => r.Booking)
+            .HasForeignKey(r => r.BookingId);
         });
 
         modelBuilder.Entity<Location>(entity =>
@@ -127,7 +131,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity
             .HasOne(e => e.Booking) // a recycling item has one booking
-            .WithMany()             // a booking has many recycling items
+            .WithMany(r => r.RecyclingItems)  // a booking has many recycling items
             .HasForeignKey(e => e.BookingId)
             .OnDelete(DeleteBehavior.Cascade);
         });

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812090645_BookingAndRecyclingItemsRelationship1")]
+    partial class BookingAndRecyclingItemsRelationship1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -327,6 +330,9 @@ namespace backend.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("booking_id");
 
+                    b.Property<int?>("BookingId1")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("ContaminationPercent")
                         .HasColumnType("numeric")
                         .HasColumnName("contamination_percent");
@@ -347,6 +353,8 @@ namespace backend.Migrations
                         .HasName("recycling_item_pkey");
 
                     b.HasIndex("BookingId");
+
+                    b.HasIndex("BookingId1");
 
                     b.ToTable("recycling_item", "booking");
                 });
@@ -486,10 +494,14 @@ namespace backend.Migrations
             modelBuilder.Entity("RecyclingItem", b =>
                 {
                     b.HasOne("Booking", "Booking")
-                        .WithMany("RecyclingItems")
+                        .WithMany()
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Booking", null)
+                        .WithMany("RecyclingItems")
+                        .HasForeignKey("BookingId1");
 
                     b.Navigation("Booking");
                 });

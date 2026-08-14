@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Booking
 {
@@ -18,6 +20,7 @@ public class Booking
     public UserProfile? UserProfile { get; set; }
     public Location? Location { get; set; }
     public Schedule? Schedule { get; set; }
+    public ICollection<RecyclingItem>? RecyclingItems { get; set; }
 }
 
 public enum BookingStatus

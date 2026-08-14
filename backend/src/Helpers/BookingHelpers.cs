@@ -1,32 +1,6 @@
-public class BookingHelpers
+public class BookingHelpers : IBookingHelpers
 {
-    public static AddBookingRequest ConvertBookingDtoToRequest(string userId, BookingDTO booking)
-    {
-        List<AddRecyclingItemRequest> recyclingItemRequests = new();
-        foreach (var item in booking.RecyclingItems)
-        {
-            var (WeightKg, VolumeLiters) = CalculateItemProperties(item.MaterialType, item.ItemCount);
-            recyclingItemRequests.Add(new AddRecyclingItemRequest
-            {
-                MaterialType = item.MaterialType,
-                WeightKg = WeightKg,
-                VolumeLiters = VolumeLiters,
-                ContaminationPercent = 0
-            });
-        }
-
-        return new()
-        {
-            UserId = userId,
-            Schedule = booking.Schedule,
-            Status = booking.Status,
-            CollectionDate = booking.CollectionDate,
-            Location = booking.Location,
-            RecyclingItems = recyclingItemRequests,
-            DateCreated = DateTime.Now,
-        };
-    }
-    public static (decimal WeightKg, decimal VolumeLiters) CalculateItemProperties(MaterialTypes material, int itemCount)
+    public (decimal WeightKg, decimal VolumeLiters) CalculateWeightAndVolume(MaterialTypes material, int itemCount)
     {
         var materialWeights = new { tin = 0, aluminum = 0, glass = 0 };
         decimal weightKg = 0;

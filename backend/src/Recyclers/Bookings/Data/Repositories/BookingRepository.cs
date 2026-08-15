@@ -85,10 +85,9 @@ public class BookingRepository : IBookingRepository
             await transaction.CommitAsync();
             return newBooking.Id;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await transaction.RollbackAsync();
-            Console.WriteLine(ex.Message);
             throw;
         }
     }

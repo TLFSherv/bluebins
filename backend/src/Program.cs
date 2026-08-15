@@ -85,7 +85,8 @@ builder.Services.AddSingleton<IBookingHelpers, BookingHelpers>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
-
+// add custom middleware for catching errors 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler();

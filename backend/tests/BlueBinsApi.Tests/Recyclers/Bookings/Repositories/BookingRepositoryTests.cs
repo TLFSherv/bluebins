@@ -7,9 +7,9 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-public class IntegrationTest : IntegrationTestBase
+public class BookingRepositoryTests : IntegrationTestBase
 {
-    public IntegrationTest(WebApplicationFactory<Program> fixture) : base(fixture)
+    public BookingRepositoryTests(WebApplicationFactory<Program> fixture) : base(fixture)
     {
     }
 

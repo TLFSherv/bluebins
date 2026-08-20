@@ -14,82 +14,51 @@ public class BookingRepository : IBookingRepository
     // Creates a new booking and returns the booking id
     public async Task<int?> AddBooking(AddBookingRequest request)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-
-        try
+        Location? foundLocation = null;
+        if (request.Location.LocationId != null)
         {
-            var locationId = request.Location?.LocationId;
-            /* 
-            conditions (location is not nullable): 
-            - location id is null => create new location
-            - location id not null => location already exists
-            */
-            if (locationId is null)
-            {
-                AddLocationRequest newLocation = new()
-                {
-                    MapsId = request.Location!.MapsId,
-                    Address = request.Location.Address,
-                    Postcode = request.Location.Postcode,
-                    Latitude = request.Location.Latitude,
-                    Longitude = request.Location.Longitude,
-                    Details = request.Location.Details
-                };
-                locationId = await AddLocation(newLocation);
-            }
-
-            /* 
-            conditions (schedule is nullable): 
-            - schedule is not null and schedule id is null => create new schedule
-            - schedule is null => there's no schedule
-            - both schedule and schedule id not null => schedule already exists
-            */
-            var scheduleId = request?.Schedule?.ScheduleId;
-            if (request?.Schedule is not null && scheduleId is null)
-            {
-                AddScheduleRequest addScheduleRequest = new() { StartDate = request.Schedule.StartDate, Frequency = request.Schedule.Frequency, IsActive = request.Schedule.IsActive };
-                scheduleId = await AddSchedule(addScheduleRequest);
-            }
-            var userSchedule = await _context.Schedules.Where(x => x.Id == scheduleId).FirstOrDefaultAsync();
-
-            Booking newBooking = new()
-            {
-                UserId = request.UserId,
-                LocationId = locationId,
-                ScheduleId = scheduleId,
-                Status = request.Status,
-                CollectionDate = request.CollectionDate,
-                DateCreated = request.DateCreated,
-                DateModified = request.DateModified,
-            };
-            _context.Add(newBooking);
-            await _context.SaveChangesAsync();
-            // add recycling items for booking
-            if (request.RecyclingItems != null)
-            {
-                List<RecyclingItem> newRecyclingItems = new();
-                foreach (var item in request.RecyclingItems)
-                {
-                    newRecyclingItems.Add(new RecyclingItem()
-                    {
-                        BookingId = newBooking.Id,
-                        MaterialType = item.MaterialType,
-                        WeightKg = item.WeightKg,
-                        VolumeLiters = item.VolumeLiters
-                    });
-                }
-                _context.AddRange(newRecyclingItems);
-                await _context.SaveChangesAsync();
-            }
-
-            await transaction.CommitAsync();
-            return newBooking.Id;
+            foundLocation = await _context.Locations.SingleOrDefaultAsync(x => x.Id == request.Location.LocationId);
         }
-        catch (Exception)
+
+        Schedule? foundSchedule = null;
+        if (request.Schedule != null && request.Schedule.ScheduleId != null)
         {
-            await transaction.RollbackAsync();
-            throw;
+            foundSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.Id == request.Schedule.ScheduleId);
         }
+
+        Booking newBooking = new()
+        {
+            UserId = request.UserId,
+            Status = request.Status,
+            CollectionDate = request.CollectionDate,
+            DateCreated = request.DateCreated,
+            DateModified = request.DateModified,
+            Location = foundLocation ?? new()
+            {
+                MapsId = request.Location.MapsId,
+                AddressLine1 = request.Location.Address,
+                Postcode = request.Location.Postcode,
+                Latitude = request.Location.Latitude,
+                Longitude = request.Location.Longitude,
+                Details = request.Location.Details
+            },
+            Schedule = request.Schedule != null ? foundSchedule ?? new()
+            {
+                StartDate = request.Schedule.StartDate,
+                Frequency = request.Schedule.Frequency,
+                IsActive = request.Schedule.IsActive
+            } : null,
+            RecyclingItems = request.RecyclingItems?.Select(x => new RecyclingItem()
+            {
+                MaterialType = x.MaterialType,
+                WeightKg = x.WeightKg,
+                VolumeLiters = x.VolumeLiters
+            }).ToList()
+        };
+
+        _context.Add(newBooking);
+        await _context.SaveChangesAsync();
+        return newBooking.Id;
     }
 
     public async Task<int?> AddLocation(AddLocationRequest request)

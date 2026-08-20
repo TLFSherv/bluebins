@@ -8,55 +8,38 @@ public static class BookingRoutes
         return builder.UseEndpoints(endpoints =>
         {
             var bookingApi = endpoints.MapGroup("/booking")
-            .AddEndpointFilterFactory(BookingFilters.ValidateFactory)
-            .AddEndpointFilterFactory(BookingFilters.LoggingFactory);
+            .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
+            .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
 
-            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDto, HttpContext context, [FromServices] IBookingService service, [FromServices] LinkGenerator linker) =>
+            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDTO, HttpContext context, [FromServices] IBookingService service, [FromServices] LinkGenerator linker) =>
             {
-                try
+                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId is null)
                 {
-                    var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    if (userId is null)
-                    {
-                        return Results.Unauthorized();
-                    }
-
-                    var result = await service.AddBooking(userId, bookingDto);
-                    if (result is null)
-                    {
-                        Results.BadRequest();
-                    }
-
-                    return Results.CreatedAtRoute(linker.GetPathByName("GetBooking", new { id = result }), result);
+                    return Results.Unauthorized();
                 }
-                catch (Exception e)
+
+                var result = await service.AddBooking(userId, bookingDTO);
+                if (result is null)
                 {
-                    // return problem details
-                    return Results.Problem(e.Message);
+                    Results.BadRequest();
                 }
+                return Results.CreatedAtRoute("GetBooking", routeValues: new { id = result }, value: result);
             }).WithName("AddBooking");
 
             bookingApi.MapGet("/{id:int}", async ([FromRoute] int id, HttpContext context, [FromServices] IBookingService service) =>
             {
-                try
+                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId is null)
                 {
-                    var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    if (userId is null)
-                    {
-                        return Results.Unauthorized();
-                    }
-                    var result = await service.GetBooking(userId, id);
-                    if (result is null)
-                    {
-                        Results.BadRequest();
-                    }
-                    return Results.Ok(result);
+                    return Results.Unauthorized();
                 }
-                catch (Exception e)
+                var result = await service.GetBooking(userId, id);
+                if (result is null)
                 {
-                    return Results.Problem(e.Message);
+                    Results.BadRequest();
                 }
-
+                return Results.Ok(result);
             }).WithName("GetBooking");
         });
     }

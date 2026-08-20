@@ -1,5 +1,4 @@
 using System.Reflection;
-using EllipticCurve;
 using FluentValidation;
 
 public enum RouteNames
@@ -27,9 +26,12 @@ public class BookingFilters
 
         return async (invocationContext) =>
        {
+           // add validation filter for the add booking route
            if (routeName == RouteNames.AddBooking)
            {
+               // get validator from DI container
                var validator = context.ApplicationServices.GetRequiredService<IValidator<BookingDTO>>();
+               // get route input parameters, specifically the booking DTO
                var input = invocationContext.GetArgument<BookingDTO>(parameterPosition);
                var validationResults = await validator.ValidateAsync(input);
                if (!validationResults.IsValid)
@@ -37,7 +39,7 @@ public class BookingFilters
                    return Results.ValidationProblem(validationResults.ToDictionary());
                }
            }
-           return next(invocationContext);
+           return await next(invocationContext);
        };
     }
 
@@ -48,12 +50,12 @@ public class BookingFilters
 
         ParameterInfo[] parameters = context.MethodInfo.GetParameters();
         var (routeName, parameterPosition) = GetRouteInfo(parameters);
-
+        // if route can't be found continue to next filter in pipeline
         if (routeName == RouteNames.Unknown)
         {
             return next;
         }
-
+        // add logging filter
         var logger = context.ApplicationServices.GetRequiredService<ILogger<BookingFilters>>();
         return async (invocationContext) =>
         {
@@ -82,6 +84,7 @@ public class BookingFilters
                             logger.LogError("Failed to add booking");
                             return next;
                         }
+
                         logger.LogInformation("Successfully added new booking with id {id}", result);
                         return result;
                     }
@@ -100,11 +103,13 @@ public class BookingFilters
             {
                 routeName = RouteNames.GetBooking;
                 parameterPosition = i;
+                break;
             }
             else if (parameters[i].Name == "bookingDTO" && parameters[i].ParameterType == typeof(BookingDTO))
             {
                 routeName = RouteNames.AddBooking;
                 parameterPosition = i;
+                break;
             }
         }
         return (routeName, parameterPosition);

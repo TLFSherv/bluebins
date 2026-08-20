@@ -16,17 +16,24 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception ex)
         {
-            // log the error
+            // 1. Ensure response hasn't already started writing headers
+            if (context.Response.HasStarted)
+            {
+                logger.LogWarning("The response has already started, error handler middleware cannot write custom error payload.");
+                throw;
+            }
+
+            // 2. Safe structured logging (removes manual $ characters)
             var traceId = Guid.NewGuid();
-            logger.LogError($"Error occured while processing the request, TraceId: ${traceId}," +
-            $"Meesage:${ex.Message},StackTrace:${ex.StackTrace}");
+            logger.LogError(ex, "Error occurred while processing request. TraceId: {TraceId}", traceId);
 
             var response = context.Response;
-            response.ContentType = "application/json";
 
-            // return the response code and message
+            // 3. Set status code BEFORE setting content-type or writing to body
             var (status, message) = GetResponse(ex);
             response.StatusCode = (int)status;
+            response.ContentType = "application/json";
+
             await response.WriteAsync(message);
         }
     }

@@ -7,11 +7,10 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-public class BookingRepositoryTests : IntegrationTestBase
+public class RepositoryTests : IntegrationTestBase
 {
-    public BookingRepositoryTests(WebApplicationFactory<Program> fixture) : base(fixture)
-    {
-    }
+    public RepositoryTests(WebApplicationFactory<Program> fixture) : base(fixture)
+    { }
 
     // Method providing test data
     public static IEnumerable<object?[]> GetUserBookingTestData()
@@ -91,14 +90,14 @@ public class BookingRepositoryTests : IntegrationTestBase
         AddBookingRequest request1 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = null, DateCreated = DateTime.Today };
         AddBookingRequest request2 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule1, DateCreated = DateTime.Today };
         AddBookingRequest request3 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule2, DateCreated = DateTime.Today };
-        yield return new object[] { request1, 1 }; // request with no schedule
-        yield return new object[] { request2, 1 }; // request with schedule
-        yield return new object[] { request3, 1 }; // request with new schedule
+        yield return new object[] { request1 }; // request with no schedule
+        yield return new object[] { request2 }; // request with schedule
+        yield return new object[] { request3 }; // request with new schedule
     }
 
     [Theory]
     [MemberData(nameof(AddUserBookingData))]
-    public async Task AddUserBooking_ReturnsCorrectBookingId(AddBookingRequest request, object expectedResult)
+    public async Task AddUserBooking_ReturnsCorrectBookingId(AddBookingRequest request)
     {
         context.Database.EnsureCreated();
         // Arrange
@@ -122,7 +121,19 @@ public class BookingRepositoryTests : IntegrationTestBase
         var repository = new BookingRepository(context, mockMapper.Object);
         // Act
         var result = await repository.AddBooking(request);
+        Assert.IsType<int>(result);
+        var booking = context.Bookings
+        .Include(x => x.Location)
+        .Include(x => x.Schedule)
+        .Include(x => x.RecyclingItems)
+        .FirstOrDefault(x => x.Id == result);
+
+        Assert.IsType<Booking>(booking);
         // Assert
-        Assert.Equal(expectedResult, result);
+        Assert.Equal(request.CollectionDate, booking.CollectionDate);
+        Assert.Equal(request.Location.Address, booking.Location!.AddressLine1);
+        Assert.Equal(request.Schedule?.StartDate, booking.Schedule?.StartDate);
+        Assert.Equal(request.RecyclingItems?.Count(), booking.RecyclingItems?.Count());
+
     }
 }

@@ -82,7 +82,7 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(BookingProfile));
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddSingleton<IBookingHelpers, BookingHelpers>();
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddValidatorsFromAssemblyContaining<AddBookingValidator>(ServiceLifetime.Singleton);
 
 var app = builder.Build();
 // add custom middleware for catching errors 

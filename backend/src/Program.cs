@@ -57,13 +57,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddAuthentication()
-.AddOpenIdConnect("Google", options =>
+.AddGoogle("Google", options =>
 {
-    options.Authority = "https://accounts.google.com";
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.CallbackPath = "/signin-google";
-    options.ResponseType = "code";
     options.SaveTokens = true;
     options.SignInScheme = IdentityConstants.ExternalScheme;
 
@@ -71,17 +69,11 @@ builder.Services.AddAuthentication()
     options.CorrelationCookie.HttpOnly = true;
     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
     options.CorrelationCookie.SameSite = SameSiteMode.None;
-
-    options.NonceCookie.HttpOnly = true;
-    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.NonceCookie.SameSite = SameSiteMode.None;
 });
 
 // add auto mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(BookingProfile));
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddSingleton<IBookingHelpers, BookingHelpers>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddBookingValidator>(ServiceLifetime.Singleton);
 
 var app = builder.Build();

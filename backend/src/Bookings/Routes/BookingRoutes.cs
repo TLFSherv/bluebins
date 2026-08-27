@@ -11,7 +11,7 @@ public static class BookingRoutes
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
 
-            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDTO, HttpContext context, [FromServices] IBookingService service, [FromServices] LinkGenerator linker) =>
+            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDTO, HttpContext context, [FromServices] IBookingRepository repository, [FromServices] LinkGenerator linker) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId is null)
@@ -19,25 +19,36 @@ public static class BookingRoutes
                     return Results.Unauthorized();
                 }
 
-                var result = await service.AddBooking(userId, bookingDTO);
+                AddBookingRequest addBooking = new()
+                {
+                    UserId = userId,
+                    Schedule = bookingDTO.Schedule,
+                    Status = bookingDTO.Status,
+                    CollectionDate = bookingDTO.CollectionDate,
+                    Location = bookingDTO.Location,
+                    RecyclingItems = bookingDTO.RecyclingItems.ToRequest(),
+                    DateCreated = DateTime.Now,
+                };
+                var result = await repository.AddBooking(addBooking);
+
                 if (result is null)
                 {
-                    Results.BadRequest();
+                    return Results.BadRequest();
                 }
                 return Results.CreatedAtRoute("GetBooking", routeValues: new { id = result }, value: result);
             }).WithName("AddBooking");
 
-            bookingApi.MapGet("/{id:int}", async ([FromRoute] int id, HttpContext context, [FromServices] IBookingService service) =>
+            bookingApi.MapGet("/{id:int}", async ([FromRoute] int id, HttpContext context, [FromServices] IBookingRepository repository) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId is null)
                 {
                     return Results.Unauthorized();
                 }
-                var result = await service.GetBooking(userId, id);
+                var result = await repository.GetUserBooking(userId, id);
                 if (result is null)
                 {
-                    Results.BadRequest();
+                    return Results.BadRequest();
                 }
                 return Results.Ok(result);
             }).WithName("GetBooking");

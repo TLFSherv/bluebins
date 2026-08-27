@@ -9,7 +9,7 @@ import SignIn from './Recyclers/Pages/Auth/SignIn'
 import SignUp from './Recyclers/Pages/Auth/SignUp'
 import Layout from './Components/Layout'
 import Dashboard from './Recyclers/Pages/Portal/Dashboard'
-import Collection from './Recyclers/Pages/Portal/Collection';
+import Booking from './Recyclers/Pages/Portal/Booking'
 import { ErrorBoundary } from './Components/ErrorBoundary';
 
 const router = createBrowserRouter(
@@ -22,7 +22,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path='portal'>
         <Route path='dashboard' element={<Dashboard />} />
-        <Route path='collection' element={<Collection />} />
+        <Route path='booking' element={<Booking />} />
       </Route>
     </Route >
   )

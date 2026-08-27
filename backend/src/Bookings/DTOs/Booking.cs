@@ -36,3 +36,4 @@ public record BookingView
     public ScheduleView? Schedule { get; set; }
     public List<RecyclingItemView>? RecyclingItems { get; set; }
 };
+

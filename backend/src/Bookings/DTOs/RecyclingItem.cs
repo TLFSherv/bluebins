@@ -21,3 +21,40 @@ public record UpdateRecyclingItemRequest : AddRecyclingItemRequest
 }
 
 public record RecyclingItemView : AddRecyclingItemRequest;
+
+public static class RecyclingItemExtensions
+{
+    public static List<AddRecyclingItemRequest>? ToRequest(this List<RecyclingItemDTO>? recyclingItemDTO)
+    {
+        if (recyclingItemDTO is null) return null;
+        var materialWeights = new { tin = 0, aluminum = 0, glass = 0 };
+        decimal weightKg = 0;
+        var result = new List<AddRecyclingItemRequest>();
+        foreach (var item in recyclingItemDTO)
+        {
+            switch (item.MaterialType)
+            {
+                case MaterialTypes.tin:
+                    weightKg = materialWeights.tin * item.ItemCount;
+                    break;
+                case MaterialTypes.aluminum:
+                    weightKg = materialWeights.aluminum * item.ItemCount;
+                    break;
+                case MaterialTypes.glass:
+                    weightKg = materialWeights.glass * item.ItemCount;
+                    break;
+                case MaterialTypes.mixture:
+                    break;
+            }
+            result.Add(new AddRecyclingItemRequest
+            {
+                MaterialType = item.MaterialType,
+                WeightKg = weightKg,
+                VolumeLiters = 0,
+                ContaminationPercent = 0
+            });
+
+        }
+        return result;
+    }
+}

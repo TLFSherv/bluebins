@@ -89,7 +89,7 @@ public class BookingFilters
                         return result;
                     }
             }
-            return next(invocationContext);
+            return await next(invocationContext);
         };
     }
 

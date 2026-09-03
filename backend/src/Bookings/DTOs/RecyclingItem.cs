@@ -37,7 +37,7 @@ public static class RecyclingItemExtensions
                 case MaterialTypes.tin:
                     weightKg = materialWeights.tin * item.ItemCount;
                     break;
-                case MaterialTypes.aluminum:
+                case MaterialTypes.aluminium:
                     weightKg = materialWeights.aluminum * item.ItemCount;
                     break;
                 case MaterialTypes.glass:

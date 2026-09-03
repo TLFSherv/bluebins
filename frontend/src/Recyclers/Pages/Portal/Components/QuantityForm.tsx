@@ -1,4 +1,7 @@
+import React, { useState } from "react";
+
 export default function QuantityForm() {
+    const [isRecyclingItemsFormVisible, setIsRecyclingItemsFormVisible] = useState<boolean>(false);
     return (
         <div className="space-y-7">
             <h1 className="text-center text-2xl font-[Lato]">
@@ -13,7 +16,41 @@ export default function QuantityForm() {
                 <button type="button" className="bg-[#3CC4FA] text-lg text-white w-[80px] h-[45px] rounded-lg">+</button>
                 <button type="button" className="bg-[#3CC4FA] text-lg text-white w-[80px] h-[45px] rounded-lg">-</button>
             </div>
-            <button type="button">+ Add contents</button>
+            {isRecyclingItemsFormVisible && <RecyclingItemsForm />}
+            <button type="button" onClick={() => setIsRecyclingItemsFormVisible(prev => !prev)}>
+                {isRecyclingItemsFormVisible ? "- Hide contents" : "+ Add contents"}
+            </button>
+        </div>
+    );
+}
+
+function RecyclingItemsForm() {
+    return (
+        <div className="space-y-7">
+            <div className="flex justify-evenly">
+                <div className="form-floating">
+                    <input type="number" name="quantity_tin" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
+                    <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">tin</label>
+                </div>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+            </div>
+            <div className="flex justify-evenly">
+                <div className="form-floating">
+                    <input type="number" name="quantity_aluminium" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
+                    <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">aluminium</label>
+                </div>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+            </div>
+            <div className="flex justify-evenly">
+                <div className="form-floating">
+                    <input type="number" name="quantity_glass" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
+                    <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">glass</label>
+                </div>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
+                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+            </div>
         </div>
     );
 }

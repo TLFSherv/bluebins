@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function AddressForm() {
-    var [showExtraFields, setShowExtraFields] = useState<boolean>(false);
+    const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
+    const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     return (
         <div className="space-y-6">
             <h1 className="text-center text-2xl font-[Lato]">
@@ -10,30 +11,39 @@ export default function AddressForm() {
             <p className="text-center text-lg">
                 Where can we collect your recycling?
             </p>
-            <div>
-                <div className="form-floating">
-                    <input type="text" name="address" className="form-control-1" autoComplete="off" />
-                    <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Address</label>
+            <div className="space-y-3">
+                <div>
+                    <div className="form-floating">
+                        <input type="text" name="address" className="form-control-1" autoComplete="off" />
+                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Address</label>
+                    </div>
+                    <div className="flex justify-end space-x-2 text-sm pt-2">
+                        <input type="checkbox" name="makeDefault" />
+                        <label>
+                            Make my default
+                        </label>
+                    </div>
                 </div>
-                <div className="flex justify-end space-x-2 text-sm pt-2">
-                    <input type="checkbox" name="makeDefault" />
-                    <label>
-                        Make my default
-                    </label>
-                </div>
+                {isAdditionalInfoVisible &&
+                    <div className="form-floating">
+                        <textarea name="additionalInformation" className="form-control-1" />
+                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Additional information</label>
+                    </div>}
                 <div className="space-y-3">
-                    {showExtraFields && <ManualAddressFields />}
-                    <button type="button" onClick={() => setShowExtraFields(prev => !prev)}>
-                        {showExtraFields ? "- Hide manual fields" : "+ Enter address manually"}
+                    {isFullAddressFormVisible && <FullAddressForm />}
+                    <button type="button" onClick={() => setIsAdditionalInfoVisible(prev => !prev)}>
+                        {isAdditionalInfoVisible ? "- Hide additional information" : "+ Add additional information"}
                     </button>
-                    <button type="button">+ Add additional information</button>
+                    <button type="button" onClick={() => setIsFullAddressFormVisible(prev => !prev)}>
+                        {isFullAddressFormVisible ? "- Hide manual fields" : "+ Enter address manually"}
+                    </button>
                 </div>
             </div>
         </div>
     );
 }
 
-function ManualAddressFields() {
+function FullAddressForm() {
     return (
         <div className="space-y-6">
             <div className="form-floating">
@@ -41,8 +51,8 @@ function ManualAddressFields() {
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Postcode</label>
             </div>
             <div className="form-floating">
-                <textarea name="additionalInformation" className="form-control-1" />
-                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Additional information</label>
+                <input type="text" name="postcode" className="form-control-1 w-[150px]" />
+                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Parish</label>
             </div>
         </div>
     );

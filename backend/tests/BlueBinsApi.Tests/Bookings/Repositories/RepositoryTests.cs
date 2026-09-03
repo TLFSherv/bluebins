@@ -22,7 +22,7 @@ public class RepositoryTests : IntegrationTestBase
             Location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems =
             [
-                new() {BookingId=1, MaterialType=MaterialTypes.aluminum, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
                 new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
                 new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
             ]
@@ -39,7 +39,7 @@ public class RepositoryTests : IntegrationTestBase
         // Arrange
         List<RecyclingItem> recyclingItems = new()
         {
-            new() {Id=1, BookingId=1, MaterialType=MaterialTypes.aluminum, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+            new() {Id=1, BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
             new() {Id=2, BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
             new() {Id=3, BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
         };
@@ -78,7 +78,7 @@ public class RepositoryTests : IntegrationTestBase
         LocationDTO location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
         List<AddRecyclingItemRequest> recyclingItems = new()
        {
-            new() {MaterialType=MaterialTypes.aluminum, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+            new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
             new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
             new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
 

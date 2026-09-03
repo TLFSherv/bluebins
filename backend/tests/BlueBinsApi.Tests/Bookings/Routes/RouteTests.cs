@@ -19,7 +19,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
             Location = new LocationDTO { MapsId = "test", Address = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
             RecyclingItems = new()
             {
-                new() {MaterialType=MaterialTypes.aluminum, ItemCount = 3},
+                new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
                 new() {MaterialType=MaterialTypes.glass, ItemCount=2},
                 new() {MaterialType=MaterialTypes.glass, ItemCount=2},
             }
@@ -31,7 +31,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
             Location = new LocationDTO { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems = new()
             {
-                new() {MaterialType=MaterialTypes.aluminum, ItemCount = 3},
+                new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
                 new() {MaterialType=MaterialTypes.glass, ItemCount=2},
                 new() {MaterialType=MaterialTypes.glass, ItemCount=2},
             }
@@ -61,7 +61,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     {
         List<RecyclingItemView> recyclingItems = new()
         {
-            new() {BookingId=1, MaterialType=MaterialTypes.aluminum, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+            new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
             new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
             new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
         };

@@ -16,7 +16,7 @@ public class RecyclingItem
 public enum MaterialTypes
 {
     tin = 1,
-    aluminum = 2,
+    aluminium = 2,
     glass = 3,
     mixture = 4
 }

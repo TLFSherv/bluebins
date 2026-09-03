@@ -84,7 +84,7 @@ function AuthNav(props: { isSignedIn: boolean, setIsSignedIn: React.Dispatch<Rea
             </form>
             <ol className="space-y-2 h-full">
                 <li>
-                    <Link to={"portal/collection"}> Collection</Link>
+                    <Link to={"portal/booking"}> Booking</Link>
                 </li>
                 <li>
                     <Link to={"portal/dashboard"}>Dashboard</Link>

@@ -45,7 +45,7 @@ public class BookingRepositoryStub : IBookingRepository
         if (userId != "1" || bookingId != 1) return null;
         List<RecyclingItemView> recyclingItems = new()
         {
-            new() {BookingId=1, MaterialType=MaterialTypes.aluminum, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+            new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
             new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
             new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
         };

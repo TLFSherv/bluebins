@@ -29,9 +29,9 @@ public static class BookingRoutes
                     RecyclingItems = bookingDTO.RecyclingItems.ToRequest(),
                     DateCreated = DateTime.Now,
                 };
-                var result = await repository.AddBooking(addBooking);
+                var result = await repository.AddEntity<AddBookingRequest, Booking, int>(addBooking);
 
-                if (result is null)
+                if (result == 0)
                 {
                     return Results.BadRequest();
                 }

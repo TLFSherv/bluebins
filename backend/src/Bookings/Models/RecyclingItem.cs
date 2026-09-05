@@ -1,16 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-public class RecyclingItem
+public class RecyclingItem : IEntity<int>
 {
-    [Required]
     public int Id { get; set; }
-    [Required]
     public int BookingId { get; set; }
     public MaterialTypes MaterialType { get; set; }
     public decimal WeightKg { get; set; }
     public decimal VolumeLiters { get; set; }
     public decimal ContaminationPercent { get; set; } // add default
-
     public Booking? Booking { get; set; }
 }
 public enum MaterialTypes

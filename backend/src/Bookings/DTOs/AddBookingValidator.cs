@@ -8,7 +8,7 @@ public class AddBookingValidator : AbstractValidator<BookingDTO>
 
         // validate location
         RuleFor(x => x.Location).NotNull();
-        RuleFor(x => x.Location.Address).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(6).MaximumLength(50);
+        RuleFor(x => x.Location.AddressLine1).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(6).MaximumLength(50);
         RuleFor(x => x.Location.Postcode).Cascade(CascadeMode.Stop).NotEmpty().MinimumLength(3).MaximumLength(8);
         RuleFor(x => x.Location.Latitude).NotEqual(0);
         RuleFor(x => x.Location.Longitude).NotEqual(0);

@@ -5,8 +5,8 @@ public class BookingProfile : Profile
     public BookingProfile()
     {
         CreateMap<AddBookingRequest, Booking>();
-        CreateMap<AddLocationRequest, Location>()
-        .ForMember(dest => dest.AddressLine1, act => act.MapFrom(src => src.Address));
+        CreateMap<LocationDTO, Location>();
+        CreateMap<AddLocationRequest, Location>();
         CreateMap<AddRecyclingItemRequest, RecyclingItem>();
         CreateMap<AddScheduleRequest, Schedule>();
         CreateMap<AddUserProfileRequest, UserProfile>();

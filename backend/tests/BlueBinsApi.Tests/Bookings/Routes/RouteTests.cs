@@ -16,7 +16,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         {
             Status = BookingStatus.Draft,
             CollectionDate = new DateTime(2026, 12, 20),
-            Location = new LocationDTO { MapsId = "test", Address = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
+            Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
             RecyclingItems = new()
             {
                 new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
@@ -28,7 +28,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         {
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 12, 20),
-            Location = new LocationDTO { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems = new()
             {
                 new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
@@ -70,7 +70,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 8, 20),
             DateCreated = DateTime.Today,
-            Location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems = recyclingItems
         };
         yield return new object[] { 1, booking };

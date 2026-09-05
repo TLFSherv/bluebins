@@ -1,15 +1,26 @@
 using System.Runtime.CompilerServices;
 using AutoMapper;
+using Castle.Core.Logging;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 public class RepositoryTests : IntegrationTestBase
 {
+    private readonly IMapper _mapper;
     public RepositoryTests(WebApplicationFactory<Program> fixture) : base(fixture)
-    { }
+    {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<BookingProfile>();
+        }, NullLoggerFactory.Instance);
+
+        _mapper = config.CreateMapper();
+
+    }
 
     // Method providing test data
     public static IEnumerable<object?[]> GetUserBookingTestData()
@@ -19,7 +30,7 @@ public class RepositoryTests : IntegrationTestBase
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 8, 20),
             DateCreated = DateTime.Today,
-            Location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems =
             [
                 new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
@@ -65,8 +76,7 @@ public class RepositoryTests : IntegrationTestBase
             .Include(x => x.RecyclingItems)
             .FirstOrDefaultAsync(x => x.Id == 1);
 
-        var mapperMock = new Mock<IMapper>();
-        var repository = new BookingRepository(context, mapperMock.Object);
+        var repository = new BookingRepository(context, _mapper);
         // Act
         var result = await repository.GetUserBooking(userId, bookingId);
         // Assert
@@ -75,7 +85,7 @@ public class RepositoryTests : IntegrationTestBase
 
     public static IEnumerable<object[]> AddUserBookingData()
     {
-        LocationDTO location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
+        LocationDTO location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
         List<AddRecyclingItemRequest> recyclingItems = new()
        {
             new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
@@ -105,20 +115,14 @@ public class RepositoryTests : IntegrationTestBase
         context.Add(schedule);
         context.SaveChanges();
 
-        var mockMapper = new Mock<IMapper>();
-
-        Location newLocation = new() { MapsId = request.Location.MapsId, AddressLine1 = request.Location.Address, Postcode = request.Location.Postcode, Latitude = request.Location.Latitude, Longitude = request.Location.Longitude, Details = request.Location.Details };
-        mockMapper.Setup(x => x.Map<AddLocationRequest, Location>(It.IsAny<AddLocationRequest>())).Returns(newLocation);
-
         if (request.Schedule is not null)
         {
             Schedule newSchedule = new() { StartDate = request.Schedule.StartDate, Frequency = request.Schedule.Frequency };
-            mockMapper.Setup(x => x.Map<AddScheduleRequest, Schedule>(It.IsAny<AddScheduleRequest>())).Returns(newSchedule);
         }
 
-        var repository = new BookingRepository(context, mockMapper.Object);
+        var repository = new BookingRepository(context, _mapper);
         // Act
-        var result = await repository.AddBooking(request);
+        var result = await repository.AddEntity<AddBookingRequest, Booking, int>(request);
         Assert.IsType<int>(result);
         var booking = context.Bookings
         .Include(x => x.Location)
@@ -129,7 +133,7 @@ public class RepositoryTests : IntegrationTestBase
         Assert.IsType<Booking>(booking);
         // Assert
         Assert.Equal(request.CollectionDate, booking.CollectionDate);
-        Assert.Equal(request.Location.Address, booking.Location!.AddressLine1);
+        Assert.Equal(request.Location.AddressLine1, booking.Location!.AddressLine1);
         Assert.Equal(request.Schedule?.StartDate, booking.Schedule?.StartDate);
         Assert.Equal(request.RecyclingItems?.Count(), booking.RecyclingItems?.Count());
 

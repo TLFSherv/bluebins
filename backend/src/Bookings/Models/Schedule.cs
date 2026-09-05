@@ -1,4 +1,4 @@
-public class Schedule
+public class Schedule : IEntity<int>
 {
     public int Id { get; set; }
     public DateOnly StartDate { get; set; }

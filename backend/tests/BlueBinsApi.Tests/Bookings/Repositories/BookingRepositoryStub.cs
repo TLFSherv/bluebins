@@ -1,8 +1,21 @@
 public class BookingRepositoryStub : IBookingRepository
 {
-    public async Task<int?> AddBooking(AddBookingRequest request)
+    public async Task<TId> AddEntity<TRequest, TEntity, TId>(TRequest requestDto)
+    where TEntity : class, IEntity<TId>
     {
-        return await Task.FromResult(1);
+        if (typeof(TId) == typeof(string))
+        {
+            string mockId = "1";
+            return (TId)(object)mockId;
+        }
+
+        if (typeof(TId) == typeof(int))
+        {
+            int mockId = 1;
+            return (TId)(object)mockId;
+        }
+
+        throw new NotSupportedException($"Type {typeof(TId).Name} is not supported");
     }
 
     public async Task<int?> AddLocation(AddLocationRequest request)
@@ -54,7 +67,7 @@ public class BookingRepositoryStub : IBookingRepository
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 8, 20),
             DateCreated = DateTime.Today,
-            Location = new() { MapsId = "test", Address = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems = recyclingItems
         };
 

@@ -1,16 +1,13 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-public class UserProfile
+public class UserProfile : IEntity<string>
 {
-    [Required]
-    [MaxLength(80)]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public int? DefaultLocationId { get; set; }
     public int? DefaultScheduleId { get; set; }
     public bool IsDeleted { get; set; }
     public Location? DefaultLocation { get; set; }
-
     public Schedule? DefaultSchedule { get; set; }
 
 }

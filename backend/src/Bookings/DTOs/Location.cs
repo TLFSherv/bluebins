@@ -4,7 +4,7 @@ public record LocationDTO
 {
     public int? LocationId { get; set; }
     public string? MapsId { get; set; }
-    public string Address { get; set; }
+    public string AddressLine1 { get; set; }
     public string Postcode { get; set; }
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }
@@ -14,7 +14,7 @@ public record LocationDTO
 public record AddLocationRequest
 {
     public string? MapsId { get; set; }
-    public string? Address { get; set; }
+    public string? AddressLine1 { get; set; }
     public string? Postcode { get; set; }
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }

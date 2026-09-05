@@ -11,88 +11,15 @@ public class BookingRepository : IBookingRepository
         _context = context;
         _mapper = mapper;
     }
-    // Creates a new booking and returns the booking id
-    public async Task<int?> AddBooking(AddBookingRequest request)
+    // Creates a new database entry and returns Id
+    public async Task<TId> AddEntity<TRequest, TEntity, TId>(TRequest requestDto)
+        where TEntity : class, IEntity<TId>
     {
-        Location? foundLocation = null;
-        if (request.Location.LocationId != null)
-        {
-            foundLocation = await _context.Locations.SingleOrDefaultAsync(x => x.Id == request.Location.LocationId);
-        }
-
-        Schedule? foundSchedule = null;
-        if (request.Schedule != null && request.Schedule.ScheduleId != null)
-        {
-            foundSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.Id == request.Schedule.ScheduleId);
-        }
-
-        Booking newBooking = new()
-        {
-            UserId = request.UserId,
-            Status = request.Status,
-            CollectionDate = request.CollectionDate,
-            DateCreated = request.DateCreated,
-            DateModified = request.DateModified,
-            Location = foundLocation ?? new()
-            {
-                MapsId = request.Location.MapsId,
-                AddressLine1 = request.Location.Address,
-                Postcode = request.Location.Postcode,
-                Latitude = request.Location.Latitude,
-                Longitude = request.Location.Longitude,
-                Details = request.Location.Details
-            },
-            Schedule = request.Schedule != null ? foundSchedule ?? new()
-            {
-                StartDate = request.Schedule.StartDate,
-                Frequency = request.Schedule.Frequency,
-                IsActive = request.Schedule.IsActive
-            } : null,
-            RecyclingItems = request.RecyclingItems?.Select(x => new RecyclingItem()
-            {
-                MaterialType = x.MaterialType,
-                WeightKg = x.WeightKg,
-                VolumeLiters = x.VolumeLiters
-            }).ToList()
-        };
-
-        _context.Add(newBooking);
+        var entity = _mapper.Map<TEntity>(requestDto);
+        _context.Add(entity);
         await _context.SaveChangesAsync();
-        return newBooking.Id;
+        return entity.Id;
     }
-
-    public async Task<int?> AddLocation(AddLocationRequest request)
-    {
-        var location = _mapper.Map<AddLocationRequest, Location>(request);
-        _context.Add(location);
-        await _context.SaveChangesAsync();
-        return location.Id;
-    }
-
-    public async Task<int?> AddRecyclingItem(AddRecyclingItemRequest request)
-    {
-        var recyclingItem = _mapper.Map<AddRecyclingItemRequest, RecyclingItem>(request);
-        _context.Add(recyclingItem);
-        await _context.SaveChangesAsync();
-        return recyclingItem.Id;
-    }
-
-    public async Task<int?> AddSchedule(AddScheduleRequest request)
-    {
-        var schedule = _mapper.Map<AddScheduleRequest, Schedule>(request);
-        _context.Add(schedule);
-        await _context.SaveChangesAsync();
-        return schedule.Id;
-    }
-
-    public async Task<string?> AddUserProfile(AddUserProfileRequest request)
-    {
-        var userProfile = _mapper.Map<AddUserProfileRequest, UserProfile>(request);
-        _context.Add(userProfile);
-        await _context.SaveChangesAsync();
-        return userProfile.Id;
-    }
-
     public async Task<BookingView?> GetUserBooking(string userId, int bookingId)
     {
         // utilise navigation properties to access data from tables with fk rather than joins
@@ -108,7 +35,7 @@ public class BookingRepository : IBookingRepository
             Location = new LocationView
             {
                 MapsId = b.Location!.MapsId,
-                Address = b.Location.AddressLine1,
+                AddressLine1 = b.Location.AddressLine1,
                 Postcode = b.Location.Postcode,
                 Latitude = b.Location.Latitude,
                 Longitude = b.Location.Longitude,
@@ -139,7 +66,7 @@ public class BookingRepository : IBookingRepository
         .Select(x => new LocationView
         {
             MapsId = x.MapsId,
-            Address = x.AddressLine1,
+            AddressLine1 = x.AddressLine1,
             Postcode = x.Postcode,
             Latitude = x.Latitude,
             Longitude = x.Longitude,

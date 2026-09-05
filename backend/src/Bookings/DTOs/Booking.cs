@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 
 public record BookingDTO
 {
@@ -8,6 +9,7 @@ public record BookingDTO
     public required List<RecyclingItemDTO> RecyclingItems { get; set; }
     public ScheduleDTO? Schedule { get; set; }
 }
+
 public record AddBookingRequest
 {
     public required string UserId { get; set; }
@@ -17,7 +19,7 @@ public record AddBookingRequest
     public ScheduleDTO? Schedule { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
-    public List<AddRecyclingItemRequest>? RecyclingItems { get; set; }
+    public ICollection<AddRecyclingItemRequest>? RecyclingItems { get; set; }
 
 }
 public record UpdateBookingRequest : AddBookingRequest

@@ -1,5 +1,5 @@
 using FluentValidation;
-public class AddBookingValidator : AbstractValidator<BookingDTO>
+public class AddBookingValidator : AbstractValidator<AddBookingRequest>
 {
     public AddBookingValidator()
     {
@@ -21,7 +21,7 @@ public class AddBookingValidator : AbstractValidator<BookingDTO>
         RuleForEach(x => x.RecyclingItems).ChildRules(item =>
         {
             item.RuleFor(x => x.MaterialType).IsInEnum();
-            item.RuleFor(x => x.ItemCount).GreaterThan(0);
+            item.RuleFor(x => x.MaterialCount).GreaterThan(0);
         });
     }
 

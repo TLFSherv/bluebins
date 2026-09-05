@@ -12,42 +12,42 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     }
     public static IEnumerable<object[]> GetAddBookingData()
     {
-        BookingDTO bookingDTO = new()
+        AddBookingRequest request1 = new()
         {
             Status = BookingStatus.Draft,
             CollectionDate = new DateTime(2026, 12, 20),
             Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            RecyclingItems = new()
+            RecyclingItems = new List<AddRecyclingItemRequest>()
             {
-                new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
-                new() {MaterialType=MaterialTypes.glass, ItemCount=2},
-                new() {MaterialType=MaterialTypes.glass, ItemCount=2},
+                new() {MaterialType=MaterialTypes.aluminium, MaterialCount = 3},
+                new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
+                new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
             }
         };
-        BookingDTO bookingDTO1 = new()
+        AddBookingRequest request2 = new()
         {
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 12, 20),
             Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            RecyclingItems = new()
+            RecyclingItems = new List<AddRecyclingItemRequest>()
             {
-                new() {MaterialType=MaterialTypes.aluminium, ItemCount = 3},
-                new() {MaterialType=MaterialTypes.glass, ItemCount=2},
-                new() {MaterialType=MaterialTypes.glass, ItemCount=2},
+                new() {MaterialType=MaterialTypes.aluminium, MaterialCount = 3},
+                new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
+                new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
             }
         };
-        yield return new object[] { bookingDTO, HttpStatusCode.Created, 1 };
-        yield return new object[] { bookingDTO1, HttpStatusCode.BadRequest }; // Latitude and Longitude in Location should fail validation
+        yield return new object[] { request1, HttpStatusCode.Created, 1 };
+        yield return new object[] { request2, HttpStatusCode.BadRequest }; // Latitude and Longitude in Location should fail validation
     }
 
     [Theory]
     [MemberData(nameof(GetAddBookingData))]
-    public async Task AddBookingRoute(BookingDTO booking, HttpStatusCode httpStatusCode, int? expectedValue = null)
+    public async Task AddBookingRoute(AddBookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
     {
         // Arrange
         HttpClient client = _fixture.CreateClient();
         // Act
-        var result = await client.PostAsync("/booking", JsonContent.Create(booking));
+        var result = await client.PostAsync("/booking", JsonContent.Create(req));
         // Assert
         Assert.Equal(httpStatusCode, result.StatusCode);
         if (expectedValue != null)

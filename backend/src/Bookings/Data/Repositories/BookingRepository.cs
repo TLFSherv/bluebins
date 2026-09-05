@@ -143,7 +143,7 @@ public class BookingRepository : IBookingRepository
 
     public async Task<int?> UpdateRecyclingItem(UpdateRecyclingItemRequest request)
     {
-        var recyclingItem = await _context.RecyclingItems.FindAsync(request.Id);
+        var recyclingItem = await _context.RecyclingItems.FindAsync(1);
 
         if (recyclingItem is null)
         {

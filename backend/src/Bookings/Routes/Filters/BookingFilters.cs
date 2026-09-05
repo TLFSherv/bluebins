@@ -30,9 +30,9 @@ public class BookingFilters
            if (routeName == RouteNames.AddBooking)
            {
                // get validator from DI container
-               var validator = context.ApplicationServices.GetRequiredService<IValidator<BookingDTO>>();
+               var validator = context.ApplicationServices.GetRequiredService<IValidator<AddBookingRequest>>();
                // get route input parameters, specifically the booking DTO
-               var input = invocationContext.GetArgument<BookingDTO>(parameterPosition);
+               var input = invocationContext.GetArgument<AddBookingRequest>(parameterPosition);
                var validationResults = await validator.ValidateAsync(input);
                if (!validationResults.IsValid)
                {
@@ -76,7 +76,7 @@ public class BookingFilters
                     }
                 case RouteNames.AddBooking:
                     {
-                        var input = invocationContext.GetArgument<BookingDTO>(parameterPosition);
+                        var input = invocationContext.GetArgument<AddBookingRequest>(parameterPosition);
                         logger.LogInformation("Adding booking new booking");
                         object? result = await next(invocationContext);
                         if (result is null)
@@ -105,7 +105,7 @@ public class BookingFilters
                 parameterPosition = i;
                 break;
             }
-            else if (parameters[i].Name == "bookingDTO" && parameters[i].ParameterType == typeof(BookingDTO))
+            else if (parameters[i].ParameterType == typeof(AddBookingRequest))
             {
                 routeName = RouteNames.AddBooking;
                 parameterPosition = i;

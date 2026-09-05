@@ -11,25 +11,16 @@ public static class BookingRoutes
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
 
-            bookingApi.MapPost("/", async ([FromBody] BookingDTO bookingDTO, HttpContext context, [FromServices] IBookingRepository repository, [FromServices] LinkGenerator linker) =>
+            bookingApi.MapPost("/", async ([FromBody] AddBookingRequest request, HttpContext context, [FromServices] IBookingRepository repository, [FromServices] LinkGenerator linker) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId is null)
                 {
                     return Results.Unauthorized();
                 }
-
-                AddBookingRequest addBooking = new()
-                {
-                    UserId = userId,
-                    Schedule = bookingDTO.Schedule,
-                    Status = bookingDTO.Status,
-                    CollectionDate = bookingDTO.CollectionDate,
-                    Location = bookingDTO.Location,
-                    RecyclingItems = bookingDTO.RecyclingItems.ToRequest(),
-                    DateCreated = DateTime.Now,
-                };
-                var result = await repository.AddEntity<AddBookingRequest, Booking, int>(addBooking);
+                // use method extension to calculate weight and volume of materials and set values on obj properties
+                request.RecyclingItems.CalculateWeightAndVolume();
+                var result = await repository.AddEntity<AddBookingRequest, Booking, int>(request);
 
                 if (result == 0)
                 {

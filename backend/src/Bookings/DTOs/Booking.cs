@@ -1,21 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-
-public record AddBookingRequest
+public record BookingRequest : IRequest<string>
 {
-    public string? UserId { get; set; }
+    public string Id { get; set; }
+    public string UserId { get; set; }
     public BookingStatus Status { get; set; }
     public DateTime CollectionDate { get; set; }
-    public LocationDTO? Location { get; set; }
-    public ScheduleDTO? Schedule { get; set; }
+    public LocationRequest Location { get; set; }
+    public ScheduleRequest Schedule { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
-    public ICollection<AddRecyclingItemRequest>? RecyclingItems { get; set; }
+    public ICollection<RecyclingItemRequest>? RecyclingItems { get; set; }
 
-}
-public record UpdateBookingRequest : AddBookingRequest
-{
-    public string? Id { get; set; }
 }
 
 public record BookingView
@@ -26,6 +20,6 @@ public record BookingView
     public DateTime? DateModified { get; set; }
     public LocationView? Location { get; set; }
     public ScheduleView? Schedule { get; set; }
-    public List<RecyclingItemView>? RecyclingItems { get; set; }
+    public ICollection<RecyclingItemView>? RecyclingItems { get; set; }
 };
 

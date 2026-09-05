@@ -1,12 +1,8 @@
-using System.Runtime.CompilerServices;
 using AutoMapper;
-using Castle.Core.Logging;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 
 public class RepositoryTests : IntegrationTestBase
 {
@@ -33,19 +29,19 @@ public class RepositoryTests : IntegrationTestBase
             Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             RecyclingItems =
             [
-                new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-                new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-                new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+                new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
             ]
         };
-        yield return new object[] { "123456", 1, expectedResult }; // correct userId and bookingId should return booking
-        yield return new object?[] { "123456", 2, null }; // incorrect bookingId should return null
-        yield return new object?[] { "badId", 1, null }; // incorrect userId should return null
+        yield return new object[] { 1, expectedResult }; // correct bookingId should return booking
+        yield return new object?[] { 2, null }; // incorrect bookingId should return null
+        yield return new object?[] { 3, null }; // incorrect bookingId should return null
     }
 
     [Theory]
     [MemberData(nameof(GetUserBookingTestData))]
-    public async Task GetUserBooking_ReturnsCorrectBooking(string userId, int bookingId, BookingView? expectedResult)
+    public async Task GetUserBooking_ReturnsCorrectBooking(int bookingId, BookingView? expectedResult)
     {
         // Arrange
         List<RecyclingItem> recyclingItems = new()
@@ -78,26 +74,26 @@ public class RepositoryTests : IntegrationTestBase
 
         var repository = new BookingRepository(context, _mapper);
         // Act
-        var result = await repository.GetUserBooking(userId, bookingId);
+        var result = await repository.Get<int, Booking, BookingView>(bookingId);
         // Assert
         result.Should().BeEquivalentTo(expectedResult);
     }
 
     public static IEnumerable<object[]> AddUserBookingData()
     {
-        LocationDTO location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
-        List<AddRecyclingItemRequest> recyclingItems = new()
+        LocationRequest location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
+        List<RecyclingItemRequest> recyclingItems = new()
        {
             new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
             new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
             new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
 
        };
-        ScheduleDTO schedule1 = new() { ScheduleId = 1, SetAsDefault = true, StartDate = new DateOnly(2026, 8, 8), Frequency = FrequencyTypes.Weekly, IsActive = true };
-        ScheduleDTO schedule2 = new() { ScheduleId = null, SetAsDefault = false, StartDate = new DateOnly(2026, 8, 9), Frequency = FrequencyTypes.Weekly, IsActive = true };
-        AddBookingRequest request1 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = null, DateCreated = DateTime.Today };
-        AddBookingRequest request2 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule1, DateCreated = DateTime.Today };
-        AddBookingRequest request3 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule2, DateCreated = DateTime.Today };
+        ScheduleRequest schedule1 = new() { Id = 1, SetAsDefault = true, StartDate = new DateOnly(2026, 8, 8), Frequency = FrequencyTypes.Weekly, IsActive = true };
+        ScheduleRequest schedule2 = new() { SetAsDefault = false, StartDate = new DateOnly(2026, 8, 9), Frequency = FrequencyTypes.Weekly, IsActive = true };
+        BookingRequest request1 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, DateCreated = DateTime.Today };
+        BookingRequest request2 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule1, DateCreated = DateTime.Today };
+        BookingRequest request3 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule2, DateCreated = DateTime.Today };
         yield return new object[] { request1 }; // request with no schedule
         yield return new object[] { request2 }; // request with schedule
         yield return new object[] { request3 }; // request with new schedule
@@ -105,7 +101,7 @@ public class RepositoryTests : IntegrationTestBase
 
     [Theory]
     [MemberData(nameof(AddUserBookingData))]
-    public async Task AddUserBooking_ReturnsCorrectBookingId(AddBookingRequest request)
+    public async Task AddUserBooking_ReturnsCorrectBookingId(BookingRequest request)
     {
         context.Database.EnsureCreated();
         // Arrange
@@ -122,7 +118,7 @@ public class RepositoryTests : IntegrationTestBase
 
         var repository = new BookingRepository(context, _mapper);
         // Act
-        var result = await repository.AddEntity<AddBookingRequest, Booking, int>(request);
+        var result = await repository.Add<BookingRequest, Booking, int>(request);
         Assert.IsType<int>(result);
         var booking = context.Bookings
         .Include(x => x.Location)

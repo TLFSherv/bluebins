@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
@@ -15,8 +16,9 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
         .UseSqlite(connection)
         .Options;
-
-        context = new ApplicationDbContext(options);
+        var userIdService = new Mock<IUserIdService>();
+        userIdService.Setup(x => x.GetUserId()).Returns("123456");
+        context = new ApplicationDbContext(options, userIdService.Object);
     }
 
     public void Dispose()

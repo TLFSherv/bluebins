@@ -1,7 +1,3 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 public class Booking : IEntity<int>
 {
     public int Id { get; set; }

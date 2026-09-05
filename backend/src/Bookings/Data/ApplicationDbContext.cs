@@ -4,9 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
+    // change this to a GUID
+    private readonly string _userId;
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserIdService userIdService) :
         base(options)
-    { }
+    {
+        _userId = userIdService.GetUserId();
+    }
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<Location> Locations { get; set; }
@@ -43,6 +47,9 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<Booking>(entity =>
         {
+            // add global query filter so users can only interact with their bookings
+            entity.HasQueryFilter(x => x.UserId == _userId);
+
             entity.HasKey(e => e.Id).HasName("booking_pkey");
 
             entity.ToTable("booking", "booking");

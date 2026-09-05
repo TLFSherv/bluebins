@@ -1,21 +1,16 @@
-using System.ComponentModel.DataAnnotations;
+public record ScheduleRequest : IRequest<int>
+{
+    public int Id { get; set; }
+    public DateOnly StartDate { get; set; }
+    public FrequencyTypes Frequency { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool SetAsDefault { get; set; }
+}
 
-public record AddScheduleRequest
+public record ScheduleView
 {
     public DateOnly StartDate { get; set; }
     public FrequencyTypes Frequency { get; set; }
     public bool IsActive { get; set; } = true;
-}
-
-public record ScheduleDTO : AddScheduleRequest
-{
-    public int? ScheduleId { get; set; }
     public bool SetAsDefault { get; set; }
 }
-
-public record UpdateScheduleRequest : AddScheduleRequest
-{
-    public int ScheduleId { get; set; }
-}
-
-public record ScheduleView : AddScheduleRequest;

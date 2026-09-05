@@ -1,5 +1,5 @@
 using FluentValidation;
-public class AddBookingValidator : AbstractValidator<AddBookingRequest>
+public class AddBookingValidator : AbstractValidator<BookingRequest>
 {
     public AddBookingValidator()
     {

@@ -1,18 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
-public record LocationDTO
+public record LocationRequest : IRequest<int>
 {
-    public int? LocationId { get; set; }
-    public string? MapsId { get; set; }
-    public string AddressLine1 { get; set; }
-    public string Postcode { get; set; }
-    public decimal Latitude { get; set; }
-    public decimal Longitude { get; set; }
-    public string? Details { get; set; }
-    public bool SetAsDefault { get; set; }
-}
-public record AddLocationRequest
-{
+    public int Id { get; set; }
     public string? MapsId { get; set; }
     public string? AddressLine1 { get; set; }
     public string? Postcode { get; set; }
@@ -21,10 +9,13 @@ public record AddLocationRequest
     public string? Details { get; set; }
 }
 
-public record UpdateLocationRequest : AddLocationRequest
+public record LocationView
 {
-    public int LocationId { get; set; }
+    public string? MapsId { get; set; }
+    public string? AddressLine1 { get; set; }
+    public string? Postcode { get; set; }
+    public decimal Latitude { get; set; }
+    public decimal Longitude { get; set; }
+    public string? Details { get; set; }
 }
-
-public record LocationView : AddLocationRequest;
 

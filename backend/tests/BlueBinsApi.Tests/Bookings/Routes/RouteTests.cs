@@ -12,24 +12,24 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     }
     public static IEnumerable<object[]> GetAddBookingData()
     {
-        AddBookingRequest request1 = new()
+        BookingRequest request1 = new()
         {
             Status = BookingStatus.Draft,
             CollectionDate = new DateTime(2026, 12, 20),
-            Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            RecyclingItems = new List<AddRecyclingItemRequest>()
+            Location = new LocationRequest { MapsId = "test", AddressLine1 = "test_address", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
+            RecyclingItems = new List<RecyclingItemRequest>()
             {
                 new() {MaterialType=MaterialTypes.aluminium, MaterialCount = 3},
                 new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
                 new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
             }
         };
-        AddBookingRequest request2 = new()
+        BookingRequest request2 = new()
         {
             Status = BookingStatus.Scheduled,
             CollectionDate = new DateTime(2026, 12, 20),
-            Location = new LocationDTO { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            RecyclingItems = new List<AddRecyclingItemRequest>()
+            Location = new LocationRequest { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            RecyclingItems = new List<RecyclingItemRequest>()
             {
                 new() {MaterialType=MaterialTypes.aluminium, MaterialCount = 3},
                 new() {MaterialType=MaterialTypes.glass, MaterialCount=2},
@@ -42,7 +42,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
 
     [Theory]
     [MemberData(nameof(GetAddBookingData))]
-    public async Task AddBookingRoute(AddBookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
+    public async Task AddBookingRoute(BookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
     {
         // Arrange
         HttpClient client = _fixture.CreateClient();
@@ -61,9 +61,9 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     {
         List<RecyclingItemView> recyclingItems = new()
         {
-            new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-            new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-            new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+            new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+            new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+            new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
         };
         var booking = new BookingView()
         {

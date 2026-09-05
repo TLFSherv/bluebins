@@ -1,7 +1,7 @@
 public class BookingRepositoryStub : IBookingRepository
 {
-    public async Task<TId> AddEntity<TRequest, TEntity, TId>(TRequest requestDto)
-    where TEntity : class, IEntity<TId>
+    public async Task<TId> Add<TRequest, TEntity, TId>(TRequest requestDto)
+        where TEntity : class, IEntity<TId>, new()
     {
         if (typeof(TId) == typeof(string))
         {
@@ -18,89 +18,41 @@ public class BookingRepositoryStub : IBookingRepository
         throw new NotSupportedException($"Type {typeof(TId).Name} is not supported");
     }
 
-    public async Task<int?> AddLocation(AddLocationRequest request)
-    {
-        return await Task.FromResult(1);
-    }
 
-    public async Task<int?> AddRecyclingItem(AddRecyclingItemRequest request)
-    {
-        return await Task.FromResult(1);
-    }
 
-    public async Task<int?> AddSchedule(AddScheduleRequest request)
+    public async Task<TResult?> Get<TId, TEntity, TResult>(TId id)
+        where TEntity : class, IEntity<TId>, new()
+        where TResult : class
     {
-        return await Task.FromResult(1);
-    }
-
-    public async Task<string?> AddUserProfile(AddUserProfileRequest request)
-    {
-        return await Task.FromResult("1");
-    }
-
-    public async Task<LocationView?> GetLocation(int locationId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<RecyclingItemView?> GetRecyclingItem(int recyclingItemId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<ScheduleView?> GetSchedule(int scheduleId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<BookingView?> GetUserBooking(string userId, int bookingId)
-    {
-        if (userId != "1" || bookingId != 1) return null;
-        List<RecyclingItemView> recyclingItems = new()
+        if (typeof(TEntity) == typeof(Booking))
         {
-            new() {BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-            new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-            new() {BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
-        };
-        var booking = new BookingView()
-        {
-            Status = BookingStatus.Scheduled,
-            CollectionDate = new DateTime(2026, 8, 20),
-            DateCreated = DateTime.Today,
-            Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            RecyclingItems = recyclingItems
-        };
+            int mockId = 1;
+            if (!id!.Equals((TId)(object)mockId)) return null;
+            List<RecyclingItemView> recyclingItems = new()
+            {
+                new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+            };
+            var booking = new BookingView()
+            {
+                Status = BookingStatus.Scheduled,
+                CollectionDate = new DateTime(2026, 8, 20),
+                DateCreated = DateTime.Today,
+                Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+                RecyclingItems = recyclingItems
+            };
 
-        return await Task.FromResult(booking);
+            return (TResult)(object)booking;
+        }
+        return null;
     }
 
-    public async Task<UserProfileView?> GetUserProfile(string userId)
+    public async Task<TId> Update<TId, TRequest, TEntity>(TRequest request)
+        where TEntity : class, IEntity<TId>, new()
+        where TRequest : class, IRequest<TId>
     {
         throw new NotImplementedException();
     }
 
-    public async Task<int?> UpdateBooking(UpdateBookingRequest request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int?> UpdateLocation(UpdateLocationRequest request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int?> UpdateRecyclingItem(UpdateRecyclingItemRequest request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int?> UpdateSchedule(UpdateScheduleRequest request)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<string?> UpdateUserProfile(UpdateUserProfileRequest request)
-    {
-        throw new NotImplementedException();
-    }
 }

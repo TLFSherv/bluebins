@@ -1,6 +1,3 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-
 public class UserProfile : IEntity<string>
 {
     public string Id { get; set; } = string.Empty;

@@ -1,4 +1,4 @@
-import type { IAuthService, AuthError } from "../Types/AuthTypes"
+import type { IAuthService, AuthError } from "../types/AuthTypes"
 import { z } from 'zod'
 
 const backendUrl = import.meta.env.VITE_SERVER_URL;

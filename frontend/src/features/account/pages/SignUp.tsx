@@ -1,7 +1,7 @@
 import { useActionState, useContext } from "react"
-import { authService } from "../../Services/AuthService"
-import type { SignUpResponse } from "../../Types/AuthTypes";
-import { UserContext } from "../../../Store/UserContext";
+import { authService } from "../services/AuthService"
+import type { SignUpResponse } from "../types/AuthTypes";
+import { UserContext } from "../store/UserContext";
 import { Link } from "react-router";
 
 export default function SignUp() {

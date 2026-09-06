@@ -1,7 +1,7 @@
 import { useState } from "react";
-import AddressForm from "./Components/AddressForm"
-import DateForm from "./Components/DateForm"
-import QuantityForm from "./Components/QuantityForm"
+import AddressForm from "./components/AddressForm"
+import DateForm from "./components/DateForm"
+import QuantityForm from "./components/QuantityForm"
 
 export default function Booking() {
     var [activeForm, setActiveForm] = useState<number>(0);

@@ -1,7 +1,7 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet } from "react-router";
-import UserContextProvider from "../Store/UserContext";
+import UserContextProvider from "../features/account/store/UserContext";
 
 export default function Layout() {
     return (

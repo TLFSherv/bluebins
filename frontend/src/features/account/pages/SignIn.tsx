@@ -1,8 +1,8 @@
 import { useActionState, useContext } from "react"
-import { authService } from "../../Services/AuthService"
-import type { SignInResponse } from "../../Types/AuthTypes";
+import { authService } from "../services/AuthService"
+import type { SignInResponse } from "../types/AuthTypes";
 import { useNavigate } from "react-router";
-import { UserContext } from "../../../Store/UserContext";
+import { UserContext } from "../store/UserContext";
 
 export default function SignIn() {
     const navigate = useNavigate();

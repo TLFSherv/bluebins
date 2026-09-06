@@ -1,9 +1,9 @@
 
 import { useState, useRef, useEffect, useContext } from "react"
 import { Link } from "react-router";
-import { authService } from "../Recyclers/Services/AuthService";
+import { authService } from "../features/account/services/AuthService";
 import { useNavigate } from "react-router";
-import { UserContext } from "../Store/UserContext";
+import { UserContext } from "../features/account/store/UserContext";
 
 export default function HamburgerMenu() {
     const [isActive, setIsActive] = useState(false);
@@ -72,8 +72,8 @@ function AuthNav(props: { isSignedIn: boolean, setIsSignedIn: React.Dispatch<Rea
     if (!props.isSignedIn) {
         return (
             <ol className="space-y-2 text-center text-lg">
-                <li><Link to="/auth/sign-up" >Sign up</Link></li>
-                <li><Link to="/auth/sign-in" >Sign in</Link></li>
+                <li><Link to="/account/sign-up" >Sign up</Link></li>
+                <li><Link to="/account/sign-in" >Sign in</Link></li>
             </ol>
         )
     }
@@ -84,10 +84,10 @@ function AuthNav(props: { isSignedIn: boolean, setIsSignedIn: React.Dispatch<Rea
             </form>
             <ol className="space-y-2 h-full">
                 <li>
-                    <Link to={"portal/booking"}> Booking</Link>
+                    <Link to={"/booking"}> Booking</Link>
                 </li>
                 <li>
-                    <Link to={"portal/dashboard"}>Dashboard</Link>
+                    <Link to={"/dashboard"}>Dashboard</Link>
                 </li>
                 <li>
                     Account

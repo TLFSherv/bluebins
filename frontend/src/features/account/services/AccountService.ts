@@ -1,4 +1,4 @@
-import { type IAccountService, type ProfileResponse } from "../Types/AccountTypes"
+import { type IAccountService, type ProfileResponse } from "../types/AccountTypes"
 
 const accountService: IAccountService = {
     getProfile: function (): Promise<ProfileResponse> {

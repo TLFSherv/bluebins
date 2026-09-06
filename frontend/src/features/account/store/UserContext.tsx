@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { authService } from "../Recyclers/Services/AuthService";
+import { authService } from "../services/AuthService";
 
 export const UserContext = createContext<{
     isSignedIn: boolean,

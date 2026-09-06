@@ -4,23 +4,23 @@ import {
   Route,
   RouterProvider
 } from 'react-router';
-import Home from './Home'
-import SignIn from './Recyclers/Pages/Auth/SignIn'
-import SignUp from './Recyclers/Pages/Auth/SignUp'
-import Layout from './Components/Layout'
-import Dashboard from './Recyclers/Pages/Portal/Dashboard'
-import Booking from './Recyclers/Pages/Portal/Booking'
-import { ErrorBoundary } from './Components/ErrorBoundary';
+import Home from './index';
+import SignIn from './features/account/pages/SignIn'
+import SignUp from './features/account/pages/SignUp'
+import Layout from './components/Layout'
+import Dashboard from './features/dashboard'
+import Booking from './features/bookings'
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
       <Route index element={<Home />} />
-      <Route path='auth'>
+      <Route path='account'>
         <Route path='sign-in' element={<SignIn />} />
         <Route path='sign-up' element={<SignUp />} />
       </Route>
-      <Route path='portal'>
+      <Route path='/'>
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='booking' element={<Booking />} />
       </Route>

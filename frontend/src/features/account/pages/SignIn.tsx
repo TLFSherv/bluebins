@@ -14,7 +14,7 @@ export default function SignIn() {
             const result = await authService.signIn(prevState, formData) ?? initState;
             if (result.success) {
                 setIsSignedIn(true);
-                navigate("/portal/dashboard");
+                navigate("/dashboard");
             }
             return result;
         }, initState);

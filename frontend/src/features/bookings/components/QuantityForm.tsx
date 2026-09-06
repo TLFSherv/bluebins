@@ -13,13 +13,21 @@ export default function QuantityForm() {
                     <input type="number" name="quantity" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
                     <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">Quantity</label>
                 </div>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white w-[80px] h-[45px] rounded-lg">+</button>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white w-[80px] h-[45px] rounded-lg">-</button>
+                <button type="button" className="quantity-btn w-[80px] h-[45px] rounded-lg">+</button>
+                <button type="button" className="quantity-btn w-[80px] h-[45px] rounded-lg">-</button>
             </div>
             {isRecyclingItemsFormVisible && <RecyclingItemsForm />}
             <button type="button" onClick={() => setIsRecyclingItemsFormVisible(prev => !prev)}>
                 {isRecyclingItemsFormVisible ? "- Hide contents" : "+ Add contents"}
             </button>
+            <div className="space-y-4  justify-center">
+                <button className="btn" type="button">
+                    Next
+                </button>
+                <button className="btn" type="button">
+                    Back
+                </button>
+            </div>
         </div>
     );
 }
@@ -32,24 +40,24 @@ function RecyclingItemsForm() {
                     <input type="number" name="quantity_tin" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
                     <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">tin</label>
                 </div>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
             </div>
             <div className="flex justify-evenly">
                 <div className="form-floating">
                     <input type="number" name="quantity_aluminium" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
                     <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">aluminium</label>
                 </div>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
             </div>
             <div className="flex justify-evenly">
                 <div className="form-floating">
                     <input type="number" name="quantity_glass" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
                     <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">glass</label>
                 </div>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
-                <button type="button" className="bg-[#3CC4FA] text-lg text-white mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">+</button>
+                <button type="button" className="quantity-btn mx-[20px] w-[40px] h-[40px] rounded-full">-</button>
             </div>
         </div>
     );

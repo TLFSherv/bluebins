@@ -39,6 +39,11 @@ export default function AddressForm() {
                     </button>
                 </div>
             </div>
+            <div className="space-y-4 flex justify-center">
+                <button className="btn" type="button">
+                    Next
+                </button>
+            </div>
         </div>
     );
 }

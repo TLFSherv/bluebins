@@ -4,20 +4,20 @@ export default function AddressForm() {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     return (
-        <div className="space-y-6">
-            <h1 className="text-center text-2xl font-[Lato]">
+        <div className="space-y-6 w-full">
+            <h1 className="text-center text-3xl font-[Lato]">
                 Booking Address
             </h1>
             <p className="text-center text-lg">
                 Where can we collect your recycling?
             </p>
-            <div className="space-y-3">
+            <div className={`space-y-3 h-[180px] py-2 overflow-y-scroll px-2 py-4 scrollbar-thin ${isFullAddressFormVisible || isAdditionalInfoVisible ? "shadow-lg rounded-xl" : ""}`}>
                 <div>
                     <div className="form-floating">
                         <input type="text" name="address" className="form-control-1" autoComplete="off" />
-                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Address</label>
+                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Address</label>
                     </div>
-                    <div className="flex justify-end space-x-2 text-sm pt-2">
+                    <div className="flex justify-end space-x-2 pt-2 text-sm">
                         <input type="checkbox" name="makeDefault" />
                         <label>
                             Make my default
@@ -27,7 +27,7 @@ export default function AddressForm() {
                 {isAdditionalInfoVisible &&
                     <div className="form-floating">
                         <textarea name="additionalInformation" className="form-control-1" />
-                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Additional information</label>
+                        <label className="form-label bg-default -translate-y-8 translate-x-1 text-black rounded-md p-1 text-lg">Additional information</label>
                     </div>}
                 <div className="space-y-3">
                     {isFullAddressFormVisible && <FullAddressForm />}
@@ -39,11 +39,6 @@ export default function AddressForm() {
                     </button>
                 </div>
             </div>
-            <div className="space-y-4 flex justify-center">
-                <button className="btn" type="button">
-                    Next
-                </button>
-            </div>
         </div>
     );
 }
@@ -53,11 +48,11 @@ function FullAddressForm() {
         <div className="space-y-6">
             <div className="form-floating">
                 <input type="text" name="postcode" className="form-control-1 w-[100px]" />
-                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Postcode</label>
+                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Postcode</label>
             </div>
             <div className="form-floating">
                 <input type="text" name="postcode" className="form-control-1 w-[150px]" />
-                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-base rounded-md p-1">Parish</label>
+                <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Parish</label>
             </div>
         </div>
     );

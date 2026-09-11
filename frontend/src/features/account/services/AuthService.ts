@@ -215,7 +215,7 @@ export const authService: IAuthService = {
 
     },
     async signInWithGoogle() {
-        const returnUrl = encodeURIComponent("https://localhost:5173/portal/dashboard");
+        const returnUrl = encodeURIComponent("https://localhost:5173/dashboard");
         window.location.href = `${backendUrl}/login/google?returnUrl=${returnUrl}`;
     },
 }

@@ -4,7 +4,7 @@ import DateForm from "./components/DateForm"
 import QuantityForm from "./components/QuantityForm"
 
 export default function Booking() {
-    const [activeIndex, setActiveIndex] = useState<number>(2);
+    const [activeIndex, setActiveIndex] = useState<number>(0);
     const formComponents = [<AddressForm />, <QuantityForm />, <DateForm />];
     const COUNT = formComponents.length;
     const GAP = 4;

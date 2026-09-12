@@ -86,10 +86,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(d => d.ScheduleId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
-
-            entity.HasMany(b => b.RecyclingItems)
-            .WithOne(r => r.Booking)
-            .HasForeignKey(r => r.BookingId);
         });
 
         modelBuilder.Entity<Location>(entity =>
@@ -137,9 +133,9 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.ContaminationPercent).HasColumnName("contamination_percent");
 
             entity
-            .HasOne(e => e.Booking) // a recycling item has one booking
-            .WithMany(r => r.RecyclingItems)  // a booking has many recycling items
-            .HasForeignKey(e => e.BookingId)
+            .HasOne(r => r.Booking) // a recycling item has one booking
+            .WithMany(b => b.RecyclingItems)  // a booking has many recycling items
+            .HasForeignKey(r => r.BookingId)
             .OnDelete(DeleteBehavior.Cascade);
         });
     }

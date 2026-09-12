@@ -4,12 +4,14 @@ import { Materials } from "../types/types";
 export default function QuantityForm() {
     const [isRecyclingItemsFormVisible, setIsRecyclingItemsFormVisible] = useState<boolean>(false);
     return (
-        <div className="space-y-7">
-            <h1 className="text-center text-2xl font-[Lato]">
-                Quantity & Contents
-            </h1>
-            <p className="text-center text-lg"> How many bags are we collecting?</p>
-            <div className={`h-[180px] space-y-7 py-2 overflow-y-scroll px-2 py-4 scrollbar-thin ${isRecyclingItemsFormVisible ? "shadow-lg rounded-xl" : ""}`}>
+        <div>
+            <div className="space-y-6">
+                <h1 className="text-center text-3xl font-[Lato]">
+                    Quantity & Contents
+                </h1>
+                <p className="text-center text-lg"> How many bags are we collecting?</p>
+            </div>
+            <div style={{ height: isRecyclingItemsFormVisible ? "170px" : "130px" }} className={`space-y-7 overflow-y-scroll px-2 pt-10 scrollbar-thin ${isRecyclingItemsFormVisible ? "shadow-lg rounded-xl" : ""}`}>
                 <div className="flex justify-evenly">
                     <div className="form-floating">
                         <input type="number" name="quantity" className="form-control-1 w-[112px] h-[45px] text-center" autoComplete="off" />
@@ -19,10 +21,10 @@ export default function QuantityForm() {
                     <button type="button" className="quantity-btn w-[80px] h-[45px] rounded-lg">-</button>
                 </div>
                 {isRecyclingItemsFormVisible && <RecyclingItemsForm />}
-                <button type="button" onClick={() => setIsRecyclingItemsFormVisible(prev => !prev)}>
-                    {isRecyclingItemsFormVisible ? "- Hide contents" : "+ Add contents"}
-                </button>
             </div>
+            <button type="button" className="pl-2" onClick={() => setIsRecyclingItemsFormVisible(prev => !prev)}>
+                {isRecyclingItemsFormVisible ? "- Hide contents" : "+ Add contents"}
+            </button>
         </div>
     );
 }

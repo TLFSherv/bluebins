@@ -2,11 +2,11 @@ import WeeklyCalendar from "./WeeklyCalendar";
 export default function DateForm() {
     const radioLabels = ["weekly", "bi-weekly", "tri-weekly", "monthly"];
     return (
-        <div className="space-y-7">
-            <h1 className="text-center text-2xl font-[Lato]">
+        <div className="space-y-6">
+            <h1 className="text-center text-3xl font-[Lato]">
                 Date
             </h1>
-            <p className="text-center">When do you want us to collect your recycling?</p>
+            <p className="text-center text-lg">When do you want us to collect your recycling?</p>
             <WeeklyCalendar />
             <div className="grid grid-cols-2 grid-rows-2 mx-auto gap-y-2">
                 {radioLabels.map(labels =>

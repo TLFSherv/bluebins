@@ -19,7 +19,7 @@ export default function Booking() {
             <div className="overflow-hidden w-full mx-auto">
                 <div className="flex transition-transform" style={{ transform: `translateX(${translateX}px)`, gap: `${GAP}px` }}>
                     {formComponents.map((component, i) => (
-                        <div key={i} style={{ width: `${itemWidth}px` }} className="mx-2 object-cover shrink-0 border-2 border-[#2496FA] rounded-xl px-2 py-4 space-y-6">
+                        <div key={i} style={{ width: `${itemWidth}px` }} className="mx-2 object-cover shrink-0 border-2 border-[#2496FA] rounded-xl px-2 pt-8 pb-2 space-y-4">
                             {component}
                             <div className="flex flex-row items-center gap-4 justify-center">
                                 <button className="btn" type="button" onClick={() => setActiveIndex(prev => Math.max(prev - 1, 0))}>

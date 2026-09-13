@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { type AddressInputs } from "../types/types";
 
-export default function AddressForm() {
+export default function AddressForm({ inputs, setInput }: {
+    inputs: AddressInputs,
+    setInput: (event: React.ChangeEvent) => void
+}) {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
+    const { address, additionalInfo, postcode, parish } = inputs;
     return (
         <div>
             <div className="space-y-6">
@@ -16,7 +21,13 @@ export default function AddressForm() {
             </div>
             <div style={{ height: isShowingMore ? "170px" : "130px" }} className={`space-y-3 overflow-y-scroll px-2 pt-8 scrollbar-thin ${isShowingMore ? "shadow-lg rounded-xl" : ""}`}>
                 <div className="form-floating">
-                    <input type="text" name="address" className="form-control-1" autoComplete="off" />
+                    <input
+                        type="text"
+                        name="address"
+                        className="form-control-1"
+                        autoComplete="off"
+                        value={address}
+                        onChange={e => setInput(e)} />
                     <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Address</label>
                 </div>
                 <div className="flex justify-end space-x-2 text-sm">
@@ -28,10 +39,16 @@ export default function AddressForm() {
                 <div className="space-y-6">
                     {isAdditionalInfoVisible &&
                         <div className="form-floating">
-                            <textarea name="additionalInformation" className="form-control-1" />
+                            <textarea
+                                name="additionalInfo"
+                                className="form-control-1"
+                                value={additionalInfo}
+                                onChange={e => setInput(e)} />
+
                             <label className="form-label bg-default -translate-y-8 translate-x-1 text-black rounded-md p-1 text-lg">Additional information</label>
                         </div>}
-                    {isFullAddressFormVisible && <FullAddressForm />}
+                    {isFullAddressFormVisible && <FullAddressForm inputs={{ postcode, parish }}
+                        setInput={setInput} />}
                 </div>
             </div>
             <div className="space-y-2">
@@ -46,15 +63,28 @@ export default function AddressForm() {
     );
 }
 
-function FullAddressForm() {
+function FullAddressForm({ inputs, setInput }: {
+    inputs: { postcode: string, parish: string },
+    setInput: (event: React.ChangeEvent) => void
+}) {
     return (
         <div className="space-y-6">
             <div className="form-floating">
-                <input type="text" name="postcode" className="form-control-1 w-[100px]" />
+                <input
+                    type="text"
+                    name="postcode"
+                    className="form-control-1 w-[100px]"
+                    value={inputs.postcode}
+                    onChange={e => setInput(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Postcode</label>
             </div>
             <div className="form-floating">
-                <input type="text" name="postcode" className="form-control-1 w-[150px]" />
+                <input
+                    type="text"
+                    name="parish"
+                    className="form-control-1 w-[150px]"
+                    value={inputs.parish}
+                    onChange={e => setInput(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Parish</label>
             </div>
         </div>

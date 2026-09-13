@@ -2,16 +2,22 @@ import { useState } from "react";
 import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import QuantityForm from "./components/QuantityForm"
+import { useBookingHandler } from "./hooks/useBookingHandler";
 
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
-    const formComponents = [<AddressForm />, <QuantityForm />, <DateForm />];
+    const { bookingInputs, setInput } = useBookingHandler();
+    const formComponents = [
+        <AddressForm inputs={{ ...bookingInputs.addressInputs }} setInput={setInput} />,
+        <DateForm inputs={{ ...bookingInputs.dateInputs }} setInput={setInput} />,
+        <QuantityForm inputs={{ ...bookingInputs.quantityInputs }} setInput={setInput} />];
     const COUNT = formComponents.length;
     const GAP = 4;
     const SCREEN = window.screen.width;
     let itemWidth = Math.round(SCREEN * 0.9);
     // Calculate offset to center the active item relative to the container
     const translateX = -activeIndex * (itemWidth + GAP);
+
     return (
         <form className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-8">
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}

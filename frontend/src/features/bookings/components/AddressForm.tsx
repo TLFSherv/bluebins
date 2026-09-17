@@ -3,12 +3,18 @@ import { type AddressInputs } from "../types/types";
 
 export default function AddressForm({ inputs, setInput }: {
     inputs: AddressInputs,
-    setInput: (event: React.ChangeEvent) => void
+    setInput: (input: AddressInputs) => void
 }) {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
     const { address, additionalInfo, postcode, parish } = inputs;
+    const handleChange = (e: React.ChangeEvent) => {
+        const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+        const name = target.name;
+        const value = target.value;
+        setInput({ ...inputs, [name]: value });
+    }
     return (
         <div>
             <div className="space-y-6">
@@ -27,7 +33,7 @@ export default function AddressForm({ inputs, setInput }: {
                         className="form-control-1"
                         autoComplete="off"
                         value={address}
-                        onChange={e => setInput(e)} />
+                        onChange={e => handleChange(e)} />
                     <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Address</label>
                 </div>
                 <div className="flex justify-end space-x-2 text-sm">
@@ -43,12 +49,12 @@ export default function AddressForm({ inputs, setInput }: {
                                 name="additionalInfo"
                                 className="form-control-1"
                                 value={additionalInfo}
-                                onChange={e => setInput(e)} />
+                                onChange={e => handleChange(e)} />
 
                             <label className="form-label bg-default -translate-y-8 translate-x-1 text-black rounded-md p-1 text-lg">Additional information</label>
                         </div>}
                     {isFullAddressFormVisible && <FullAddressForm inputs={{ postcode, parish }}
-                        setInput={setInput} />}
+                        handleChange={handleChange} />}
                 </div>
             </div>
             <div className="space-y-2">
@@ -63,9 +69,9 @@ export default function AddressForm({ inputs, setInput }: {
     );
 }
 
-function FullAddressForm({ inputs, setInput }: {
+function FullAddressForm({ inputs, handleChange }: {
     inputs: { postcode: string, parish: string },
-    setInput: (event: React.ChangeEvent) => void
+    handleChange: (event: React.ChangeEvent) => void
 }) {
     return (
         <div className="space-y-6">
@@ -75,7 +81,7 @@ function FullAddressForm({ inputs, setInput }: {
                     name="postcode"
                     className="form-control-1 w-[100px]"
                     value={inputs.postcode}
-                    onChange={e => setInput(e)} />
+                    onChange={e => handleChange(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Postcode</label>
             </div>
             <div className="form-floating">
@@ -84,7 +90,7 @@ function FullAddressForm({ inputs, setInput }: {
                     name="parish"
                     className="form-control-1 w-[150px]"
                     value={inputs.parish}
-                    onChange={e => setInput(e)} />
+                    onChange={e => handleChange(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Parish</label>
             </div>
         </div>

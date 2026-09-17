@@ -1,9 +1,11 @@
-export type ScheduleFrequency = "weekly" | "bi-weekly" | "tri-weekly" | "monthly";
+const ScheduleFrequency = ["weekly", "bi-weekly", "tri-weekly", "monthly"] as const;
+export type ScheduleFrequency = typeof ScheduleFrequency[number];
+
 
 export const RecyclableMaterials = ["tin", "aluminium", "glass"] as const;
-type MaterialTypes = typeof RecyclableMaterials[number];
+export type MaterialTypes = typeof RecyclableMaterials[number];
 
-export type CardData = { weekDay: string, dayNum: string, month: string, active: boolean };
+export type CardData = { weekDay: string, dayNum: number, month: string, active: boolean };
 
 export type BookingInputs = {
     addressInputs: AddressInputs,

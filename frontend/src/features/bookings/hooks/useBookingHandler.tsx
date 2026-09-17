@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type BookingInputs } from "../types/types";
+import { type BookingInputs, type AddressInputs, type QuantityInputs, type DateInputs } from "../types/types";
 
 const initBookingInputs: BookingInputs = {
     addressInputs: {
@@ -27,40 +27,19 @@ const initBookingInputs: BookingInputs = {
 };
 export function useBookingHandler() {
     const [bookingInputs, setBookingInputs] = useState<BookingInputs>(initBookingInputs);
-    const setInput = (event: React.ChangeEvent) => {
-        const target = event.target as (EventTarget & HTMLInputElement) | (EventTarget & HTMLTextAreaElement)
-        let name = target.name;
-        let value: string | number = target.value;
-        if (target.type == "number" && Number.isInteger(value)) {
-            value = Number.parseInt(value);
-        }
-        if (bookingInputs != undefined) {
-            // Set state for the correct BookingInputs property object
-            setBookingInputs((prev) => {
-                let newInput = {};
-                for (const [key, value] of Object.entries(prev)) {
-                    // Find the property the input is for  
-                    // then create a new property and return in new BookingInputs instance
-                    if (Object.hasOwn(value, name)) {
-                        newInput = { ...value, [name]: value };
-                        return { ...prev, [key]: newInput };
-                    }
-                    else {
-                        let materialQuantity = prev.quantityInputs.materialQuantity;
-                        if (Object.hasOwn(materialQuantity, name)) {
-                            newInput = { ...materialQuantity, [name]: value };
-                            const newQuantityInputs = {
-                                ...prev.quantityInputs,
-                                materialQuantity: { ...materialQuantity, [name]: value }
-                            };
-                            return { ...prev, quantityInputs: newQuantityInputs };
-                        }
-                    }
-                }
-                return prev;
-            });
-        }
-    };
-    return { bookingInputs, setInput };
+    const setInput = (input: AddressInputs | QuantityInputs | DateInputs) => {
+        // Set state for the correct BookingInputs property object
+        let key: string;
+        if ("address" in input)
+            key = "addressInputs";
+        else if ("dayOfWeek" in input)
+            key = "dateInputs";
+        else if ("quantity" in input)
+            key = "quantityInputs";
+        console.log(input);
 
+        setBookingInputs(prev => ({ ...prev, [key]: input }));
+    };
+    // console.log(bookingInputs.addressInputs);
+    return { bookingInputs, setInput };
 }

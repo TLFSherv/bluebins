@@ -20,11 +20,12 @@ export default function WeeklyCalendar({ inputs, setInput }:
             weekDay: WEEKDAYS[start.getDay()],
             dayNum: start.getDate(),
             month: MONTHS[start.getMonth() - 1],
-            active: false
+            active: start.getDate() == inputs.dayNumber
         });
     }
     const handleChange = (card: CardData) => {
         setInput({
+            type: "date",
             dayOfWeek: card.weekDay,
             dayNumber: card.dayNum,
             month: card.month,

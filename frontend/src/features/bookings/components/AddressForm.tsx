@@ -9,8 +9,9 @@ export default function AddressForm({ inputs, setInput }: {
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
     const { address, additionalInfo, postcode, parish } = inputs;
-    const handleChange = (e: React.ChangeEvent) => {
-        const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
+        React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
+        const target = e.target;
         const name = target.name;
         const value = target.value;
         setInput({ ...inputs, [name]: value });
@@ -71,7 +72,8 @@ export default function AddressForm({ inputs, setInput }: {
 
 function FullAddressForm({ inputs, handleChange }: {
     inputs: { postcode: string, parish: string },
-    handleChange: (event: React.ChangeEvent) => void
+    handleChange: (event: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
+        React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => void
 }) {
     return (
         <div className="space-y-6">

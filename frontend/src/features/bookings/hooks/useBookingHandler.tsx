@@ -3,6 +3,7 @@ import { type BookingInputs, type AddressInputs, type QuantityInputs, type DateI
 
 const initBookingInputs: BookingInputs = {
     addressInputs: {
+        type: "address",
         address: "",
         additionalInfo: "",
         postcode: "",
@@ -11,12 +12,14 @@ const initBookingInputs: BookingInputs = {
         longitude: 0
     },
     dateInputs: {
+        type: "date",
         dayOfWeek: "Mon",
         dayNumber: 1,
         month: "Oct",
         frequency: "bi-weekly"
     },
     quantityInputs: {
+        type: "quantity",
         quantity: 1,
         materialQuantity: {
             tin: 0,
@@ -25,19 +28,19 @@ const initBookingInputs: BookingInputs = {
         }
     }
 };
+
+const KEY_MAP = {
+    address: "addressInputs",
+    quantity: "quantityInputs",
+    date: "dateInputs",
+} as const;
+
 export function useBookingHandler() {
     const [bookingInputs, setBookingInputs] = useState<BookingInputs>(initBookingInputs);
     const setInput = (input: AddressInputs | QuantityInputs | DateInputs) => {
+        console.log(input.type);
         // Set state for the correct BookingInputs property object
-        let key: string;
-        if ("address" in input)
-            key = "addressInputs";
-        else if ("dayOfWeek" in input)
-            key = "dateInputs";
-        else if ("quantity" in input)
-            key = "quantityInputs";
-        console.log(input);
-
+        const key = KEY_MAP[input.type];
         setBookingInputs(prev => ({ ...prev, [key]: input }));
     };
     // console.log(bookingInputs.addressInputs);

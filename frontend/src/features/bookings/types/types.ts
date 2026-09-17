@@ -7,13 +7,16 @@ export type MaterialTypes = typeof RecyclableMaterials[number];
 
 export type CardData = { weekDay: string, dayNum: number, month: string, active: boolean };
 
+type Input = { type: string };
+
 export type BookingInputs = {
     addressInputs: AddressInputs,
     dateInputs: DateInputs,
     quantityInputs: QuantityInputs
 };
 
-export type AddressInputs = {
+export type AddressInputs = Input & {
+    type: "address",
     address: string,
     postcode: string,
     parish: string,
@@ -22,7 +25,8 @@ export type AddressInputs = {
     longitude: number
 };
 
-export type DateInputs = {
+export type DateInputs = Input & {
+    type: "date",
     dayOfWeek: String,
     dayNumber: number,
     month: string,
@@ -30,7 +34,8 @@ export type DateInputs = {
 };
 
 
-export type QuantityInputs = {
+export type QuantityInputs = Input & {
+    type: "quantity",
     quantity: number,
     materialQuantity: Record<MaterialTypes, number>
 };

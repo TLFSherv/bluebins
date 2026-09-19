@@ -44,8 +44,8 @@ export default function WeeklyCalendar({ inputs, setInput }:
     return (
         <div className="w-full" >
             <div className="border-2 border-[#4AA5F6] rounded-xl bg-[#D9D9D9] p-1 flex gap-x-2 overflow-x-scroll">
-                {dayCards.map(card =>
-                    <div onClick={() => handleChange(card)}
+                {dayCards.map((card, key) =>
+                    <div key={key} onClick={() => handleChange(card)}
                         className={`rounded-lg ${card.active ? "bg-[#0088FF] text-white" : "bg-[#F3F6FB]"}`}>
                         <ol className="text-center w-[90px] h-[90px] flex flex-col justify-evenly">
                             <li className="text-xs">{card.weekDay}</li>

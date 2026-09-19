@@ -8,12 +8,16 @@ export default function AddressForm({ inputs, setInput }: {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
-    const { address, additionalInfo, postcode, parish } = inputs;
+    const { address, additionalInfo, postcode, parish, makeDefault } = inputs;
     const handleChange = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
         React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
         const target = e.target;
         const name = target.name;
-        const value = target.value;
+        let value: string | number = target.value;
+        if (name == "makeDefault") {
+            value = Number.parseInt(value) == 0 ? 1 : 0;
+        }
+
         setInput({ ...inputs, [name]: value });
     }
     return (
@@ -38,7 +42,7 @@ export default function AddressForm({ inputs, setInput }: {
                     <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Address</label>
                 </div>
                 <div className="flex justify-end space-x-2 text-sm">
-                    <input type="checkbox" name="makeDefault" />
+                    <input type="checkbox" name="makeDefault" value={makeDefault} onChange={e => handleChange(e)} />
                     <label>
                         Make my default
                     </label>

@@ -22,7 +22,8 @@ export type AddressInputs = Input & {
     parish: string,
     additionalInfo: string,
     latitude: number,
-    longitude: number
+    longitude: number,
+    makeDefault: number
 };
 
 export type DateInputs = Input & {

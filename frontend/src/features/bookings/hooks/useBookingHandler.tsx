@@ -9,7 +9,8 @@ const initBookingInputs: BookingInputs = {
         postcode: "",
         parish: "",
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        makeDefault: 0
     },
     dateInputs: {
         type: "date",
@@ -42,6 +43,5 @@ export function useBookingHandler() {
         const key = KEY_MAP[input.type];
         setBookingInputs(prev => ({ ...prev, [key]: input }));
     };
-    // console.log(bookingInputs.addressInputs);
     return { bookingInputs, setInput };
 }

@@ -17,7 +17,7 @@ export default function DateForm({ inputs, setInput }:
                 {radioLabels.map(labels =>
                 (
                     <div className="space-x-2 mx-auto w-[100px]">
-                        <input type="checkbox" name={labels} onClick={() => handleChange(labels)} />
+                        <input type="radio" name="frequency" onClick={() => handleChange(labels)} />
                         <label>{labels}</label>
                     </div>
                 )

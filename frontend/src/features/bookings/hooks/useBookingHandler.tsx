@@ -38,7 +38,6 @@ const KEY_MAP = {
 export function useBookingHandler() {
     const [bookingInputs, setBookingInputs] = useState<BookingInputs>(initBookingInputs);
     const setInput = (input: AddressInputs | QuantityInputs | DateInputs) => {
-        console.log(input.type);
         // Set state for the correct BookingInputs property object
         const key = KEY_MAP[input.type];
         setBookingInputs(prev => ({ ...prev, [key]: input }));

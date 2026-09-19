@@ -14,13 +14,22 @@ export default function WeeklyCalendar({ inputs, setInput }:
     const dayCards: CardData[] = [];
     const WEEKDAYS: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const MONTHS: string[] = ["Jan", "Feb", "Mar", "Apr", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+    const frequencyGaps = { "weekly": 7, "bi-weekly": 14, "tri-weekly": 21, "monthly": 30 };
+    let cardNum = -1;
+    let isActive = false;
     for (let i = 0; i < numOfDays; i++) {
         start.setDate(start.getDate() + 1);
+        // When a frequency radio button is selected  
+        // make the chosen date and the next set of dates active
+        if (start.getDate() == inputs.dayNumber) cardNum = i;
+        isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
+
         dayCards.push({
             weekDay: WEEKDAYS[start.getDay()],
             dayNum: start.getDate(),
             month: MONTHS[start.getMonth() - 1],
-            active: start.getDate() == inputs.dayNumber
+            active: isActive
         });
     }
     const handleChange = (card: CardData) => {

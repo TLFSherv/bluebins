@@ -1,10 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-
 public class Location : IEntity<int>
 {
     public int Id { get; set; }
+    public required string Address { get; set; }
     public string? MapsId { get; set; }
-    public string? AddressLine1 { get; set; }
+    public required string Parish { get; set; }
     public string? Postcode { get; set; }
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }

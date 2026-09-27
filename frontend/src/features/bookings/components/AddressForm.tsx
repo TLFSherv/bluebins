@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { type AddressInputs } from "../types/types";
+import { type Address } from "../types/types";
 
 export default function AddressForm({ inputs, setInput }: {
-    inputs: AddressInputs,
-    setInput: (input: AddressInputs) => void
+    inputs: Address,
+    setInput: (input: Address) => void
 }) {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);

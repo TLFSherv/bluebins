@@ -1,7 +1,8 @@
-import { type CardData, type DateInputs } from "../types/types";
+import { type CardData, type Date } from "../types/types";
+import { WEEKDAYS, MONTHS } from "../types/types";
 
 export default function WeeklyCalendar({ inputs, setInput }:
-    { inputs: DateInputs, setInput: (input: DateInputs) => void }) {
+    { inputs: Date, setInput: (input: Date) => void }) {
     const start = new Date();
     // automatically adjusts for edge cases like shorter months
     const newDate = new Date()
@@ -12,8 +13,6 @@ export default function WeeklyCalendar({ inputs, setInput }:
     let numOfDays = diffInMs / (1000 * 60 * 60 * 24);
 
     const dayCards: CardData[] = [];
-    const WEEKDAYS: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const MONTHS: string[] = ["Jan", "Feb", "Mar", "Apr", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
     const frequencyGaps = { "weekly": 7, "bi-weekly": 14, "tri-weekly": 21, "monthly": 30 };
     let cardNum = -1;
@@ -22,22 +21,18 @@ export default function WeeklyCalendar({ inputs, setInput }:
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active
-        if (start.getDate() == inputs.dayNumber) cardNum = i;
+        if (start.getDate() == inputs.date[1]) cardNum = i;
         isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
 
         dayCards.push({
-            weekDay: WEEKDAYS[start.getDay()],
-            dayNum: start.getDate(),
-            month: MONTHS[start.getMonth() - 1],
+            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth() - 1]],
             active: isActive
         });
     }
     const handleChange = (card: CardData) => {
         setInput({
             type: "date",
-            dayOfWeek: card.weekDay,
-            dayNumber: card.dayNum,
-            month: card.month,
+            date: card.date,
             frequency: inputs.frequency
         });
     }
@@ -48,9 +43,9 @@ export default function WeeklyCalendar({ inputs, setInput }:
                     <div key={key} onClick={() => handleChange(card)}
                         className={`rounded-lg ${card.active ? "bg-[#0088FF] text-white" : "bg-[#F3F6FB]"}`}>
                         <ol className="text-center w-[90px] h-[90px] flex flex-col justify-evenly">
-                            <li className="text-xs">{card.weekDay}</li>
-                            <li>{card.dayNum}</li>
-                            <li>{card.month}</li>
+                            <li className="text-xs">{card.date[0]}</li>
+                            <li>{card.date[1]}</li>
+                            <li>{card.date[2]}</li>
                         </ol>
                     </div>
                 )}

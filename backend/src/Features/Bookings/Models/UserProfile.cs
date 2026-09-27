@@ -6,5 +6,10 @@ public class UserProfile : IEntity<string>
     public bool IsDeleted { get; set; }
     public Location? DefaultLocation { get; set; }
     public Schedule? DefaultSchedule { get; set; }
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    // Calculated helper property (not mapped to a database column)
+    public Booking? MostRecentBooking =>
+        Bookings.OrderByDescending(b => b.Schedule.CollectionDate).FirstOrDefault();
 
 }

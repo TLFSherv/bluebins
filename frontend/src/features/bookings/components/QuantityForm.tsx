@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { RecyclableMaterials, type QuantityInputs } from "../types/types";
+import { MATERIALS, type Quantity } from "../types/types";
 
 export default function QuantityForm({ inputs, setInput }:
     {
-        inputs: QuantityInputs,
-        setInput: (input: QuantityInputs) => void
+        inputs: Quantity,
+        setInput: (input: Quantity) => void
     }) {
     const [isRecyclingItemsFormVisible, setIsRecyclingItemsFormVisible] = useState<boolean>(false);
 
@@ -90,12 +90,12 @@ export default function QuantityForm({ inputs, setInput }:
 
 function RecyclingItemsForm({ inputs, handleChange }:
     {
-        inputs: QuantityInputs,
+        inputs: Quantity,
         handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => void
     }) {
     return (
         <div className="space-y-7">
-            {RecyclableMaterials.map(material =>
+            {MATERIALS.map(material =>
             (
                 <div id={material} className="flex justify-evenly">
                     <div className="form-floating">

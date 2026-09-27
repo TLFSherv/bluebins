@@ -1,7 +1,13 @@
+using Moq;
+
 public class BookingRepositoryStub : IBookingRepository
 {
+    public Task<int> Add(BookingRequest bookingRequest)
+    {
+        return Task.FromResult(1);
+    }
     public async Task<TId> Add<TRequest, TEntity, TId>(TRequest requestDto)
-        where TEntity : class, IEntity<TId>, new()
+        where TEntity : class, IEntity<TId>
     {
         if (typeof(TId) == typeof(string))
         {
@@ -21,7 +27,7 @@ public class BookingRepositoryStub : IBookingRepository
 
 
     public async Task<TResult?> Get<TId, TEntity, TResult>(TId id)
-        where TEntity : class, IEntity<TId>, new()
+        where TEntity : class, IEntity<TId>
         where TResult : class
     {
         if (typeof(TEntity) == typeof(Booking))
@@ -37,10 +43,10 @@ public class BookingRepositoryStub : IBookingRepository
             var booking = new BookingView()
             {
                 Status = BookingStatus.Scheduled,
-                CollectionDate = new DateTime(2026, 8, 20),
+                Schedule = new() { StartDate = new DateOnly(2026, 8, 20), IsDefault = false },
+                Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+                Recycling = new() { BookingId = mockId, NumberOfBags = 2, RecyclingItems = recyclingItems },
                 DateCreated = DateTime.Today,
-                Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-                RecyclingItems = recyclingItems
             };
 
             return (TResult)(object)booking;
@@ -49,7 +55,7 @@ public class BookingRepositoryStub : IBookingRepository
     }
 
     public async Task<TId> Update<TId, TRequest, TEntity>(TRequest request)
-        where TEntity : class, IEntity<TId>, new()
+        where TEntity : class, IEntity<TId>
         where TRequest : class, IRequest<TId>
     {
         throw new NotImplementedException();

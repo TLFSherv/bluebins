@@ -41,7 +41,7 @@ const parseError = (errorData: any): AuthError => {
 }
 
 export const authService: IAuthService = {
-    async signIn(prevState, formData) {
+    async signIn(_, formData) {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -104,7 +104,7 @@ export const authService: IAuthService = {
         }
 
     },
-    async signUp(prevState, formData) {
+    async signUp(_, formData) {
         try {
             const request = {
                 email: formData.get("email") as string,

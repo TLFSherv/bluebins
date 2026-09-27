@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using EllipticCurve.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 public static class BookingRoutes
@@ -14,13 +15,12 @@ public static class BookingRoutes
             bookingApi.MapPost("/", async ([FromBody] BookingRequest request, HttpContext context, [FromServices] IBookingRepository repository, [FromServices] LinkGenerator linker) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId is null)
+                if (userId is null || userId != request.UserProfile.Id)
                 {
                     return Results.Unauthorized();
                 }
-                // use method extension to calculate and set weight and volume of materials
-                request.RecyclingItems.CalculateWeightAndVolume();
-                var result = await repository.Add<BookingRequest, Booking, int>(request);
+
+                var result = await repository.Add(request);
 
                 if (result == 0)
                 {

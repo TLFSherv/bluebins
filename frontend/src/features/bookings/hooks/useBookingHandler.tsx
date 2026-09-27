@@ -1,25 +1,23 @@
 import { useState } from "react";
-import { type BookingInputs, type AddressInputs, type QuantityInputs, type DateInputs } from "../types/types";
+import { type Booking, type Address, type Quantity, type Date } from "../types/types";
 
-const initBookingInputs: BookingInputs = {
-    addressInputs: {
-        type: "address",
+const initBooking: Booking = {
+    location: {
+        type: "location",
         address: "",
-        additionalInfo: "",
+        details: "",
         postcode: "",
-        parish: "",
+        parish: "hamilton parish",
         latitude: 0,
         longitude: 0,
         makeDefault: 0
     },
-    dateInputs: {
+    date: {
         type: "date",
-        dayOfWeek: "Mon",
-        dayNumber: 1,
-        month: "Oct",
+        date: ["Mon", 1, "Oct"],
         frequency: "bi-weekly"
     },
-    quantityInputs: {
+    quantity: {
         type: "quantity",
         quantity: 1,
         materialQuantity: {
@@ -31,17 +29,18 @@ const initBookingInputs: BookingInputs = {
 };
 
 const KEY_MAP = {
-    address: "addressInputs",
-    quantity: "quantityInputs",
-    date: "dateInputs",
+    address: "address",
+    quantity: "quantity",
+    date: "date",
 } as const;
 
 export function useBookingHandler() {
-    const [bookingInputs, setBookingInputs] = useState<BookingInputs>(initBookingInputs);
-    const setInput = (input: AddressInputs | QuantityInputs | DateInputs) => {
-        // Set state for the correct BookingInputs property object
+    const [booking, setBooking] = useState<Booking>(initBooking);
+
+    const setInput = (input: Address | Quantity | Date) => {
+        // Set state for the correct Booking property object
         const key = KEY_MAP[input.type];
-        setBookingInputs(prev => ({ ...prev, [key]: input }));
+        setBooking(prev => ({ ...prev, [key]: input }));
     };
-    return { bookingInputs, setInput };
+    return { booking, setInput };
 }

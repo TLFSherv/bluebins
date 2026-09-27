@@ -1,25 +1,19 @@
-public record BookingRequest : IRequest<string>
+public record BookingRequest : IRequest<int>
 {
-    public string Id { get; set; }
-    public string UserId { get; set; }
-    public BookingStatus Status { get; set; }
-    public DateTime CollectionDate { get; set; }
-    public LocationRequest Location { get; set; }
-    public ScheduleRequest Schedule { get; set; }
-    public DateTime DateCreated { get; set; }
-    public DateTime? DateModified { get; set; }
-    public ICollection<RecyclingItemRequest>? RecyclingItems { get; set; }
-
+    public int Id { get; set; }
+    public required UserProfile UserProfile { get; set; }
+    public required LocationRequest Location { get; set; }
+    public required ScheduleRequest Schedule { get; set; }
+    public required RecyclingRequest Recycling { get; set; }
 }
 
 public record BookingView
 {
     public BookingStatus Status { get; set; }
-    public DateTime CollectionDate { get; set; }
+    public required LocationView Location { get; set; }
+    public required ScheduleView Schedule { get; set; }
+    public required RecyclingView Recycling { get; set; }
     public DateTime DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
-    public LocationView? Location { get; set; }
-    public ScheduleView? Schedule { get; set; }
-    public ICollection<RecyclingItemView>? RecyclingItems { get; set; }
 };
 

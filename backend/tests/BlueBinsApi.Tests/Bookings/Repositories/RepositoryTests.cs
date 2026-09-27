@@ -23,16 +23,30 @@ public class RepositoryTests : IntegrationTestBase
     {
         BookingView expectedResult = new()
         {
+
             Status = BookingStatus.Scheduled,
-            CollectionDate = new DateTime(2026, 8, 20),
+            Schedule = new() { StartDate = new DateOnly(2026, 10, 2), IsDefault = false },
             DateCreated = DateTime.Today,
-            Location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            RecyclingItems =
-            [
-                new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-                new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-                new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
-            ]
+            Location = new()
+            {
+                MapsId = "test",
+                Address = "test_address",
+                Parish = "test_parish",
+                Postcode = "test_postcode",
+                Latitude = 0,
+                Longitude = 0
+            },
+            Recycling = new()
+            {
+                BookingId = 1,
+                NumberOfBags = 2,
+                RecyclingItems = new List<RecyclingItemView>
+                {
+                    new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                    new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                    new() {MaterialType=MaterialTypes.tin, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+                }
+            }
         };
         yield return new object[] { 1, expectedResult }; // correct bookingId should return booking
         yield return new object?[] { 2, null }; // incorrect bookingId should return null
@@ -41,97 +55,106 @@ public class RepositoryTests : IntegrationTestBase
 
     [Theory]
     [MemberData(nameof(GetUserBookingTestData))]
+    // This tests that the repository method GetUserBooking returns the booking successfully
     public async Task GetUserBooking_ReturnsCorrectBooking(int bookingId, BookingView? expectedResult)
     {
         // Arrange
-        List<RecyclingItem> recyclingItems = new()
-        {
-            new() {Id=1, BookingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-            new() {Id=2, BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-            new() {Id=3, BookingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
-        };
-
         context.Database.EnsureCreated();
-        Booking booking = new()
+        UserProfile user = new UserProfile { Id = "123456" };
+        Location location = new()
         {
             Id = 1,
-            UserId = "123456",
-            LocationId = 1,
-            Status = BookingStatus.Scheduled,
-            CollectionDate = new DateTime(2026, 8, 20),
-            DateCreated = DateTime.Today,
-            UserProfile = new() { Id = "123456" },
-            Location = new() { Id = 1, MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            MapsId = "test",
+            Address = "test_address",
+            Parish = "test_parish",
+            Postcode = "test_postcode",
+            Latitude = 0,
+            Longitude = 0
         };
+
+        Recycling recycling = new()
+        {
+            Id = 1,
+            NumberOfBags = 2,
+            RecyclingItems = new List<RecyclingItem>
+                {
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.tin, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+                }
+        };
+        Schedule schedule = new() { StartDate = new DateOnly(2026, 10, 2) };
+        Booking booking = new(user, recycling, location, schedule);
+
         context.Add(booking);
-        context.AddRange(recyclingItems);
         context.SaveChanges();
-
-        var recyclingData = await context.RecyclingItems.Where(x => x.Id == 1).ToListAsync();
-        var bookingData = await context.Bookings
-            .Include(x => x.RecyclingItems)
-            .FirstOrDefaultAsync(x => x.Id == 1);
-
+        var test = booking;
         var repository = new BookingRepository(context, _mapper);
         // Act
         var result = await repository.Get<int, Booking, BookingView>(bookingId);
         // Assert
+        if (expectedResult is not null)
+        {
+            Assert.IsType<BookingView>(result);
+        }
         result.Should().BeEquivalentTo(expectedResult);
     }
 
     public static IEnumerable<object[]> AddUserBookingData()
     {
-        LocationRequest location = new() { MapsId = "test", AddressLine1 = "test_address", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
-        List<RecyclingItemRequest> recyclingItems = new()
-       {
-            new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
-            new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
-            new() {MaterialType=MaterialTypes.glass, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+        UserProfile user = new UserProfile { Id = "123456" };
+        LocationRequest location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
+        RecyclingRequest recycling = new()
+        {
+            Id = 1,
+            NumberOfBags = 2,
+            RecyclingItems = new()
+            {
+                new() {MaterialType=MaterialTypes.aluminium, Quantity = 6},
+                new() {MaterialType=MaterialTypes.glass, Quantity = 3},
+                new() {MaterialType=MaterialTypes.tin, Quantity = 8},
+            }
+        };
 
-       };
-        ScheduleRequest schedule1 = new() { Id = 1, SetAsDefault = true, StartDate = new DateOnly(2026, 8, 8), Frequency = FrequencyTypes.Weekly, IsActive = true };
-        ScheduleRequest schedule2 = new() { SetAsDefault = false, StartDate = new DateOnly(2026, 8, 9), Frequency = FrequencyTypes.Weekly, IsActive = true };
-        BookingRequest request1 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, DateCreated = DateTime.Today };
-        BookingRequest request2 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule1, DateCreated = DateTime.Today };
-        BookingRequest request3 = new() { UserId = "123456", Status = BookingStatus.Draft, Location = location, RecyclingItems = recyclingItems, Schedule = schedule2, DateCreated = DateTime.Today };
+
+        ScheduleRequest schedule1 = new() { Id = 1, StartDate = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
+        ScheduleRequest schedule2 = new() { Id = 1, StartDate = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
+        BookingRequest request1 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule1 };
+        BookingRequest request2 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule1 };
+        BookingRequest request3 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule2 };
         yield return new object[] { request1 }; // request with no schedule
-        yield return new object[] { request2 }; // request with schedule
+        yield return new object[] { request2 }; // request with existing schedule
         yield return new object[] { request3 }; // request with new schedule
     }
 
     [Theory]
     [MemberData(nameof(AddUserBookingData))]
+    //  This tests that the AddUserBooking method successfully adds bookings
     public async Task AddUserBooking_ReturnsCorrectBookingId(BookingRequest request)
     {
         context.Database.EnsureCreated();
         // Arrange
         UserProfile user = new() { Id = "123456" };
-        Schedule schedule = new() { Id = 1, StartDate = new DateOnly(2026, 8, 8), Frequency = FrequencyTypes.Weekly };
         context.Add(user);
-        context.Add(schedule);
         context.SaveChanges();
-
-        if (request.Schedule is not null)
-        {
-            Schedule newSchedule = new() { StartDate = request.Schedule.StartDate, Frequency = request.Schedule.Frequency };
-        }
 
         var repository = new BookingRepository(context, _mapper);
         // Act
-        var result = await repository.Add<BookingRequest, Booking, int>(request);
+        var result = await repository.Add(request);
         Assert.IsType<int>(result);
         var booking = context.Bookings
         .Include(x => x.Location)
         .Include(x => x.Schedule)
-        .Include(x => x.RecyclingItems)
+        .Include(x => x.Recycling)
+        .ThenInclude(x => x.RecyclingItems)
         .FirstOrDefault(x => x.Id == result);
 
         Assert.IsType<Booking>(booking);
         // Assert
-        Assert.Equal(request.CollectionDate, booking.CollectionDate);
-        Assert.Equal(request.Location.AddressLine1, booking.Location!.AddressLine1);
-        Assert.Equal(request.Schedule?.StartDate, booking.Schedule?.StartDate);
-        Assert.Equal(request.RecyclingItems?.Count(), booking.RecyclingItems?.Count());
+        Assert.Equal(request.Schedule.StartDate, booking.Schedule.StartDate);
+        Assert.Equal(request.Location.Address, booking.Location!.Address);
+        Assert.Equal(request.Schedule?.Frequency, booking.Schedule?.Frequency);
+        Assert.Equal(request.Recycling?.RecyclingItems?.Count(), booking.Recycling.RecyclingItems?.Count());
 
     }
 }

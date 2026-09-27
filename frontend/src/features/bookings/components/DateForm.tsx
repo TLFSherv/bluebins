@@ -1,9 +1,9 @@
-import type { DateInputs, ScheduleFrequency } from "../types/types";
+import type { Date, FREQUENCY } from "../types/types";
 import WeeklyCalendar from "./WeeklyCalendar";
 export default function DateForm({ inputs, setInput }:
-    { inputs: DateInputs, setInput: (input: DateInputs) => void }) {
-    const radioLabels: ScheduleFrequency[] = ["weekly", "bi-weekly", "tri-weekly", "monthly"];
-    const handleChange = (frequency: ScheduleFrequency) => {
+    { inputs: Date, setInput: (input: Date) => void }) {
+    const radioLabels: (typeof FREQUENCY[number])[] = ["weekly", "bi-weekly", "tri-weekly", "monthly"];
+    const handleChange = (frequency: (typeof FREQUENCY[number])) => {
         setInput({ ...inputs, frequency });
     }
     return (

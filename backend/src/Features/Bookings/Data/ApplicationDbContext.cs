@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -14,6 +13,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<Location> Locations { get; set; }
+    public virtual DbSet<Recycling> Recyclings { get; set; }
     public virtual DbSet<RecyclingItem> RecyclingItems { get; set; }
     public virtual DbSet<Schedule> Schedules { get; set; }
 
@@ -62,7 +62,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Status)
             .HasDefaultValue(BookingStatus.Scheduled)
             .HasColumnName("status");
-            entity.Property(e => e.CollectionDate).HasColumnName("collection_date");
             entity.Property(e => e.DateCreated)
             // .HasDefaultValueSql("now()")
             .HasColumnName("date_created");
@@ -72,7 +71,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasColumnName("date_modified");
 
             entity.HasOne(d => d.UserProfile) // a booking has one user
-            .WithMany()                 // a user can have many bookings
+            .WithMany(d => d.Bookings)       // a user can have many bookings
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
@@ -84,7 +83,11 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(d => d.Schedule) // a booking can have one schedule
             .WithMany()                     // a schedule can have many bookings
             .HasForeignKey(d => d.ScheduleId)
-            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(d => d.Recycling) // a booking has one recycling
+            .WithOne(d => d.Booking)        // a recycling can have one booking
+            .HasForeignKey<Recycling>(d => d.Id)
             .OnDelete(DeleteBehavior.NoAction);
         });
 
@@ -93,9 +96,10 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("location_pkey");
 
             entity.ToTable("location", "booking");
-            entity.Property(e => e.MapsId).HasColumnName("maps_id");
-            entity.Property(e => e.AddressLine1).HasColumnName("address_line_1");
-            entity.Property(e => e.Postcode).HasColumnName("postcode");
+            entity.Property(e => e.MapsId).HasMaxLength(256).HasColumnName("maps_id");
+            entity.Property(e => e.Address).HasMaxLength(256).HasColumnName("address");
+            entity.Property(e => e.Parish).HasMaxLength(32).HasColumnName("parish");
+            entity.Property(e => e.Postcode).HasMaxLength(8).HasColumnName("postcode");
             entity.Property(e => e.Latitude)
             .HasColumnName("latitude")
             .HasPrecision(9, 6);
@@ -105,6 +109,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Details).HasColumnName("details");
 
             entity.HasIndex(e => e.Postcode);
+            entity.HasIndex(e => e.Address);
         });
 
         modelBuilder.Entity<Schedule>(entity =>
@@ -112,31 +117,31 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("schedule_pkey");
 
             entity.ToTable("schedule", "booking");
-            entity.Property(e => e.Id)
-            .ValueGeneratedOnAdd()
-            .HasColumnName("id");
-            entity.Property(e => e.StartDate).HasColumnName("start_date");
+            entity.Property(e => e.StartDate).HasColumnType("date");
             entity.Property(e => e.Frequency).HasColumnName("frequency");
-            entity.Property(e => e.IsActive).HasColumnName("is_active");
         });
 
-        modelBuilder.Entity<RecyclingItem>(entity =>
+        modelBuilder.Entity<Recycling>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("recycling_item_pkey");
 
+            entity.Property(e => e.Id).HasColumnName("booking_id");
+
+            entity
+            .HasMany(r => r.RecyclingItems) // recycling has many recycling items
+            .WithOne()                          // a recycling item is only in one recycling
+            .HasForeignKey(c => c.RecyclingId)
+            .OnDelete(DeleteBehavior.SetNull);
+        });
+        modelBuilder.Entity<RecyclingItem>(entity =>
+        {
+            entity.HasKey(e => new { e.RecyclingId, e.MaterialType });
+
             entity.ToTable("recycling_item", "booking");
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.BookingId).HasColumnName("booking_id");
             entity.Property(e => e.MaterialType).HasColumnName("material_type");
             entity.Property(e => e.WeightKg).HasColumnName("weight_kg");
             entity.Property(e => e.VolumeLiters).HasColumnName("volume_litres");
             entity.Property(e => e.ContaminationPercent).HasColumnName("contamination_percent");
-
-            entity
-            .HasOne(r => r.Booking) // a recycling item has one booking
-            .WithMany(b => b.RecyclingItems)  // a booking has many recycling items
-            .HasForeignKey(r => r.BookingId)
-            .OnDelete(DeleteBehavior.Cascade);
         });
     }
 

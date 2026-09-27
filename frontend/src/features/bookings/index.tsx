@@ -3,14 +3,15 @@ import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import QuantityForm from "./components/QuantityForm"
 import { useBookingHandler } from "./hooks/useBookingHandler";
+import { BookingService } from "./services/bookingService";
 
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
-    const { bookingInputs, setInput } = useBookingHandler();
+    const { booking, setInput } = useBookingHandler();
     const formComponents = [
-        <AddressForm inputs={{ ...bookingInputs.addressInputs }} setInput={setInput} />,
-        <DateForm inputs={{ ...bookingInputs.dateInputs }} setInput={setInput} />,
-        <QuantityForm inputs={{ ...bookingInputs.quantityInputs }} setInput={setInput} />];
+        <AddressForm inputs={{ ...booking.address }} setInput={setInput} />,
+        <DateForm inputs={{ ...booking.date }} setInput={setInput} />,
+        <QuantityForm inputs={{ ...booking.quantity }} setInput={setInput} />];
     const COUNT = formComponents.length;
     const GAP = 4;
     const SCREEN = window.screen.width;
@@ -18,8 +19,16 @@ export default function Booking() {
     // Calculate offset to center the active item relative to the container
     const translateX = -activeIndex * (itemWidth + GAP);
 
+    const submitHandler = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const response = await BookingService.createBooking(booking);
+        // use 
+        console.log("submit")
+    }
+
     return (
-        <form className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-8">
+        <form onSubmit={e => submitHandler(e)}
+            className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-8">
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}
                 className="w-1/2 h-2 bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg" />
             <div className="overflow-hidden w-full mx-auto">
@@ -27,18 +36,40 @@ export default function Booking() {
                     {formComponents.map((component, i) => (
                         <div key={i} style={{ width: `${itemWidth}px` }} className="mx-2 object-cover shrink-0 border-2 border-[#2496FA] rounded-xl px-2 pt-8 pb-2 space-y-4">
                             {component}
-                            <div className="flex flex-row items-center gap-4 justify-center">
-                                <button className="btn" type="button" onClick={() => setActiveIndex(prev => Math.max(prev - 1, 0))}>
-                                    Back
-                                </button>
-                                <button className="btn" type="button" onClick={() => setActiveIndex(prev => Math.min(prev + 1, COUNT - 1))}>
-                                    Next
-                                </button>
-                            </div>
+                            {(activeIndex == i) &&
+                                <NavigationButtons
+                                    setActiveIndex={setActiveIndex}
+                                    totalComponents={COUNT}
+                                    isLastComponent={i == COUNT - 1} />}
                         </div>
                     ))}
                 </div>
             </div>
         </form >
     );
-} 
+}
+
+function NavigationButtons({ setActiveIndex, totalComponents, isLastComponent }:
+    {
+        setActiveIndex: React.Dispatch<React.SetStateAction<number>>,
+        totalComponents: number,
+        isLastComponent: boolean
+    }) {
+    return (
+        <div className="flex flex-row items-center gap-4 justify-center">
+            <button className="btn" type="button" onClick={() => setActiveIndex(prev => Math.max(prev - 1, 0))}>
+                Back
+            </button>
+            {
+                isLastComponent ?
+                    <button className="btn" type="submit" >
+                        Done
+                    </button>
+                    :
+                    <button className="btn" type="button" onClick={() => setActiveIndex(prev => Math.min(prev + 1, totalComponents - 1))}>
+                        Next
+                    </button>
+            }
+        </div>
+    )
+}

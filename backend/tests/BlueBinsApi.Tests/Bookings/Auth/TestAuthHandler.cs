@@ -15,7 +15,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         // Define default claims for the test user
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, "1")
+            new(ClaimTypes.NameIdentifier, "123456")
         };
 
         var identity = new ClaimsIdentity(claims, SchemeName);

@@ -8,20 +8,21 @@ const initBooking: Booking = {
         details: "",
         postcode: "",
         parish: "hamilton parish",
-        latitude: 0,
-        longitude: 0,
-        makeDefault: 0
+        latitude: 1,
+        longitude: 1,
+        makeDefault: false
     },
     schedule: {
         type: "schedule",
-        date: ["Mon", 1, "Oct"],
-        frequency: "weekly",
-        makeDefault: 0
+        displayDate: ["Mon", 1, "Oct", 2026],
+        date: "2026-10-01",
+        frequency: "Weekly",
+        makeDefault: false
     },
     quantity: {
         type: "quantity",
-        quantity: 1,
-        materialQuantity: {
+        numberOfBags: 1,
+        materialQuantities: {
             tin: 0,
             aluminium: 0,
             glass: 0

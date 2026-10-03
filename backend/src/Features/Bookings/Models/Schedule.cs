@@ -1,8 +1,11 @@
 
+using System.Text.Json.Serialization;
+
 public class Schedule : IEntity<int>
 {
     public int Id { get; set; }
     public DateOnly Date { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public Frequency? Frequency { get; set; }
     public DateOnly CollectionDate => GetCollectionDate();
     private DateOnly GetCollectionDate()
@@ -30,7 +33,7 @@ public class Schedule : IEntity<int>
 
 
 }
-
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Frequency
 {
     Weekly = 1,

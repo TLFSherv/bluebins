@@ -2,7 +2,7 @@ import { type IBookingService, type Booking, type BookingResponse, BookingSchema
 import { z } from "zod"
 
 export const BookingService: IBookingService = {
-    backendUrl: import.meta.env.VITE_SERVER_URL,
+    backendUrl: `${import.meta.env.VITE_SERVER_URL}/booking`,
     validate(booking: Booking): ValidationResponse {
         // Validate booking input
         const validationResult = BookingSchema.safeParse(booking);
@@ -30,15 +30,16 @@ export const BookingService: IBookingService = {
             if (!isValid) {
                 return errors as BookingResponse<string>;
             }
-
+            const json = JSON.stringify(booking);
+            console.log(json);
             // Make API request
-            const response = await fetch(`${this.backendUrl}/booking?useCookies=true`,
+            const response = await fetch(`${this.backendUrl}/`,
                 {
                     method: "Post",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(booking),
+                    body: json,
                     credentials: "include"
                 }
             );
@@ -74,7 +75,7 @@ export const BookingService: IBookingService = {
     },
     async get<T>(): Promise<BookingResponse<T>> {
         try {
-            const response = await fetch(`${this.backendUrl}/booking?useCookies=true`,
+            const response = await fetch(`${this.backendUrl}/`,
                 {
                     method: "GET",
                     headers: {
@@ -119,7 +120,7 @@ export const BookingService: IBookingService = {
                 return errors as BookingResponse<string>;
             }
 
-            const response = await fetch(`${this.backendUrl}/booking?useCookies=true`,
+            const response = await fetch(`${this.backendUrl}/`,
                 {
                     method: "PUT",
                     headers: {

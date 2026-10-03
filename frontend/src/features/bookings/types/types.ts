@@ -9,18 +9,24 @@ export const LocationSchema = z.object({
     details: z.string().optional(),
     latitude: z.number(),
     longitude: z.number(),
-    makeDefault: z.literal([0, 1])
+    makeDefault: z.boolean()
 })
 
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"] as const;
-export const FREQUENCY = ["weekly", "bi-weekly", "tri-weekly", "monthly"] as const;
+export const FREQUENCY = ["Weekly", "Biweekly", "Triweekly", "Monthly"] as const;
+
+// Validates strictly "YYYY-MM-DD"
+const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date must be in YYYY-MM-DD format',
+});
 
 export const ScheduleSchema = z.object({
     type: z.literal("schedule").readonly(),
-    date: z.tuple([z.literal(WEEKDAYS), z.number().min(1).max(31), z.literal(MONTHS)]),
+    displayDate: z.tuple([z.literal(WEEKDAYS), z.number().min(1).max(31), z.literal(MONTHS), z.number().min(2026).max(2100)]),
+    date: dateOnlySchema,
     frequency: z.literal(FREQUENCY),
-    makeDefault: z.literal([0, 1])
+    makeDefault: z.boolean()
 });
 
 export const MATERIALS = ["tin", "aluminium", "glass"] as const;
@@ -36,7 +42,7 @@ export const BookingSchema = z.object({
     schedule: ScheduleSchema,
     quantity: QuantitySchema
 })
-export type CardData = { date: [typeof WEEKDAYS[number], number, typeof MONTHS[number]], active: boolean };
+export type CardData = { date: [typeof WEEKDAYS[number], number, typeof MONTHS[number], number], active: boolean };
 
 export type Booking = z.infer<typeof BookingSchema>;
 export type Location = z.infer<typeof LocationSchema>;

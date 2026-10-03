@@ -7,7 +7,7 @@ public static class BookingRoutes
     {
         return builder.UseEndpoints(endpoints =>
         {
-            var bookingApi = endpoints.MapGroup("/booking")
+            var bookingApi = endpoints.MapGroup("/api/booking")
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
             // Get users active booking or booking template

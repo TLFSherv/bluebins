@@ -20,6 +20,7 @@ export type SignUpError = AuthError & { confirmPassword: string[] } | null
 export type SignInError = AuthError | null
 
 export interface IAuthService {
+    backendUrl: string
     signIn(prevState: SignInResponse, request: FormData): Promise<SignInResponse | undefined>,
     signUp(prevState: SignUpResponse, request: FormData): Promise<SignUpResponse | undefined>,
     signOut(navigate: (path: string) => void): void,

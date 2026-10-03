@@ -14,25 +14,30 @@ export default function WeeklyCalendar({ inputs, setInput }:
 
     const dayCards: CardData[] = [];
 
-    const frequencyGaps = { "weekly": 7, "bi-weekly": 14, "tri-weekly": 21, "monthly": 30 };
+    const frequencyGaps = { "Weekly": 7, "Biweekly": 14, "Triweekly": 21, "Monthly": 30 };
     let cardNum = -1;
     let isActive = false;
     for (let i = 0; i < numOfDays; i++) {
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active
-        if (start.getDate() == inputs.date[1]) cardNum = i;
+        if (start.getDate() == inputs.displayDate[1]) cardNum = i;
         isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
 
         dayCards.push({
-            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth() - 1]],
+            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth() - 1], start.getFullYear()],
             active: isActive
         });
     }
     const handleChange = (card: CardData) => {
+        var mm = (MONTHS.indexOf(card.date[2]) + 1).toString();
+        mm = mm.length < 2 ? "0" + mm : mm;
+        var dd = card.date[1].toString();
+        dd = dd.length < 2 ? "0" + dd : dd;
         setInput({
             type: "schedule",
-            date: card.date,
+            displayDate: card.date,
+            date: `${card.date[3]}-${mm}-${dd}`,
             frequency: inputs.frequency,
             makeDefault: inputs.makeDefault,
         });
@@ -52,10 +57,10 @@ export default function WeeklyCalendar({ inputs, setInput }:
                 )}
             </div>
             <div className="flex justify-end space-x-2 text-sm">
-                <input type="checkbox" name="makeDefault" value={inputs.makeDefault}
-                    onChange={e => setInput({
+                <input type="checkbox" name="makeDefault" checked={inputs.makeDefault}
+                    onChange={() => setInput({
                         ...inputs,
-                        makeDefault: Number.parseInt(e.target.value) == 0 ? 1 : 0
+                        makeDefault: !inputs.makeDefault
                     })} />
                 <label>
                     Make my default

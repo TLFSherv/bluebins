@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 public record CreateBookingRequest : IRequest<int>
 {
     public int Id { get; set; }

@@ -1,8 +1,6 @@
 import type { IAuthService, AuthError } from "../types/AuthTypes"
 import { z } from 'zod'
 
-const backendUrl = import.meta.env.VITE_SERVER_URL;
-
 const SignInSchema = z.object({
     email: z.email("Please enter a valid email address"),
     password: z.string("Not a string")
@@ -41,6 +39,7 @@ const parseError = (errorData: any): AuthError => {
 }
 
 export const authService: IAuthService = {
+    backendUrl: `${import.meta.env.VITE_SERVER_URL}/account`,
     async signIn(_, formData) {
         try {
             const request = {
@@ -62,7 +61,7 @@ export const authService: IAuthService = {
                 }
             }
 
-            const response = await fetch(`${backendUrl}/login?useCookies=true`,
+            const response = await fetch(`${this.backendUrl}/login?useCookies=true`,
                 {
                     method: "Post",
                     headers: {
@@ -128,7 +127,7 @@ export const authService: IAuthService = {
                 }
             }
 
-            const response = await fetch(`${backendUrl}/register?useCookies=true`, {
+            const response = await fetch(`${this.backendUrl}/register?useCookies=true`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "application/json"
@@ -172,7 +171,7 @@ export const authService: IAuthService = {
         }
     },
     async signOut(navigate) {
-        const response = await fetch(`${backendUrl}/logout`, {
+        const response = await fetch(`${this.backendUrl}/logout`, {
             method: "POST",
             headers: {
                 "Content-Type": "text"
@@ -189,7 +188,7 @@ export const authService: IAuthService = {
     },
     async isSignedIn() {
         try {
-            const response = await fetch(`${backendUrl}/isSignedIn`, {
+            const response = await fetch(`${this.backendUrl}/isSignedIn`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -216,6 +215,6 @@ export const authService: IAuthService = {
     },
     async signInWithGoogle() {
         const returnUrl = encodeURIComponent("https://localhost:5173/dashboard");
-        window.location.href = `${backendUrl}/login/google?returnUrl=${returnUrl}`;
+        window.location.href = `${this.backendUrl}/login/google?returnUrl=${returnUrl}`;
     },
 }

@@ -13,9 +13,9 @@ export default function AddressForm({ inputs, setInput }: {
         React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
         const target = e.target;
         const name = target.name;
-        let value: string | number = target.value;
+        let value: string | boolean = target.value;
         if (name == "makeDefault") {
-            value = Number.parseInt(value) == 0 ? 1 : 0;
+            value = !(e as React.ChangeEvent<HTMLInputElement>).target.checked;
         }
 
         setInput({ ...inputs, [name]: value });
@@ -42,7 +42,7 @@ export default function AddressForm({ inputs, setInput }: {
                     <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Address</label>
                 </div>
                 <div className="flex justify-end space-x-2 text-sm">
-                    <input type="checkbox" name="makeDefault" value={makeDefault} onChange={e => handleChange(e)} />
+                    <input type="checkbox" name="makeDefault" checked={makeDefault} onChange={e => handleChange(e)} />
                     <label>
                         Make my default
                     </label>
@@ -51,7 +51,7 @@ export default function AddressForm({ inputs, setInput }: {
                     {isAdditionalInfoVisible &&
                         <div className="form-floating">
                             <textarea
-                                name="additionalInfo"
+                                name="details"
                                 className="form-control-1"
                                 value={details}
                                 onChange={e => handleChange(e)} />

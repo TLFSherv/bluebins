@@ -6,7 +6,7 @@ export default function QuantityForm({ inputs, setInput }:
         inputs: Quantity,
         setInput: (input: Quantity) => void
     }) {
-    const [isRecyclingItemsFormVisible, setIsRecyclingItemsFormVisible] = useState<boolean>(false);
+    const [isMaterialsFormVisible, setIsMaterialsFormVisible] = useState<boolean>(false);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) {
         const target = e.currentTarget;
@@ -16,19 +16,19 @@ export default function QuantityForm({ inputs, setInput }:
         const isClick = e.type === "click";
 
         if (name in inputs) {
-            const currentValue = Number(inputs.quantity) || 0;
+            const currentValue = Number(inputs.numberOfBags) || 0;
             let newValue = isClick ? parsedValue + currentValue : value;
             const validatedValue = Number.isInteger(newValue) ? Math.max(Number(newValue), 1) : newValue;
             setInput({ ...inputs, [name]: validatedValue });
         }
         else {
-            const key = name as keyof typeof inputs.materialQuantity;
-            const currentQty = Number(inputs.materialQuantity[key]) || 0;
+            const key = name as keyof typeof inputs.materialQuantities;
+            const currentQty = Number(inputs.materialQuantities[key]) || 0;
             const newValue = isClick ? parsedValue + currentQty : value;
             const validatedValue = Number.isInteger(newValue) ? Math.max(Number(newValue), 0) : newValue;
 
-            const newMaterialQuantity = { ...inputs.materialQuantity, [name]: validatedValue };
-            setInput({ ...inputs, materialQuantity: newMaterialQuantity });
+            const newMaterialQuantity = { ...inputs.materialQuantities, [name]: validatedValue };
+            setInput({ ...inputs, materialQuantities: newMaterialQuantity });
         }
     }
 
@@ -40,15 +40,15 @@ export default function QuantityForm({ inputs, setInput }:
                 </h1>
                 <p className="text-center text-lg"> How many bags are we collecting?</p>
             </div>
-            <div style={{ height: isRecyclingItemsFormVisible ? "170px" : "130px" }} className={`space-y-7 overflow-y-scroll px-2 pt-10 scrollbar-thin ${isRecyclingItemsFormVisible ? "shadow-lg rounded-xl" : ""}`}>
+            <div style={{ height: isMaterialsFormVisible ? "170px" : "130px" }} className={`space-y-7 overflow-y-scroll px-2 pt-10 scrollbar-thin ${isMaterialsFormVisible ? "shadow-lg rounded-xl" : ""}`}>
                 <div className="flex justify-evenly">
                     <div className="form-floating">
                         <input
                             type="number"
-                            name="quantity"
+                            name="numberOfBags"
                             className="form-control-1 w-[112px] h-[45px] text-center"
                             autoComplete="off"
-                            value={inputs.quantity}
+                            value={inputs.numberOfBags}
                             onKeyDown={(e) => {
                                 // Block '-', '+', and 'e' / 'E'
                                 if (["-", "+", "e", "E"].includes(e.key)) {
@@ -67,28 +67,28 @@ export default function QuantityForm({ inputs, setInput }:
                         <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">Quantity</label>
                     </div>
                     <button
-                        name="quantity"
+                        name="numberOfBags"
                         value={1}
                         type="button"
                         className="quantity-btn w-[80px] h-[45px] rounded-lg"
                         onClick={(e) => handleChange(e)}>+</button>
                     <button
-                        name="quantity"
+                        name="numberOfBags"
                         value={-1}
                         type="button"
                         className="quantity-btn w-[80px] h-[45px] rounded-lg"
                         onClick={(e) => handleChange(e)}>-</button>
                 </div>
-                {isRecyclingItemsFormVisible && <RecyclingItemsForm inputs={inputs} handleChange={handleChange} />}
+                {isMaterialsFormVisible && <MaterialsForm inputs={inputs} handleChange={handleChange} />}
             </div>
-            <button type="button" className="pl-2" onClick={() => setIsRecyclingItemsFormVisible(prev => !prev)}>
-                {isRecyclingItemsFormVisible ? "- Hide contents" : "+ Add contents"}
+            <button type="button" className="pl-2" onClick={() => setIsMaterialsFormVisible(prev => !prev)}>
+                {isMaterialsFormVisible ? "- Hide contents" : "+ Add contents"}
             </button>
         </div>
     );
 }
 
-function RecyclingItemsForm({ inputs, handleChange }:
+function MaterialsForm({ inputs, handleChange }:
     {
         inputs: Quantity,
         handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => void
@@ -104,7 +104,7 @@ function RecyclingItemsForm({ inputs, handleChange }:
                             name={material}
                             className="form-control-1 w-[112px] h-[45px] text-center"
                             autoComplete="off"
-                            value={inputs.materialQuantity[material]}
+                            value={inputs.materialQuantities[material]}
                             onKeyDown={(e) => {
                                 // Block '-', '+', and 'e' / 'E'
                                 if (["-", "+", "e", "E"].includes(e.key)) {
@@ -117,7 +117,7 @@ function RecyclingItemsForm({ inputs, handleChange }:
                                     handleChange(e);
                                 }
                             }}
-                            min={1} />
+                            min={0} />
                         <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">{material}</label>
                     </div>
                     <button

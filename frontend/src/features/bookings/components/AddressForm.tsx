@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { type Address } from "../types/types";
+import { type Location } from "../types/types";
 
 export default function AddressForm({ inputs, setInput }: {
-    inputs: Address,
-    setInput: (input: Address) => void
+    inputs: Location,
+    setInput: (input: Location) => void
 }) {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
-    const { address, additionalInfo, postcode, parish, makeDefault } = inputs;
+    const { address, details, postcode, parish, makeDefault } = inputs;
     const handleChange = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
         React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
         const target = e.target;
@@ -53,7 +53,7 @@ export default function AddressForm({ inputs, setInput }: {
                             <textarea
                                 name="additionalInfo"
                                 className="form-control-1"
-                                value={additionalInfo}
+                                value={details}
                                 onChange={e => handleChange(e)} />
 
                             <label className="form-label bg-default -translate-y-8 translate-x-1 text-black rounded-md p-1 text-lg">Additional information</label>

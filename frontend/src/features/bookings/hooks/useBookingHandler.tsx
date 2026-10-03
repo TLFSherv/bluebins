@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type Booking, type Address, type Quantity, type Date } from "../types/types";
+import { type Booking, type Location, type Quantity, type Schedule } from "../types/types";
 
 const initBooking: Booking = {
     location: {
@@ -12,10 +12,11 @@ const initBooking: Booking = {
         longitude: 0,
         makeDefault: 0
     },
-    date: {
-        type: "date",
+    schedule: {
+        type: "schedule",
         date: ["Mon", 1, "Oct"],
-        frequency: "bi-weekly"
+        frequency: "weekly",
+        makeDefault: 0
     },
     quantity: {
         type: "quantity",
@@ -29,15 +30,15 @@ const initBooking: Booking = {
 };
 
 const KEY_MAP = {
-    address: "address",
+    location: "location",
     quantity: "quantity",
-    date: "date",
+    schedule: "schedule",
 } as const;
 
 export function useBookingHandler() {
     const [booking, setBooking] = useState<Booking>(initBooking);
 
-    const setInput = (input: Address | Quantity | Date) => {
+    const setInput = (input: Location | Quantity | Schedule) => {
         // Set state for the correct Booking property object
         const key = KEY_MAP[input.type];
         setBooking(prev => ({ ...prev, [key]: input }));

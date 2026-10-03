@@ -1,7 +1,7 @@
 using System.Data;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-public class AddBookingValidator : AbstractValidator<BookingRequest>
+public class AddBookingValidator : AbstractValidator<CreateBookingRequest>
 {
     public AddBookingValidator()
     {
@@ -14,18 +14,14 @@ public class AddBookingValidator : AbstractValidator<BookingRequest>
         RuleFor(x => x.Location.Details).MaximumLength(100);
 
         // validate schedule
-        RuleFor(x => x.Schedule.StartDate).GreaterThan(DateOnly.FromDateTime(DateTime.Now));
-
-        // validate user
-        RuleFor(x => x.UserProfile.Id)
-        .NotEmpty();
+        RuleFor(x => x.Schedule.Date).GreaterThan(DateOnly.FromDateTime(DateTime.Now));
 
         // validate recycling items
-        RuleFor(x => x.Recycling.NumberOfBags).GreaterThan(0);
-        RuleForEach(x => x.Recycling.RecyclingItems).ChildRules(item =>
+        RuleFor(x => x.Quantity.NumberOfBags).GreaterThan(0);
+        RuleForEach(x => x.Quantity.MaterialQuantities).ChildRules(item =>
         {
-            item.RuleFor(x => x.MaterialType).IsInEnum();
-            item.RuleFor(x => x.Quantity).GreaterThanOrEqualTo(0);
+            item.RuleFor(x => x.Key).IsInEnum();
+            item.RuleFor(x => x.Value).GreaterThanOrEqualTo(0);
         });
     }
 

@@ -1,24 +1,36 @@
-using System.Transactions;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
-public class BookingRepository : IBookingRepository
+public class BookingRepository : Repository, IBookingRepository
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-    public BookingRepository(ApplicationDbContext context, IMapper mapper)
+    public BookingRepository(ApplicationDbContext context, IMapper mapper) : base(context, mapper)
+    { }
+    // Sends users default booking information, and their existing booking if it exists
+    public async Task<UserBookingView> GetUserBooking(string userId)
     {
-        _context = context;
-        _mapper = mapper;
+        var user = await _context.UserProfiles
+        .Include(x => x.DefaultLocation)
+        .Include(x => x.DefaultSchedule)
+        .Include(x => x.Bookings)
+        .SingleOrDefaultAsync(x => x.Id == userId);
+
+        UserBookingView userBooking = _mapper.Map<UserBookingView>(user);
+        var mostRecentBooking = user?.MostRecentBooking;
+        // Send the users active booking if the booking is active
+        if (mostRecentBooking != null &&
+         mostRecentBooking?.Status == BookingStatus.Scheduled)
+        {
+            userBooking.ExistingBooking = _mapper.Map<BookingView>(mostRecentBooking);
+        }
+        return userBooking;
     }
     // Creates a new database entry and returns Id
-    public async Task<int> Add(BookingRequest bookingRequest)
+    public async Task<int> Add(string userId, BookingRequest bookingRequest)
     {
         UserProfile? user = await _context.UserProfiles
         .Include(x => x.DefaultLocation)
         .Include(x => x.DefaultSchedule)
-        .FirstOrDefaultAsync(x => x.Id == bookingRequest.UserProfile.Id);
+        .FirstOrDefaultAsync(x => x.Id == userId);
 
         var location = _mapper.Map<Location>(bookingRequest.Location);
         var schedule = _mapper.Map<Schedule>(bookingRequest.Schedule);
@@ -49,34 +61,5 @@ public class BookingRepository : IBookingRepository
         booking.Recycling = recycling;
 
         return await _context.SaveChangesAsync();
-    }
-    public async Task<TId> Add<TRequest, TEntity, TId>(TRequest requestDto)
-        where TEntity : class, IEntity<TId>
-    {
-        var entity = _mapper.Map<TEntity>(requestDto);
-        _context.Add(entity);
-        await _context.SaveChangesAsync();
-        return entity.Id;
-    }
-    public async Task<TResult?> Get<TId, TEntity, TResult>(TId id)
-        where TEntity : class, IEntity<TId>
-        where TResult : class
-    {
-        return await _context.Set<TEntity>().Where(x => x.Id!.Equals(id))
-        .ProjectTo<TResult>(_mapper.ConfigurationProvider)
-        .SingleOrDefaultAsync();
-    }
-    public async Task<TId> Update<TId, TRequest, TEntity>(TRequest request)
-    where TEntity : class, IEntity<TId>
-    where TRequest : class, IRequest<TId>
-    {
-        var entity = await _context.Set<TEntity>().FindAsync(request.Id);
-        if (entity is null)
-        {
-            throw new Exception($"There is no {nameof(TEntity)} with id {request.Id}");
-        }
-        _mapper.Map<TRequest, TEntity>(request);
-        await _context.SaveChangesAsync();
-        return entity.Id;
     }
 }

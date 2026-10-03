@@ -3,14 +3,14 @@ import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import QuantityForm from "./components/QuantityForm"
 import { useBookingHandler } from "./hooks/useBookingHandler";
-import { BookingService } from "./services/bookingService";
+import { BookingService } from "./services/BookingService"
 
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const { booking, setInput } = useBookingHandler();
     const formComponents = [
-        <AddressForm inputs={{ ...booking.address }} setInput={setInput} />,
-        <DateForm inputs={{ ...booking.date }} setInput={setInput} />,
+        <AddressForm inputs={{ ...booking.location }} setInput={setInput} />,
+        <DateForm inputs={{ ...booking.schedule }} setInput={setInput} />,
         <QuantityForm inputs={{ ...booking.quantity }} setInput={setInput} />];
     const COUNT = formComponents.length;
     const GAP = 4;
@@ -21,8 +21,8 @@ export default function Booking() {
 
     const submitHandler = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const response = await BookingService.createBooking(booking);
-        // use 
+        const response = await BookingService.create(booking);
+        console.log(response);
         console.log("submit")
     }
 

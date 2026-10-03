@@ -5,10 +5,10 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     // change this to a GUID
     private readonly string _userId;
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserIdService userIdService) :
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHelperService helper) :
         base(options)
     {
-        _userId = userIdService.GetUserId();
+        _userId = helper.GetUserId();
     }
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
@@ -117,7 +117,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("schedule_pkey");
 
             entity.ToTable("schedule", "booking");
-            entity.Property(e => e.StartDate).HasColumnType("date");
+            entity.Property(e => e.Date).HasColumnType("date");
             entity.Property(e => e.Frequency).HasColumnName("frequency");
         });
 

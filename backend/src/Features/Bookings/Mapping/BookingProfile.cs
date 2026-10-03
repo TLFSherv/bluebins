@@ -11,6 +11,8 @@ public class BookingProfile : Profile
         CreateMap<UserProfileRequest, UserProfile>();
 
         CreateMap<Booking, BookingView>();
+        CreateMap<UserProfile, UserBookingView>()
+        .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
         CreateMap<Location, LocationView>();
         CreateMap<Schedule, ScheduleView>();
         CreateMap<Recycling, RecyclingView>()

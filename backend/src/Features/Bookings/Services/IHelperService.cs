@@ -1,4 +1,4 @@
-public interface IUserIdService
+public interface IHelperService
 {
     public string GetUserId();
 }

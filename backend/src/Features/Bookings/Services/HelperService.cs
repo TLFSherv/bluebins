@@ -1,9 +1,9 @@
 using System.Security.Claims;
 
-public class UserIdService : IUserIdService
+public class HelperService : IHelperService
 {
     private readonly IHttpContextAccessor _httpAccessor;
-    public UserIdService(IHttpContextAccessor httpAccessor)
+    public HelperService(IHttpContextAccessor httpAccessor)
     {
         _httpAccessor = httpAccessor;
     }

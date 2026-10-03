@@ -1,8 +1,8 @@
-import { type CardData, type Date } from "../types/types";
+import { type CardData, type Schedule } from "../types/types";
 import { WEEKDAYS, MONTHS } from "../types/types";
 
 export default function WeeklyCalendar({ inputs, setInput }:
-    { inputs: Date, setInput: (input: Date) => void }) {
+    { inputs: Schedule, setInput: (input: Schedule) => void }) {
     const start = new Date();
     // automatically adjusts for edge cases like shorter months
     const newDate = new Date()
@@ -31,13 +31,14 @@ export default function WeeklyCalendar({ inputs, setInput }:
     }
     const handleChange = (card: CardData) => {
         setInput({
-            type: "date",
+            type: "schedule",
             date: card.date,
-            frequency: inputs.frequency
+            frequency: inputs.frequency,
+            makeDefault: inputs.makeDefault,
         });
     }
     return (
-        <div className="w-full" >
+        <div className="w-full space-y-4" >
             <div className="border-2 border-[#4AA5F6] rounded-xl bg-[#D9D9D9] p-1 flex gap-x-2 overflow-x-scroll">
                 {dayCards.map((card, key) =>
                     <div key={key} onClick={() => handleChange(card)}
@@ -49,6 +50,16 @@ export default function WeeklyCalendar({ inputs, setInput }:
                         </ol>
                     </div>
                 )}
+            </div>
+            <div className="flex justify-end space-x-2 text-sm">
+                <input type="checkbox" name="makeDefault" value={inputs.makeDefault}
+                    onChange={e => setInput({
+                        ...inputs,
+                        makeDefault: Number.parseInt(e.target.value) == 0 ? 1 : 0
+                    })} />
+                <label>
+                    Make my default
+                </label>
             </div>
         </div>
     )

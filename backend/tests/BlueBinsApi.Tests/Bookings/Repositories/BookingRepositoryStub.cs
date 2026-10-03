@@ -2,10 +2,6 @@ using Moq;
 
 public class BookingRepositoryStub : IBookingRepository
 {
-    public Task<int> Add(BookingRequest bookingRequest)
-    {
-        return Task.FromResult(1);
-    }
     public async Task<TId> Add<TRequest, TEntity, TId>(TRequest requestDto)
         where TEntity : class, IEntity<TId>
     {
@@ -24,7 +20,10 @@ public class BookingRepositoryStub : IBookingRepository
         throw new NotSupportedException($"Type {typeof(TId).Name} is not supported");
     }
 
-
+    public Task<int> Add(string userId, BookingRequest bookingRequest)
+    {
+        return Task.FromResult(1);
+    }
 
     public async Task<TResult?> Get<TId, TEntity, TResult>(TId id)
         where TEntity : class, IEntity<TId>
@@ -43,7 +42,7 @@ public class BookingRepositoryStub : IBookingRepository
             var booking = new BookingView()
             {
                 Status = BookingStatus.Scheduled,
-                Schedule = new() { StartDate = new DateOnly(2026, 8, 20), IsDefault = false },
+                Schedule = new() { Date = new DateOnly(2026, 8, 20), IsDefault = false },
                 Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
                 Recycling = new() { BookingId = mockId, NumberOfBags = 2, RecyclingItems = recyclingItems },
                 DateCreated = DateTime.Today,
@@ -54,6 +53,11 @@ public class BookingRepositoryStub : IBookingRepository
         return null;
     }
 
+    public Task<UserBookingView> GetUserBooking(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<TId> Update<TId, TRequest, TEntity>(TRequest request)
         where TEntity : class, IEntity<TId>
         where TRequest : class, IRequest<TId>
@@ -61,4 +65,8 @@ public class BookingRepositoryStub : IBookingRepository
         throw new NotImplementedException();
     }
 
+    public Task<int> Update(BookingRequest bookingRequest)
+    {
+        throw new NotImplementedException();
+    }
 }

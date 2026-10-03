@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 public class RepositoryTests : IntegrationTestBase
 {
@@ -25,7 +26,7 @@ public class RepositoryTests : IntegrationTestBase
         {
 
             Status = BookingStatus.Scheduled,
-            Schedule = new() { StartDate = new DateOnly(2026, 10, 2), IsDefault = false },
+            Schedule = new() { Date = new DateOnly(2026, 10, 2), IsDefault = false },
             DateCreated = DateTime.Today,
             Location = new()
             {
@@ -83,7 +84,7 @@ public class RepositoryTests : IntegrationTestBase
                     new() {RecyclingId=1, MaterialType=MaterialTypes.tin, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
                 }
         };
-        Schedule schedule = new() { StartDate = new DateOnly(2026, 10, 2) };
+        Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
         Booking booking = new(user, recycling, location, schedule);
 
         context.Add(booking);
@@ -102,26 +103,22 @@ public class RepositoryTests : IntegrationTestBase
 
     public static IEnumerable<object[]> AddUserBookingData()
     {
-        UserProfile user = new UserProfile { Id = "123456" };
         LocationRequest location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
-        RecyclingRequest recycling = new()
+        QuantityRequest quantity = new()
         {
-            Id = 1,
             NumberOfBags = 2,
-            RecyclingItems = new()
+            MaterialQuantities = new()
             {
-                new() {MaterialType=MaterialTypes.aluminium, Quantity = 6},
-                new() {MaterialType=MaterialTypes.glass, Quantity = 3},
-                new() {MaterialType=MaterialTypes.tin, Quantity = 8},
+                {MaterialTypes.aluminium, 6},
+                {MaterialTypes.glass, 3},
+                {MaterialTypes.tin, 8},
             }
         };
-
-
-        ScheduleRequest schedule1 = new() { Id = 1, StartDate = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
-        ScheduleRequest schedule2 = new() { Id = 1, StartDate = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
-        BookingRequest request1 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule1 };
-        BookingRequest request2 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule1 };
-        BookingRequest request3 = new() { UserProfile = user, Location = location, Recycling = recycling, Schedule = schedule2 };
+        ScheduleRequest schedule1 = new() { Id = 1, Date = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
+        ScheduleRequest schedule2 = new() { Id = 1, Date = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
+        CreateBookingRequest request1 = new() { Location = location, Quantity = quantity, Schedule = schedule1 };
+        CreateBookingRequest request2 = new() { Location = location, Quantity = quantity, Schedule = schedule1 };
+        CreateBookingRequest request3 = new() { Location = location, Quantity = quantity, Schedule = schedule2 };
         yield return new object[] { request1 }; // request with no schedule
         yield return new object[] { request2 }; // request with existing schedule
         yield return new object[] { request3 }; // request with new schedule
@@ -130,17 +127,21 @@ public class RepositoryTests : IntegrationTestBase
     [Theory]
     [MemberData(nameof(AddUserBookingData))]
     //  This tests that the AddUserBooking method successfully adds bookings
-    public async Task AddUserBooking_ReturnsCorrectBookingId(BookingRequest request)
+    public async Task AddUserBooking_ReturnsCorrectBookingId(CreateBookingRequest request)
     {
         context.Database.EnsureCreated();
         // Arrange
         UserProfile user = new() { Id = "123456" };
         context.Add(user);
         context.SaveChanges();
-
+        // Helper service mock
+        var helperService = new Mock<IHelperService>();
+        helperService.Setup(x => x.GetUserId()).Returns("123456");
+        // Booking repository mock
         var repository = new BookingRepository(context, _mapper);
+        var service = new BookingService(helperService.Object, repository);
         // Act
-        var result = await repository.Add(request);
+        var result = await service.AddUserBooking(request);
         Assert.IsType<int>(result);
         var booking = context.Bookings
         .Include(x => x.Location)
@@ -151,10 +152,9 @@ public class RepositoryTests : IntegrationTestBase
 
         Assert.IsType<Booking>(booking);
         // Assert
-        Assert.Equal(request.Schedule.StartDate, booking.Schedule.StartDate);
+        Assert.Equal(request.Schedule.Date, booking.Schedule.Date);
         Assert.Equal(request.Location.Address, booking.Location!.Address);
         Assert.Equal(request.Schedule?.Frequency, booking.Schedule?.Frequency);
-        Assert.Equal(request.Recycling?.RecyclingItems?.Count(), booking.Recycling.RecyclingItems?.Count());
-
+        Assert.Equal(request.Quantity.NumberOfBags, booking.Recycling.NumberOfBags);
     }
 }

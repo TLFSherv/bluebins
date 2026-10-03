@@ -16,9 +16,9 @@ public class IntegrationTestBase : IClassFixture<WebApplicationFactory<Program>>
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
         .UseSqlite(connection)
         .Options;
-        var userIdService = new Mock<IUserIdService>();
-        userIdService.Setup(x => x.GetUserId()).Returns("123456");
-        context = new ApplicationDbContext(options, userIdService.Object);
+        var helperService = new Mock<IHelperService>();
+        helperService.Setup(x => x.GetUserId()).Returns("123456");
+        context = new ApplicationDbContext(options, helperService.Object);
     }
 
     public void Dispose()

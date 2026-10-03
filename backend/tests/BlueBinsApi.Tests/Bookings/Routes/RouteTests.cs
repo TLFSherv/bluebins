@@ -10,25 +10,23 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     }
     public static IEnumerable<object[]> GetAddBookingData()
     {
-        var recyclingItemRequests = new List<RecyclingItemRequest>()
+        var materialQuantities = new Dictionary<MaterialTypes, int>()
         {
-            new() {MaterialType=MaterialTypes.aluminium, Quantity = 3},
-            new() {MaterialType=MaterialTypes.glass, Quantity=2},
-            new() {MaterialType=MaterialTypes.glass, Quantity=2},
+            {MaterialTypes.aluminium, 3} ,
+            {MaterialTypes.glass, 2},
+            {MaterialTypes.tin, 2},
         };
-        BookingRequest request1 = new()
+        CreateBookingRequest request1 = new()
         {
-            UserProfile = new() { Id = "123456" },
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            Schedule = new() { StartDate = new DateOnly(2026, 10, 2), MakeDefault = false },
-            Recycling = new() { NumberOfBags = 2, RecyclingItems = recyclingItemRequests }
+            Schedule = new() { Date = new DateOnly(2026, 10, 4), MakeDefault = false },
+            Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
-        BookingRequest request2 = new()
+        CreateBookingRequest request2 = new()
         {
-            UserProfile = new() { Id = "123456" },
-            Schedule = new() { StartDate = new DateOnly(2026, 10, 2) },
+            Schedule = new() { Date = new DateOnly(2026, 10, 4) },
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parsih", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            Recycling = new() { NumberOfBags = 2, RecyclingItems = recyclingItemRequests }
+            Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         yield return new object[] { request1, HttpStatusCode.Created, 1 };
         yield return new object[] { request2, HttpStatusCode.BadRequest }; // Latitude and Longitude in Location should fail validation
@@ -36,7 +34,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
 
     [Theory]
     [MemberData(nameof(GetAddBookingData))]
-    public async Task AddBookingRoute(BookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
+    public async Task AddBookingRoute(CreateBookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
     {
         // Arrange
         HttpClient client = _fixture.CreateClient();
@@ -62,7 +60,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         var booking = new BookingView()
         {
             Status = BookingStatus.Scheduled,
-            Schedule = new() { StartDate = new DateOnly(2026, 8, 20) },
+            Schedule = new() { Date = new DateOnly(2026, 8, 20) },
             DateCreated = DateTime.Today,
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Recycling = new() { BookingId = 1, NumberOfBags = 2, RecyclingItems = recyclingItems }

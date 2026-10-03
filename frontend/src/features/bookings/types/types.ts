@@ -13,7 +13,7 @@ export const LocationSchema = z.object({
 })
 
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"] as const;
+export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"] as const;
 export const FREQUENCY = ["Weekly", "Biweekly", "Triweekly", "Monthly"] as const;
 
 // Validates strictly "YYYY-MM-DD"

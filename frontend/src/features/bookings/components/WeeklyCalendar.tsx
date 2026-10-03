@@ -25,7 +25,7 @@ export default function WeeklyCalendar({ inputs, setInput }:
         isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
 
         dayCards.push({
-            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth() - 1], start.getFullYear()],
+            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth()], start.getFullYear()],
             active: isActive
         });
     }

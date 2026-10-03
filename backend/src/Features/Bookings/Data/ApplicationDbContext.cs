@@ -63,6 +63,10 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasDefaultValue(BookingStatus.Scheduled)
             .HasColumnName("status");
             entity.Property(e => e.DateCreated)
+            .HasConversion(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+            )
             // .HasDefaultValueSql("now()")
             .HasColumnName("date_created");
             entity.Property(e => e.DateModified)
@@ -117,12 +121,13 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("schedule_pkey");
 
             entity.ToTable("schedule", "booking");
-            entity.Property(e => e.Date).HasColumnType("date");
+            entity.Property(e => e.Date);
             entity.Property(e => e.Frequency).HasColumnName("frequency");
         });
 
         modelBuilder.Entity<Recycling>(entity =>
         {
+            entity.ToTable("recycling", "booking");
             entity.HasKey(e => e.Id).HasName("recycling_item_pkey");
 
             entity.Property(e => e.Id).HasColumnName("booking_id");
@@ -130,8 +135,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity
             .HasMany(r => r.RecyclingItems) // recycling has many recycling items
             .WithOne()                          // a recycling item is only in one recycling
-            .HasForeignKey(c => c.RecyclingId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .HasForeignKey(c => c.RecyclingId);
         });
         modelBuilder.Entity<RecyclingItem>(entity =>
         {

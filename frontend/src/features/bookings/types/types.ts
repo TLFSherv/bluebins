@@ -14,7 +14,7 @@ export const LocationSchema = z.object({
 
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"] as const;
-export const FREQUENCY = ["Weekly", "Biweekly", "Triweekly", "Monthly"] as const;
+export const FREQUENCY = ["Once", "Weekly", "Biweekly", "Triweekly", "Monthly"] as const;
 
 // Validates strictly "YYYY-MM-DD"
 const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {

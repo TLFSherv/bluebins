@@ -16,7 +16,7 @@ const initBooking: Booking = {
         type: "schedule",
         displayDate: ["Mon", 1, "Oct", 2026],
         date: "2026-10-01",
-        frequency: "Weekly",
+        frequency: "Once",
         makeDefault: false
     },
     quantity: {

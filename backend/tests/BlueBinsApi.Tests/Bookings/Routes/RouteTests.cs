@@ -19,13 +19,13 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         CreateBookingRequest request1 = new()
         {
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            Schedule = new() { Date = new DateOnly(2026, 10, 4), MakeDefault = false },
+            Schedule = new() { Date = new DateOnly(2026, 10, 10), MakeDefault = false },
             Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         CreateBookingRequest request2 = new()
         {
             Schedule = new() { Date = new DateOnly(2026, 10, 4) },
-            Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parsih", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
+            Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         yield return new object[] { request1, HttpStatusCode.Created, 1 };
@@ -39,7 +39,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         HttpClient client = _fixture.CreateClient();
         // Act
-        var result = await client.PostAsync("/booking", JsonContent.Create(req));
+        var result = await client.PostAsync("/api/booking", JsonContent.Create(req));
         // Assert
         Assert.Equal(httpStatusCode, result.StatusCode);
         if (expectedValue != null)
@@ -76,7 +76,7 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         HttpClient client = _fixture.CreateClient();
         // Act
-        var result = await client.GetAsync($"/booking/{bookingId}");
+        var result = await client.GetAsync($"/api/booking/{bookingId}");
         // Assert
         if (expectedResult is null)
         {

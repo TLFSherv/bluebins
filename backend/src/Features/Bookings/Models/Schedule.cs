@@ -10,14 +10,10 @@ public class Schedule : IEntity<int>
     public DateOnly CollectionDate => GetCollectionDate();
     private DateOnly GetCollectionDate()
     {
-        if (Frequency is null) return Date;
+        if (Frequency is null || Frequency is global::Frequency.Once) return Date;
         DateOnly start = Date;
         DateOnly end = new DateOnly();
-        int numOfDays = 7;
-        if (Frequency == global::Frequency.Biweekly)
-            numOfDays = 14;
-        else if (Frequency == global::Frequency.Triweekly)
-            numOfDays = 21;
+        int numOfDays = (int)Frequency.Value * 7;
         while (start <= end)
         {
             if (Frequency == global::Frequency.Monthly)
@@ -36,6 +32,7 @@ public class Schedule : IEntity<int>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Frequency
 {
+    Once = 0,
     Weekly = 1,
     Biweekly = 2,
     Triweekly = 3,

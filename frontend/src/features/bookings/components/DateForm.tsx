@@ -1,8 +1,16 @@
 import type { Schedule, FREQUENCY } from "../types/types";
 import WeeklyCalendar from "./WeeklyCalendar";
+
 export default function DateForm({ inputs, setInput }:
     { inputs: Schedule, setInput: (input: Schedule) => void }) {
-    const radioLabels: (typeof FREQUENCY[number])[] = ["weekly", "bi-weekly", "tri-weekly", "monthly"];
+    const radioLabels: typeof FREQUENCY[number][] = ["Once", "Weekly", "Biweekly", "Triweekly", "Monthly"];
+    const radioMap = {
+        Once: "once",
+        Weekly: "weekly",
+        Biweekly: "bi-weekly",
+        Triweekly: "tri-weekly",
+        Monthly: "monthly"
+    };
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => {
         var value = e.target.value as typeof FREQUENCY[number];
         setInput({ ...inputs, frequency: value });
@@ -18,7 +26,7 @@ export default function DateForm({ inputs, setInput }:
                     className="border border-[#4AA5F6] rounded-lg block mx-auto text-center"
                     onChange={e => handleChange(e)}>
                     {radioLabels.map(label => (
-                        <option value={label}>{label}</option>
+                        <option value={label}>{radioMap[label]}</option>
                     ))}
                 </select>
             </div>

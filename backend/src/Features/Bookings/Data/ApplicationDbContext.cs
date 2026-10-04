@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
@@ -47,6 +48,10 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<Booking>(entity =>
         {
+            var utcConverter = new ValueConverter<DateTime, DateTime>(
+                toDb => toDb,
+                fromDb =>
+                    DateTime.SpecifyKind(fromDb, DateTimeKind.Utc));
             // add global query filter so users can only interact with their bookings
             entity.HasQueryFilter(x => x.UserId == _userId);
 
@@ -63,10 +68,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasDefaultValue(BookingStatus.Scheduled)
             .HasColumnName("status");
             entity.Property(e => e.DateCreated)
-            .HasConversion(
-                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
-            )
+            .HasConversion(utcConverter)
             // .HasDefaultValueSql("now()")
             .HasColumnName("date_created");
             entity.Property(e => e.DateModified)

@@ -14,10 +14,10 @@ export default function WeeklyCalendar({ inputs, setInput }:
 
     const dayCards: CardData[] = [];
 
-    const frequencyGaps = { "Weekly": 7, "Biweekly": 14, "Triweekly": 21, "Monthly": 30 };
+    const frequencyGaps = { "Once": numOfDays + 1, "Weekly": 7, "Biweekly": 14, "Triweekly": 21, "Monthly": numOfDays };
     let cardNum = -1;
     let isActive = false;
-    for (let i = 0; i < numOfDays; i++) {
+    for (let i = 0; i < numOfDays - 1; i++) {
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active

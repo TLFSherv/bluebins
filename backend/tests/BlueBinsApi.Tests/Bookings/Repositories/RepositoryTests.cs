@@ -89,7 +89,7 @@ public class RepositoryTests : IntegrationTestBase
 
         context.Add(booking);
         context.SaveChanges();
-        var test = booking;
+
         var repository = new BookingRepository(context, _mapper);
         // Act
         var result = await repository.Get<int, Booking, BookingView>(bookingId);

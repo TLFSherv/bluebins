@@ -78,6 +78,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddBookingValidator>(ServiceLifetime.Singleton);
 builder.Services.AddScoped<IHelperService, HelperService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 // add custom middleware for catching errors 

@@ -1,28 +1,6 @@
-import type { IAuthService, AuthError } from "../types/AuthTypes"
+import type { IAuthService, AuthError, AuthResponse } from "../types/AuthTypes"
+import { SignInSchema, SignUpSchema } from "../types/AuthTypes"
 import { z } from 'zod'
-
-const SignInSchema = z.object({
-    email: z.email("Please enter a valid email address"),
-    password: z.string("Not a string")
-        .min(6, "Passwords must be at least 6 characters")
-        .max(24, "Password is too long")
-});
-
-const SignUpSchema = z.object({
-    email: z.email("Please enter a valid email address"),
-    password: z.string("Not a string")
-        .min(6, "Passwords must be at least 6 characters")
-        .max(24, "Password is too long")
-    ,
-    confirmPassword: z.string("Not a string")
-        .min(6, "Passwords must be at least 6 characters")
-        .max(24, "Password is too long")
-}).refine((data) => data.password == data.confirmPassword, {
-    message: "Password and confirm password must be the same",
-    path: ["confirmPassword"]
-})
-
-
 
 const parseError = (errorData: any): AuthError => {
     const error: AuthError = { email: [], password: [], other: [] };
@@ -40,7 +18,7 @@ const parseError = (errorData: any): AuthError => {
 
 export const authService: IAuthService = {
     backendUrl: `${import.meta.env.VITE_SERVER_URL}/account`,
-    async signIn(_, formData) {
+    async signIn(_, formData): Promise<AuthResponse> {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -56,7 +34,7 @@ export const authService: IAuthService = {
                     error: {
                         email: zodError.fieldErrors.email ?? [],
                         password: zodError.fieldErrors.password ?? [],
-                        other: []
+                        other: [],
                     }
                 }
             }
@@ -88,7 +66,6 @@ export const authService: IAuthService = {
             return {
                 success: true,
                 message: "Signed in successfully",
-                error: null
             };
 
         } catch (error: any) {
@@ -98,12 +75,11 @@ export const authService: IAuthService = {
             return {
                 success: false,
                 message: error.message,
-                error: null
             }
         }
 
     },
-    async signUp(_, formData) {
+    async signUp(_, formData): Promise<AuthResponse> {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -127,7 +103,7 @@ export const authService: IAuthService = {
                 }
             }
 
-            const response = await fetch(`${this.backendUrl}/register?useCookies=true`, {
+            const response = await fetch(`${this.backendUrl}/signup?useCookies=true`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "application/json"
@@ -156,7 +132,6 @@ export const authService: IAuthService = {
                 success: true,
                 data: request.email,
                 message: "Signed up succesfully",
-                error: null
             };
 
         } catch (error: any) {
@@ -166,7 +141,6 @@ export const authService: IAuthService = {
             return {
                 success: false,
                 message: error.message,
-                error: null
             }
         }
     },

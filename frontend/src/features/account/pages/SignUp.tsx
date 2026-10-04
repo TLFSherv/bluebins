@@ -80,7 +80,7 @@ function VerifyEmailButton({ email }: { email: string }) {
             <button type="button" className="form-btn" onClick={() => authService.resendConfirmationEmail(email)}>
                 Resend
             </button>
-            <Link to={"/portal/dashboard"}>
+            <Link to={"/dashboard"}>
                 <button type="button" className="form-btn bg-black flex justify-center items-center space-x-2">
                     <span>Next</span>
                     <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,12 +36,25 @@ public static class AccountRoutes
 
                 return Results.Challenge(properties, ["Google"]);
             });
+            // Add this route
+            accountApi.MapPost("/signup", async ([FromBody] RegisterRequest request, [FromServices] IAuthService service) =>
+            {
+                try
+                {
+                    var result = await service.RegisterUser(request);
+                    return Results.Ok(result);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { message = ex.Message });
+                }
+            });
 
             accountApi.MapGet("/login/google/callback", async (
                 [FromQuery] string returnUrl,
                 SignInManager<ApplicationUser> signInManager,
                 UserManager<ApplicationUser> userManager,
-                HttpContext context) =>
+                [FromServices] IAuthService service) =>
             {
                 var info = await signInManager.GetExternalLoginInfoAsync();
                 if (info == null)
@@ -68,23 +82,20 @@ public static class AccountRoutes
                     return Results.BadRequest("Email claim not received from Google.");
                 }
 
+                await service.RegisterUser(new(Email: email, Password: null));
+
                 var user = new ApplicationUser { UserName = email, Email = email };
-                var createResult = await userManager.CreateAsync(user);
 
-                if (createResult.Succeeded)
+                // Link the Google account login token to the local Identity database user
+                var loginResult = await userManager.AddLoginAsync(user, info);
+                if (loginResult.Succeeded)
                 {
-                    // Link the Google account login token to the local Identity database user
-                    var loginResult = await userManager.AddLoginAsync(user, info);
-                    if (loginResult.Succeeded)
-                    {
-                        // Establish the local application cookie session
-                        await signInManager.SignInAsync(user, isPersistent: true);
+                    // Establish the local application cookie session
+                    await signInManager.SignInAsync(user, isPersistent: true);
 
-                        // Return clean redirect execution object
-                        return Results.Redirect(finalTarget);
-                    }
+                    // Return clean redirect execution object
+                    return Results.Redirect(finalTarget);
                 }
-
                 return Results.BadRequest("Failed to complete local account creation or association.");
 
             }).WithName("GoogleLoginCallback");

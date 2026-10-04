@@ -2,9 +2,9 @@ import { z } from 'zod'
 
 export const LocationSchema = z.object({
     type: z.literal("location").readonly(),
-    address: z.string("Not a string"),
+    address: z.string("Not a string").nonoptional("Please enter a address"),
     mapsId: z.string().optional(),
-    postcode: z.string().length(4),
+    postcode: z.string().length(4, "Please add a 4 character postcode."),
     parish: z.literal(["st georges", "hamilton parish", "smiths", "st davids", "pempbroke", "devonshire", "sandys", "warwick", "somerset"]),
     details: z.string().optional(),
     latitude: z.number(),
@@ -18,7 +18,7 @@ export const FREQUENCY = ["Once", "Weekly", "Biweekly", "Triweekly", "Monthly"] 
 
 // Validates strictly "YYYY-MM-DD"
 const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'Date must be in YYYY-MM-DD format',
+    message: 'Please select a date.',
 });
 
 export const ScheduleSchema = z.object({

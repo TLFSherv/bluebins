@@ -49,7 +49,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Booking>(entity =>
         {
             var utcConverter = new ValueConverter<DateTime, DateTime>(
-                toDb => toDb,
+                toDb => toDb.ToUniversalTime(),
                 fromDb =>
                     DateTime.SpecifyKind(fromDb, DateTimeKind.Utc));
             // add global query filter so users can only interact with their bookings

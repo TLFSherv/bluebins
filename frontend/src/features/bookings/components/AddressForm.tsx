@@ -15,11 +15,13 @@ export default function AddressForm({ inputs, setInput }: {
         const name = target.name;
         let value: string | boolean = target.value;
         if (name == "makeDefault") {
-            value = !(e as React.ChangeEvent<HTMLInputElement>).target.checked;
+            value = (e as React.ChangeEvent<HTMLInputElement>).target.checked;
+            value != value;
         }
 
         setInput({ ...inputs, [name]: value });
     }
+    console.log(makeDefault);
     return (
         <div>
             <div className="space-y-6">

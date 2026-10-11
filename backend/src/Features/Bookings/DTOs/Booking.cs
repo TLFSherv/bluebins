@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 public record CreateBookingRequest : IRequest<int>
 {
     public int Id { get; set; }
@@ -37,7 +35,7 @@ public record BookingView
     public required LocationView Location { get; set; }
     public required ScheduleView Schedule { get; set; }
     public required RecyclingView Recycling { get; set; }
-    public DateTime DateCreated { get; set; }
+    public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
 };
 

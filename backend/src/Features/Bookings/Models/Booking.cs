@@ -4,8 +4,9 @@ public class Booking : IEntity<int>
     public string UserId { get; set; }
     public int LocationId { get; set; }
     public int ScheduleId { get; set; }
-    public BookingStatus Status { get; private set; }
-    public DateTime DateCreated { get; set; }
+    public BookingStatus Status { get; set; } = BookingStatus.Draft;
+    // Set when added to the database
+    public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
     public UserProfile UserProfile { get; set; }
     public Location Location { get; private set; }
@@ -43,8 +44,6 @@ public class Booking : IEntity<int>
         // Override the users default schedule if schedule is provided
         Schedule = (schedule ?? defaultSchedule)!;
         Recycling = recycling;
-        Status = BookingStatus.Scheduled;
-        DateCreated = DateTime.Today;
     }
 
     // Changing the location requires a different collection date

@@ -14,8 +14,8 @@ public record LocationRequest : IRequest<int>
 public record LocationView
 {
     public string? MapsId { get; set; }
-    public required string Address { get; set; }
-    public required string Parish { get; set; }
+    public string Address { get; set; } = string.Empty;
+    public string Parish { get; set; } = string.Empty;
     public string? Postcode { get; set; }
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }

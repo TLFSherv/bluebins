@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -27,7 +28,7 @@ public class RepositoryTests : IntegrationTestBase
 
             Status = BookingStatus.Scheduled,
             Schedule = new() { Date = new DateOnly(2026, 10, 2), IsDefault = false },
-            DateCreated = DateTime.Today,
+            DateCreated = DateTime.Today.AsUtc(),
             Location = new()
             {
                 MapsId = "test",
@@ -85,11 +86,14 @@ public class RepositoryTests : IntegrationTestBase
                 }
         };
         Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
-        Booking booking = new(user, recycling, location, schedule);
+        Booking booking = new(user, recycling, location, schedule)
+        {
+            Status = BookingStatus.Scheduled,
+            DateCreated = DateTime.Today.AsUtc()
+        };
 
         context.Add(booking);
         context.SaveChanges();
-
         var repository = new BookingRepository(context, _mapper);
         // Act
         var result = await repository.Get<int, Booking, BookingView>(bookingId);
@@ -156,5 +160,121 @@ public class RepositoryTests : IntegrationTestBase
         Assert.Equal(request.Location.Address, booking.Location!.Address);
         Assert.Equal(request.Schedule?.Frequency, booking.Schedule?.Frequency);
         Assert.Equal(request.Quantity.NumberOfBags, booking.Recycling.NumberOfBags);
+    }
+
+    public static IEnumerable<object[]> GetBookingData()
+    {
+        BookingView view1 = new()
+        {
+            Status = BookingStatus.Scheduled,
+            Location = new()
+            {
+                MapsId = "test",
+                Address = "test_address",
+                Parish = "test_parish",
+                Postcode = "test_postcode",
+                Latitude = 0,
+                Longitude = 0
+            },
+            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
+            Recycling = new()
+            {
+                BookingId = 1,
+                NumberOfBags = 2,
+                RecyclingItems = new List<RecyclingItemView>
+                {
+                    new() {MaterialType=MaterialTypes.aluminium, Quantity=0, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                    new() {MaterialType=MaterialTypes.glass, Quantity=0, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                    new() {MaterialType=MaterialTypes.tin,Quantity=0, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+                }
+
+            },
+            DateCreated = DateTime.Today.AsUtc()
+        };
+        BookingView view2 = new()
+        {
+            Status = BookingStatus.Draft,
+            Location = new()
+            {
+                MapsId = "test",
+                Address = "test_address",
+                Parish = "test_parish",
+                Postcode = "test_postcode",
+                Latitude = 0,
+                Longitude = 0
+            },
+            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
+            Recycling = new()
+        };
+        BookingView view3 = new()
+        {
+            Status = BookingStatus.Draft,
+            Location = new(),
+            Schedule = new(),
+            Recycling = new()
+        };
+        // User has an active booking
+        yield return new object[] { "1", view1 };
+        // User just has default data
+        yield return new object[] { "2", view2 };
+        // user has no booking and no default data
+        yield return new object[] { "3", view3 };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetBookingData))]
+    public async Task GetBooking_ReturnsBookingView(string userId, BookingView expectedResult)
+    {
+        context.Database.EnsureCreated();
+        // Arrange
+        UserProfile user1 = new UserProfile { Id = "1" };
+        Location location = new()
+        {
+            Id = 1,
+            MapsId = "test",
+            Address = "test_address",
+            Parish = "test_parish",
+            Postcode = "test_postcode",
+            Latitude = 0,
+            Longitude = 0
+        };
+
+        Recycling recycling = new()
+        {
+            Id = 1,
+            NumberOfBags = 2,
+            RecyclingItems = new List<RecyclingItem>
+                {
+                    new() {MaterialType=MaterialTypes.aluminium, WeightKg=0.15m, VolumeLiters=0.3m, ContaminationPercent=0.1m},
+                    new() {MaterialType=MaterialTypes.glass, WeightKg=0.2m, VolumeLiters=0.1m, ContaminationPercent=0.3m},
+                    new() {MaterialType=MaterialTypes.tin, WeightKg=0.1m, VolumeLiters=0.1m, ContaminationPercent=0.23m},
+                }
+        };
+        Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
+        Booking booking = new(user1, recycling, location, schedule)
+        {
+            Status = BookingStatus.Scheduled,
+            DateCreated = DateTime.Today.AsUtc()
+        };
+
+        UserProfile user2 = new()
+        {
+            Id = "2",
+            DefaultLocation = location,
+            DefaultSchedule = schedule
+        };
+
+        UserProfile user3 = new() { Id = "3" };
+        context.AddRange(new List<UserProfile> { user1, user2, user3 });
+        context.Add(booking);
+        context.SaveChanges();
+
+        // Act
+        // Booking repository mock
+        var repository = new BookingRepository(context, _mapper);
+        var result = await repository.GetUserBooking(userId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResult);
     }
 }

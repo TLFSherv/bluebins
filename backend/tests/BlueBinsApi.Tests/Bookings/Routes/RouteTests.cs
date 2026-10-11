@@ -19,12 +19,12 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         CreateBookingRequest request1 = new()
         {
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            Schedule = new() { Date = new DateOnly(2026, 10, 10), MakeDefault = false },
+            Schedule = new() { Date = new DateOnly(2026, 11, 1), MakeDefault = false },
             Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         CreateBookingRequest request2 = new()
         {
-            Schedule = new() { Date = new DateOnly(2026, 10, 4) },
+            Schedule = new() { Date = new DateOnly(2026, 11, 1) },
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Quantity = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };

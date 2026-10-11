@@ -2,6 +2,7 @@ public class RecyclingItem
 {
     public int RecyclingId { get; set; }
     public MaterialTypes MaterialType { get; set; }
+    public int Quantity { get; set; }
     public decimal WeightKg { get; set; }
     public decimal VolumeLiters { get; set; }
     public decimal ContaminationPercent { get; set; } // add default

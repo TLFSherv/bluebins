@@ -21,7 +21,6 @@ export default function AddressForm({ inputs, setInput }: {
 
         setInput({ ...inputs, [name]: value });
     }
-    console.log(makeDefault);
     return (
         <div>
             <div className="space-y-6">

@@ -6,23 +6,42 @@ public class BookingRepository : Repository, IBookingRepository
     public BookingRepository(ApplicationDbContext context, IMapper mapper) : base(context, mapper)
     { }
     // Sends users default booking information, and their existing booking if it exists
-    public async Task<UserBookingView> GetUserBooking(string userId)
+    public async Task<BookingView?> GetUserBooking(string userId)
     {
-        var user = await _context.UserProfiles
+        UserProfile? userProfile = await _context.UserProfiles
         .Include(x => x.DefaultLocation)
         .Include(x => x.DefaultSchedule)
-        .Include(x => x.Bookings)
+        // there should only be one scheduled booking
+        .Include(x => x.Bookings.Where(booking => booking.Status == BookingStatus.Scheduled))
         .SingleOrDefaultAsync(x => x.Id == userId);
 
-        UserBookingView userBooking = _mapper.Map<UserBookingView>(user);
-        var mostRecentBooking = user?.MostRecentBooking;
-        // Send the users active booking if the booking is active
-        if (mostRecentBooking != null &&
-         mostRecentBooking?.Status == BookingStatus.Scheduled)
+        if (userProfile == null) return null;
+        // Three possibilities: 
+        // 1. User has an active booking and in that case just return it
+        // 2. User doesn't have an active booking so return their default data
+        // 3. User doesn't have default data so return empty booking
+        Booking userBooking;
+        if (userProfile.Bookings != null && userProfile.Bookings.Any())
         {
-            userBooking.ExistingBooking = _mapper.Map<BookingView>(mostRecentBooking);
+            userBooking = userProfile.Bookings.Single();
+            return _mapper.Map<BookingView>(userBooking);
         }
-        return userBooking;
+
+        LocationView locationView = new();
+        ScheduleView scheduleView = new();
+        if (userProfile.DefaultLocation != null)
+            locationView = _mapper.Map<LocationView>(userProfile.DefaultLocation);
+        if (userProfile.DefaultSchedule != null)
+            scheduleView = _mapper.Map<ScheduleView>(userProfile.DefaultSchedule);
+
+        BookingView bookingView = new()
+        {
+            Location = locationView,
+            Schedule = scheduleView,
+            Recycling = new(),
+            Status = BookingStatus.Draft
+        };
+        return bookingView;
     }
     // Creates a new database entry and returns Id
     public async Task<int> Add(string userId, BookingRequest bookingRequest)
@@ -36,7 +55,11 @@ public class BookingRepository : Repository, IBookingRepository
         var schedule = _mapper.Map<Schedule>(bookingRequest.Schedule);
         var recycling = _mapper.Map<Recycling>(bookingRequest.Recycling);
 
-        var newBooking = new Booking(user, recycling, location, schedule);
+        var newBooking = new Booking(user, recycling, location, schedule)
+        {
+            Status = BookingStatus.Scheduled,
+            DateCreated = DateTime.Now
+        };
         _context.Add(newBooking);
         // Adjust UserProfile based on new booking
         if (bookingRequest.Schedule.MakeDefault)

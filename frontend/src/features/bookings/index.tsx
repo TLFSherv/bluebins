@@ -34,7 +34,7 @@ export default function Booking() {
                 }
             }
             toast.error(
-                (t) => (<div className="pl-2 space-y-1 relative" onClick={() => toast.dismiss(t.id)}>
+                () => (<div className="pl-2 space-y-1 relative">
                     <ul>
                         {errors.map(error => <li key={error}>{error}</li>)}
                     </ul>
@@ -43,7 +43,6 @@ export default function Booking() {
                 { id: "validation", duration: Infinity }
             )
         }
-        console.log(response);
     }
 
     return (
@@ -51,7 +50,9 @@ export default function Booking() {
             className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-8">
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}
                 className="w-1/2 h-2 bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg" />
-            <Toaster position="top-center" containerStyle={{ top: 80 }} />
+            <div onClick={() => toast.dismiss("validation")}>
+                <Toaster position="top-center" containerStyle={{ top: 80 }} />
+            </div>
             <div className="overflow-hidden w-full mx-auto">
                 <div className="flex transition-transform" style={{ transform: `translateX(${translateX}px)`, gap: `${GAP}px` }}>
                     {formComponents.map((component, i) => (

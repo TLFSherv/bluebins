@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Booking, type Location, type Quantity, type Schedule } from "../types/types";
+import { BookingService } from "../services/BookingService";
+import toast from "react-hot-toast";
 
 const initBooking: Booking = {
     location: {
@@ -38,6 +40,21 @@ const KEY_MAP = {
 
 export function useBookingHandler() {
     const [booking, setBooking] = useState<Booking>(initBooking);
+
+    useEffect(() => {
+        const getUserBooking = async () => {
+            // Check cache if current booking is there 
+            // If cache is empty get booking from api
+            const result = await BookingService.get<Booking>();
+            if (!result.success) {
+                toast.error(result.message);
+                return;
+            }
+            setBooking(result.result ?? initBooking);
+            console.log(`Successfully got user booking`);
+        }
+        getUserBooking();
+    }, [])
 
     const setInput = (input: Location | Quantity | Schedule) => {
         // Set state for the correct Booking property object

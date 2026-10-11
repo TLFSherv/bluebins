@@ -53,7 +53,7 @@ public class BookingRepositoryStub : IBookingRepository
         return null;
     }
 
-    public Task<UserBookingView> GetUserBooking(string userId)
+    public Task<BookingView?> GetUserBooking(string userId)
     {
         throw new NotImplementedException();
     }

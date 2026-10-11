@@ -29,6 +29,7 @@ public record RecyclingView
 public record RecyclingItemView
 {
     public MaterialTypes MaterialType { get; set; }
+    public int Quantity { get; set; }
     public decimal WeightKg { get; set; }
     public decimal VolumeLiters { get; set; }
     public decimal ContaminationPercent { get; set; }
@@ -61,6 +62,7 @@ public static class RecyclingExtensions
             recyclingItems.Add(new RecyclingItem
             {
                 MaterialType = item.MaterialType,
+                Quantity = item.Quantity,
                 WeightKg = weightKg,
                 VolumeLiters = 0,
                 ContaminationPercent = 0

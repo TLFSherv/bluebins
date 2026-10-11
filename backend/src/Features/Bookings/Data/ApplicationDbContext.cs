@@ -67,14 +67,17 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Status)
             .HasDefaultValue(BookingStatus.Scheduled)
             .HasColumnName("status");
+
             entity.Property(e => e.DateCreated)
             .HasConversion(utcConverter)
             // .HasDefaultValueSql("now()")
+            // .ValueGeneratedOnAddOrUpdate()
             .HasColumnName("date_created");
+
             entity.Property(e => e.DateModified)
-            .ValueGeneratedOnAddOrUpdate()
-            // .HasDefaultValueSql("now()")
-            .HasColumnName("date_modified");
+            .HasColumnName("date_modified")
+            // .HasDefaultValue("now()")
+            .ValueGeneratedOnUpdate();
 
             entity.HasOne(d => d.UserProfile) // a booking has one user
             .WithMany(d => d.Bookings)       // a user can have many bookings

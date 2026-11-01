@@ -25,7 +25,7 @@ export const BookingService: IBookingService = {
     },
     async createBooking(booking: Booking): Promise<BookingResponse<string>> {
         try {
-
+            console.log(booking);
             const { isValid, errors } = this.validateBooking(booking);
             if (!isValid) {
                 return errors as BookingResponse<string>;

@@ -9,7 +9,7 @@ public class GetBookingByIdRepoTestData : IEnumerable<object?[]>
         {
 
             Status = BookingStatus.Scheduled,
-            Schedule = new() { Date = new DateOnly(2026, 10, 2), IsDefault = false },
+            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
             DateCreated = DateTime.Today.AsUtc(),
             Location = new()
             {

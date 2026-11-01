@@ -30,6 +30,7 @@ export default function Booking() {
             var errors: string[] = [];
             for (const [_, value] of Object.entries(response.error!)) {
                 if (value != undefined) {
+                    console.log(value);
                     errors.push(...value);
                 }
             }

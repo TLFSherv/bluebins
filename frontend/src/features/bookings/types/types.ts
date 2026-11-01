@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const LocationSchema = z.object({
     type: z.literal("location").readonly(),
     address: z.string("Not a string").nonoptional("Please enter a address"),
-    mapsId: z.string().optional(),
+    mapsId: z.string().optional().nullable(),
     postcode: z.string().length(4, "Please add a 4 character postcode."),
     parish: z.literal(["st georges", "hamilton parish", "smiths", "st davids", "pempbroke", "devonshire", "sandys", "warwick", "somerset"]),
     details: z.string().optional(),

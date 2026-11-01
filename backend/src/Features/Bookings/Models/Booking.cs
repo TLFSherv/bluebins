@@ -16,6 +16,7 @@ public class Booking : IEntity<int>
     {
         Location = location ?? throw new ArgumentNullException(nameof(location));
         Schedule = schedule ?? throw new ArgumentNullException(nameof(schedule));
+        DateCreated = DateTime.UtcNow;
     }
 
     // Changing the location requires a different collection date
@@ -34,6 +35,7 @@ public class Booking : IEntity<int>
 
         Location = location;
         Schedule = schedule;
+        DateModified = DateTime.UtcNow;
     }
 
 }

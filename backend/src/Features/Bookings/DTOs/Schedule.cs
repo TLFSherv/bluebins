@@ -14,4 +14,6 @@ public record ScheduleView
     public DateOnly Date { get; set; }
     public Frequency Frequency { get; set; } = Frequency.Once;
     public bool IsDefault { get; set; }
+    // Used by the frontend to know the type of the data object
+    public string Type { get; } = "schedule";
 }

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { MATERIALS, type Quantity } from "../types/types";
+import { MATERIALS, type Recycling } from "../types/types";
 
-export default function QuantityForm({ inputs, setInput }:
+export default function RecyclingForm({ inputs, setInput }:
     {
-        inputs: Quantity,
-        setInput: (input: Quantity) => void
+        inputs: Recycling,
+        setInput: (input: Recycling) => void
     }) {
     const [isMaterialsFormVisible, setIsMaterialsFormVisible] = useState<boolean>(false);
 
@@ -27,8 +27,8 @@ export default function QuantityForm({ inputs, setInput }:
             const newValue = isClick ? parsedValue + currentQty : value;
             const validatedValue = Number.isInteger(newValue) ? Math.max(Number(newValue), 0) : newValue;
 
-            const newMaterialQuantity = { ...inputs.materialQuantities, [name]: validatedValue };
-            setInput({ ...inputs, materialQuantities: newMaterialQuantity });
+            const newMaterialRecycling = { ...inputs.materialQuantities, [name]: validatedValue };
+            setInput({ ...inputs, materialQuantities: newMaterialRecycling });
         }
     }
 
@@ -36,7 +36,7 @@ export default function QuantityForm({ inputs, setInput }:
         <div>
             <div className="space-y-6">
                 <h1 className="text-center text-3xl font-[Lato]">
-                    Quantity & Contents
+                    Recycling
                 </h1>
                 <p className="text-center text-lg"> How many bags are we collecting?</p>
             </div>
@@ -64,7 +64,7 @@ export default function QuantityForm({ inputs, setInput }:
                                 }
                             }}
                             min={1} />
-                        <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">Quantity</label>
+                        <label className="form-label bg-default -translate-y-8 text-black text-base rounded-md p-1">Recycling</label>
                     </div>
                     <button
                         name="numberOfBags"
@@ -90,14 +90,14 @@ export default function QuantityForm({ inputs, setInput }:
 
 function MaterialsForm({ inputs, handleChange }:
     {
-        inputs: Quantity,
+        inputs: Recycling,
         handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => void
     }) {
     return (
         <div className="space-y-7">
             {MATERIALS.map(material =>
             (
-                <div id={material} className="flex justify-evenly">
+                <div key={material} className="flex justify-evenly">
                     <div className="form-floating">
                         <input
                             type="number"

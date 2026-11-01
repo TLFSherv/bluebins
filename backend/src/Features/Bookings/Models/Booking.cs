@@ -1,63 +1,35 @@
 public class Booking : IEntity<int>
 {
     public int Id { get; set; }
-    public string UserId { get; set; }
+    public string UserProfileId { get; set; }
     public int LocationId { get; set; }
     public int ScheduleId { get; set; }
     public BookingStatus Status { get; set; } = BookingStatus.Draft;
-    // Set when added to the database
     public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
-    public UserProfile UserProfile { get; set; }
     public Location Location { get; private set; }
-    public Schedule Schedule { get; set; }
-    public Recycling Recycling { get; set; }
+    public Schedule Schedule { get; private set; }
+    public required Recycling Recycling { get; set; }
+    private Booking() { }
 
-    private Booking()
-    { }
-
-    public Booking(UserProfile user, Recycling recycling, Location? location, Schedule? schedule)
+    public Booking(Location location, Schedule schedule)
     {
-        // A user can only have one active booking
-        if (user.MostRecentBooking != null &&
-            user.MostRecentBooking.Status == BookingStatus.Scheduled)
-        {
-            throw new Exception("User can't have multiple active bookings");
-        }
-
-        var defaultLocation = UserProfile?.DefaultLocation;
-        if (location is null && defaultLocation is null)
-        {
-            throw new Exception("A location is required");
-        }
-
-        var defaultSchedule = UserProfile?.DefaultSchedule;
-        if (schedule is null && defaultSchedule is null)
-        {
-            throw new Exception("A schedule is required");
-        }
-
-        UserProfile = user;
-        UserId = user.Id;
-        // Override the users default location if location is provided
-        Location = (location ?? defaultLocation)!;
-        // Override the users default schedule if schedule is provided
-        Schedule = (schedule ?? defaultSchedule)!;
-        Recycling = recycling;
+        Location = location ?? throw new ArgumentNullException(nameof(location));
+        Schedule = schedule ?? throw new ArgumentNullException(nameof(schedule));
     }
 
     // Changing the location requires a different collection date
-    public void SetLocation(Location location, Schedule schedule)
+    public void ChangeLocationAndSchedule(Location location, Schedule schedule)
     {
-        if (Status != BookingStatus.Scheduled)
+        if (Status != BookingStatus.Scheduled && Status != BookingStatus.Draft)
         {
-            throw new Exception("You can't change the location of a inactive booking");
+            throw new InvalidOperationException("You can't change the location of an inactive booking");
         }
 
-        if (!string.Equals(Location.Parish, location.Parish)
+        if (!string.Equals(Location.Parish, location.Parish, StringComparison.OrdinalIgnoreCase)
         && Schedule.CollectionDate.Equals(schedule.CollectionDate))
         {
-            throw new Exception("A change of parish requires a new collection date");
+            throw new InvalidOperationException("A change of parish requires a new collection date");
         }
 
         Location = location;

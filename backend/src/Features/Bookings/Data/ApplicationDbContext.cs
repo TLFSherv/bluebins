@@ -44,6 +44,11 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey(d => d.DefaultScheduleId)
             .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasMany(d => d.Bookings)
+            .WithOne()
+            .HasForeignKey(d => d.UserProfileId)
+            .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Booking>(entity =>
@@ -53,7 +58,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 fromDb =>
                     DateTime.SpecifyKind(fromDb, DateTimeKind.Utc));
             // add global query filter so users can only interact with their bookings
-            entity.HasQueryFilter(x => x.UserId == _userId);
+            // sentity.HasQueryFilter(x => x.UserId == _userId);
 
             entity.HasKey(e => e.Id).HasName("booking_pkey");
 
@@ -61,7 +66,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Id)
             .ValueGeneratedOnAdd()
             .HasColumnName("id");
-            entity.Property(e => e.UserId).HasColumnName("user_profile_id");
+            entity.Property(e => e.UserProfileId).HasColumnName("user_profile_id");
             entity.Property(e => e.LocationId).HasColumnName("location_id");
             entity.Property(e => e.ScheduleId).HasColumnName("schedule_id");
             entity.Property(e => e.Status)
@@ -78,11 +83,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasColumnName("date_modified")
             // .HasDefaultValue("now()")
             .ValueGeneratedOnUpdate();
-
-            entity.HasOne(d => d.UserProfile) // a booking has one user
-            .WithMany(d => d.Bookings)       // a user can have many bookings
-            .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(d => d.Location) // a booking can have one location
             .WithMany()                     // a location can have many bookings
@@ -148,6 +148,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.ToTable("recycling_item", "booking");
             entity.Property(e => e.MaterialType).HasColumnName("material_type");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.WeightKg).HasColumnName("weight_kg");
             entity.Property(e => e.VolumeLiters).HasColumnName("volume_litres");
             entity.Property(e => e.ContaminationPercent).HasColumnName("contamination_percent");

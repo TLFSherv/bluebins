@@ -10,7 +10,7 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _context = context;
     }
-    public async Task<RegisterResponse> RegisterUser(RegisterRequest request)
+    public async Task<bool> RegisterUser(RegisterRequest request)
     {
         // Use an EF Core execution strategy to handle retries cleanly with transactions
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -44,7 +44,7 @@ public class AuthService : IAuthService
 
             // Commit transaction
             await transaction.CommitAsync();
-            return new RegisterResponse(identityUser.Id, identityUser.Email);
+            return true;
         }
         catch
         {

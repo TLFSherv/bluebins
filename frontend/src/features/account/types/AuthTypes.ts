@@ -45,7 +45,6 @@ export type SignUpRequest = SignInRequest & {
 };
 
 export interface IAuthService {
-    backendUrl: string
     signIn(prevState: AuthResponse, request: FormData): Promise<AuthResponse>,
     signUp(prevState: AuthResponse, request: FormData): Promise<AuthResponse>,
     signOut(navigate: (path: string) => void): void,

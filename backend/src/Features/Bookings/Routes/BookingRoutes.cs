@@ -8,55 +8,81 @@ public static class BookingRoutes
         return builder.UseEndpoints(endpoints =>
         {
             var bookingApi = endpoints.MapGroup("/api/booking")
+            .RequireAuthorization()
             .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
             .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
+
             // Get users active booking or booking template
             bookingApi.MapGet("/", async (HttpContext context, [FromServices] IBookingRepository repository) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId is null)
+                if (userId == null)
                 {
                     return Results.Unauthorized();
                 }
-                var result = await repository.GetUserBooking(userId);
+
+                var result = await repository.GetBooking(userId);
+
                 if (result is null)
                 {
-                    return Results.BadRequest();
+                    return Results.NotFound();
                 }
                 return Results.Ok(result);
             }).WithName("GetBooking");
-            // Get a booking by booking id
-            bookingApi.MapGet("/{id:int}", async ([FromRoute] int id, HttpContext context, [FromServices] IBookingRepository repository) =>
+
+            bookingApi.MapGet("/{id}", async (HttpContext context, [FromRoute] int id, [FromServices] IBookingRepository repository) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId is null)
+                if (userId == null)
                 {
                     return Results.Unauthorized();
                 }
-                var result = await repository.Get<int, Booking, BookingView>(id);
+
+                var result = await repository.GetBookingById(userId, id);
+
                 if (result is null)
                 {
-                    return Results.BadRequest();
+                    return Results.NotFound();
                 }
                 return Results.Ok(result);
             }).WithName("GetBookingById");
+
             // Create a new booking
-            bookingApi.MapPost("/", async ([FromBody] CreateBookingRequest request, HttpContext context, [FromServices] IBookingService service) =>
+            bookingApi.MapPost("/", async ([FromBody] BookingRequest request, HttpContext context, [FromServices] IBookingRepository repository) =>
             {
                 var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId is null)
+                if (userId == null)
                 {
                     return Results.Unauthorized();
                 }
 
-                var result = await service.AddUserBooking(request);
+                var result = await repository.AddBooking(userId, request);
 
                 if (result == 0)
                 {
-                    return Results.BadRequest();
+                    return Results.NotFound();
                 }
                 return Results.CreatedAtRoute("GetBookingById", routeValues: new { id = result }, value: result);
             }).WithName("AddBooking");
+
+            // Update a booking
+            bookingApi.MapPut("/", async ([FromBody] BookingRequest request, HttpContext context, [FromServices] IBookingRepository respository) =>
+            {
+                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null)
+                {
+                    return Results.Unauthorized();
+                }
+
+                var result = await respository.UpdateBooking(userId, request);
+
+                if (result == 0)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(result);
+            }).WithName("UpdateBooking");
         });
+
     }
 }

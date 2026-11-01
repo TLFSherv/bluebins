@@ -74,8 +74,6 @@ builder.Services.AddAuthentication()
 // add auto mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(BookingProfile));
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddBookingValidator>(ServiceLifetime.Singleton);
 builder.Services.AddScoped<IHelperService, HelperService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

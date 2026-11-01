@@ -69,11 +69,15 @@ public static class AccountRoutes
                     bypassTwoFactor: true);
 
                 var finalTarget = string.IsNullOrEmpty(returnUrl) ? "http://localhost:3000/" : returnUrl;
-
                 if (signInResult.Succeeded)
                 {
                     // Force an immediate response-level redirect, bypassing downstream pipeline execution
                     return Results.Redirect(finalTarget);
+                }
+                if (signInResult.IsLockedOut)
+                {
+                    // Create a lockout view
+                    return Results.Redirect("/");
                 }
 
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
@@ -81,20 +85,33 @@ public static class AccountRoutes
                 {
                     return Results.BadRequest("Email claim not received from Google.");
                 }
+                // Create the user in table AspNetUsers and UserProfile
+                var createResult = await service.RegisterUser(new(Email: email, Password: null));
 
-                await service.RegisterUser(new(Email: email, Password: null));
-
-                var user = new ApplicationUser { UserName = email, Email = email };
-
-                // Link the Google account login token to the local Identity database user
-                var loginResult = await userManager.AddLoginAsync(user, info);
-                if (loginResult.Succeeded)
+                if (createResult)
                 {
-                    // Establish the local application cookie session
-                    await signInManager.SignInAsync(user, isPersistent: true);
+                    // Link the Google account login token to the local Identity database user
+                    // by adding record in AspNetUserLogins table
+                    var user = await userManager.FindByEmailAsync(email);
+                    if (user == null)
+                    {
+                        return Results.BadRequest("User was created but could not be retrieved");
+                    }
 
-                    // Return clean redirect execution object
-                    return Results.Redirect(finalTarget);
+                    var addLoginResult = await userManager.AddLoginAsync(user, info);
+                    if (addLoginResult.Succeeded)
+                    {
+                        // Establish the local application cookie session
+                        await signInManager.SignInAsync(user, isPersistent: true);
+
+                        // Return clean redirect execution object
+                        return Results.Redirect(finalTarget);
+                    }
+                    else
+                    {
+                        var errors = string.Join(", ", addLoginResult.Errors.Select(e => e.Description));
+                        throw new InvalidOperationException($"Identity creation failed: {errors}");
+                    }
                 }
                 return Results.BadRequest("Failed to complete local account creation or association.");
 

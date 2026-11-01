@@ -1,6 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-public class AddBookingValidator : AbstractValidator<CreateBookingRequest>
+public class AddBookingValidator : AbstractValidator<BookingRequest>
 {
     public AddBookingValidator()
     {
@@ -16,8 +16,8 @@ public class AddBookingValidator : AbstractValidator<CreateBookingRequest>
         RuleFor(x => x.Schedule.Date).GreaterThan(DateOnly.FromDateTime(DateTime.Now));
 
         // validate recycling items
-        RuleFor(x => x.Quantity.NumberOfBags).GreaterThan(0);
-        RuleForEach(x => x.Quantity.MaterialQuantities).ChildRules(item =>
+        RuleFor(x => x.Recycling.NumberOfBags).GreaterThan(0);
+        RuleForEach(x => x.Recycling.MaterialQuantities).ChildRules(item =>
         {
             item.RuleFor(x => x.Key).IsInEnum();
             item.RuleFor(x => x.Value).GreaterThanOrEqualTo(0);

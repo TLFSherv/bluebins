@@ -1,5 +1,5 @@
 public interface IAuthService
 {
-    Task<RegisterResponse> RegisterUser(RegisterRequest request);
+    Task<bool> RegisterUser(RegisterRequest request);
 }
 

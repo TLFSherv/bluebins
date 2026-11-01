@@ -3,7 +3,7 @@ import { z } from "zod"
 
 export const BookingService: IBookingService = {
     backendUrl: `${import.meta.env.VITE_SERVER_URL}/booking`,
-    validate(booking: Booking): ValidationResponse {
+    validateBooking(booking: Booking): ValidationResponse {
         // Validate booking input
         const validationResult = BookingSchema.safeParse(booking);
         if (!validationResult.success) {
@@ -16,21 +16,22 @@ export const BookingService: IBookingService = {
                     error: {
                         address: zodError.fieldErrors.location,
                         date: zodError.fieldErrors.schedule,
-                        quantity: zodError.fieldErrors.quantity
+                        recycling: zodError.fieldErrors.recycling
                     }
                 }
             }
         }
         return { isValid: true };
     },
-    async create(booking: Booking): Promise<BookingResponse<string>> {
+    async createBooking(booking: Booking): Promise<BookingResponse<string>> {
         try {
 
-            const { isValid, errors } = this.validate(booking);
+            const { isValid, errors } = this.validateBooking(booking);
             if (!isValid) {
                 return errors as BookingResponse<string>;
             }
-            const json = JSON.stringify(booking);
+
+            const json = JSON.stringify(this.parseBooking(booking));
             console.log(json);
             // Make API request
             const response = await fetch(`${this.backendUrl}/`,
@@ -73,7 +74,7 @@ export const BookingService: IBookingService = {
             };
         }
     },
-    async get<T>(): Promise<BookingResponse<T>> {
+    async getBooking(): Promise<BookingResponse<Booking>> {
         try {
             const response = await fetch(`${this.backendUrl}/`,
                 {
@@ -100,7 +101,7 @@ export const BookingService: IBookingService = {
             return {
                 success: true,
                 message: "successfully returned user booking",
-                result: data
+                result: this.parseBooking(data)
             }
         }
         catch (error: any) {
@@ -113,20 +114,19 @@ export const BookingService: IBookingService = {
             };
         }
     },
-    async update(booking: Booking): Promise<BookingResponse<string>> {
+    async updateBooking(booking: Booking): Promise<BookingResponse<string>> {
         try {
-            const { isValid, errors } = this.validate(booking);
+            const { isValid, errors } = this.validateBooking(booking);
             if (!isValid) {
                 return errors as BookingResponse<string>;
             }
-
             const response = await fetch(`${this.backendUrl}/`,
                 {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(booking),
+                    body: JSON.stringify(this.parseBooking(booking)),
                     credentials: "include"
                 }
             );
@@ -159,5 +159,23 @@ export const BookingService: IBookingService = {
                 error: null
             };
         }
+    },
+    parseBooking(booking: Booking): Booking {
+        // change schedule date from UTC string to date
+        // or date to UTC string
+        var date = booking.schedule.date;
+        if (typeof date == "string") {
+            const [year, month, day] = date.split('-').map(Number);
+            // Month is 0-indexed in JS Date (0 = January)
+            booking.schedule.date = new Date(year, month - 1, day);
+            return booking;
+        }
+
+        var mm = (date.getMonth() + 1).toString();
+        mm = mm.length < 2 ? "0" + mm : mm
+        var dd = (date.getDate()).toString();
+        dd = dd.length < 2 ? "0" + dd : dd;
+        booking.schedule.date = `${date.getFullYear()}-${mm}-${dd}`;
+        return booking;
     }
 }

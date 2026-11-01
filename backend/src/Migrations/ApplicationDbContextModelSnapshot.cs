@@ -95,12 +95,12 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime?>("DateCreated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_created");
 
                     b.Property<DateTime?>("DateModified")
-                        .ValueGeneratedOnAddOrUpdate()
+                        .ValueGeneratedOnUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_modified");
 
@@ -118,7 +118,7 @@ namespace backend.Migrations
                         .HasDefaultValue(2)
                         .HasColumnName("status");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserProfileId")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_profile_id");
@@ -130,7 +130,7 @@ namespace backend.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("booking", "booking");
                 });
@@ -150,6 +150,7 @@ namespace backend.Migrations
                         .HasColumnName("address");
 
                     b.Property<string>("Details")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("details");
 
@@ -349,6 +350,10 @@ namespace backend.Migrations
                         .HasColumnType("numeric")
                         .HasColumnName("contamination_percent");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
                     b.Property<decimal>("VolumeLiters")
                         .HasColumnType("numeric")
                         .HasColumnName("volume_litres");
@@ -425,17 +430,15 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("UserProfile", "UserProfile")
+                    b.HasOne("UserProfile", null)
                         .WithMany("Bookings")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Location");
 
                     b.Navigation("Schedule");
-
-                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

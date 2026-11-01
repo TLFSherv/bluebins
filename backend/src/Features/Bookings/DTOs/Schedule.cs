@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 public record ScheduleRequest : IRequest<int>
 {
-    public int Id { get; set; } // the same as the booking id used to create the schedule
+    public int Id { get; set; }
     public DateOnly Date { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Frequency Frequency { get; set; }

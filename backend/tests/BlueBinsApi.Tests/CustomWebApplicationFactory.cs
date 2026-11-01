@@ -11,7 +11,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             // replace booking repository so database is not used
             services.AddScoped<IBookingRepository, BookingRepositoryStub>();
-            services.AddScoped<IHelperService, HelperServiceStub>();
 
             // Register the custom test scheme as default
             services.AddAuthentication(options =>

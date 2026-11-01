@@ -16,9 +16,9 @@ const parseError = (errorData: any): AuthError => {
     return error;
 }
 
-export const authService: IAuthService = {
-    backendUrl: `${import.meta.env.VITE_SERVER_URL}/account`,
-    async signIn(_, formData): Promise<AuthResponse> {
+class AuthService implements IAuthService {
+    #backendUrl = `${import.meta.env.VITE_SERVER_URL}/account`;
+    signIn = async (_prevState: AuthResponse, formData: FormData): Promise<AuthResponse> => {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -39,7 +39,7 @@ export const authService: IAuthService = {
                 }
             }
 
-            const response = await fetch(`${this.backendUrl}/login?useCookies=true`,
+            const response = await fetch(`${this.#backendUrl}/login?useCookies=true`,
                 {
                     method: "Post",
                     headers: {
@@ -78,8 +78,9 @@ export const authService: IAuthService = {
             }
         }
 
-    },
-    async signUp(_, formData): Promise<AuthResponse> {
+    }
+
+    signUp = async (_prevState: AuthResponse, formData: FormData): Promise<AuthResponse> => {
         try {
             const request = {
                 email: formData.get("email") as string,
@@ -103,7 +104,7 @@ export const authService: IAuthService = {
                 }
             }
 
-            const response = await fetch(`${this.backendUrl}/signup?useCookies=true`, {
+            const response = await fetch(`${this.#backendUrl}/signup?useCookies=true`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "application/json"
@@ -143,9 +144,9 @@ export const authService: IAuthService = {
                 message: error.message,
             }
         }
-    },
-    async signOut(navigate) {
-        const response = await fetch(`${this.backendUrl}/logout`, {
+    }
+    signOut = async (navigate: (path: string) => void) => {
+        const response = await fetch(`${this.#backendUrl}/logout`, {
             method: "POST",
             headers: {
                 "Content-Type": "text"
@@ -159,10 +160,10 @@ export const authService: IAuthService = {
         }
 
         navigate("/");
-    },
-    async isSignedIn() {
+    }
+    isSignedIn = async () => {
         try {
-            const response = await fetch(`${this.backendUrl}/isSignedIn`, {
+            const response = await fetch(`${this.#backendUrl}/isSignedIn`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -181,14 +182,16 @@ export const authService: IAuthService = {
             console.log(error.message);
             return false;
         }
-    },
-    async resendConfirmationEmail(email: string) {
+    }
+    resendConfirmationEmail = async (email: string) => {
         // put a limit on the number of confirmation emails that can be sent
         console.log(`Resend email confirmation to ${email}`);
 
-    },
-    async signInWithGoogle() {
+    }
+    signInWithGoogle = async () => {
         const returnUrl = encodeURIComponent("https://localhost:5173/dashboard");
-        window.location.href = `${this.backendUrl}/login/google?returnUrl=${returnUrl}`;
-    },
+        window.location.href = `${this.#backendUrl}/login/google?returnUrl=${returnUrl}`;
+    }
 }
+
+export const authService = new AuthService();

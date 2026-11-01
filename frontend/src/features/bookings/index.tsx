@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
-import QuantityForm from "./components/QuantityForm"
+import RecyclingForm from "./components/RecyclingForm"
 import { useBookingHandler } from "./hooks/useBookingHandler";
 import { BookingService } from "./services/BookingService"
 import { Toaster, toast } from "react-hot-toast";
@@ -12,7 +12,7 @@ export default function Booking() {
     const formComponents = [
         <AddressForm inputs={{ ...booking.location }} setInput={setInput} />,
         <DateForm inputs={{ ...booking.schedule }} setInput={setInput} />,
-        <QuantityForm inputs={{ ...booking.quantity }} setInput={setInput} />];
+        <RecyclingForm inputs={{ ...booking.recycling }} setInput={setInput} />];
     const COUNT = formComponents.length;
     const GAP = 4;
     const SCREEN = window.screen.width;
@@ -22,7 +22,7 @@ export default function Booking() {
 
     const submitHandler = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const response = await BookingService.create(booking);
+        const response = await BookingService.createBooking(booking);
         if (response.success) {
             toast.success(`Booking created successfully! ID: ${response.result}`);
         }

@@ -23,16 +23,15 @@ const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
 
 export const ScheduleSchema = z.object({
     type: z.literal("schedule").readonly(),
-    displayDate: z.tuple([z.literal(WEEKDAYS), z.number().min(1).max(31), z.literal(MONTHS), z.number().min(2026).max(2100)]),
-    date: dateOnlySchema,
+    date: z.union([z.date(), dateOnlySchema]),
     frequency: z.literal(FREQUENCY),
     makeDefault: z.boolean()
 });
 
 export const MATERIALS = ["tin", "aluminium", "glass"] as const;
 
-export const QuantitySchema = z.object({
-    type: z.literal("quantity").readonly(),
+export const RecyclingSchema = z.object({
+    type: z.literal("recycling").readonly(),
     numberOfBags: z.number().gte(1),
     materialQuantities: z.record(z.enum(MATERIALS), z.number().gte(0))
 })
@@ -40,14 +39,14 @@ export const QuantitySchema = z.object({
 export const BookingSchema = z.object({
     location: LocationSchema,
     schedule: ScheduleSchema,
-    quantity: QuantitySchema
+    recycling: RecyclingSchema
 })
-export type CardData = { date: [typeof WEEKDAYS[number], number, typeof MONTHS[number], number], active: boolean };
+export type CardData = { date: Date, active: boolean };
 
 export type Booking = z.infer<typeof BookingSchema>;
 export type Location = z.infer<typeof LocationSchema>;
 export type Schedule = z.infer<typeof ScheduleSchema>;
-export type Quantity = z.infer<typeof QuantitySchema>;
+export type Recycling = z.infer<typeof RecyclingSchema>;
 
 export type BookingResponse<T> = {
     success: boolean,
@@ -56,7 +55,7 @@ export type BookingResponse<T> = {
     error?: {
         address: string[] | undefined,
         date: string[] | undefined,
-        quantity: string[] | undefined
+        recycling: string[] | undefined
     } | null
 }
 
@@ -67,9 +66,12 @@ export type ValidationResponse = {
 
 export interface IBookingService {
     backendUrl: string
-    validate(booking: Booking): ValidationResponse
-    get<T>(): Promise<BookingResponse<T>>
-    create(booking: Booking): Promise<BookingResponse<string>>
-    update(booking: Booking): Promise<BookingResponse<string>>
+    validateBooking(booking: Booking): ValidationResponse
+    getBooking(): Promise<BookingResponse<Booking>>
+    createBooking(booking: Booking): Promise<BookingResponse<string>>
+    updateBooking(booking: Booking): Promise<BookingResponse<string>>
+    parseBooking(booking: Booking): Booking
 };
+
+
 

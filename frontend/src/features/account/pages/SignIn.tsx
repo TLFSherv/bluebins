@@ -1,6 +1,6 @@
 import { useActionState, useContext } from "react"
 import { authService } from "../services/AuthService"
-import type { SignInResponse } from "../types/AuthTypes";
+import type { AuthResponse } from "../types/AuthTypes";
 import { useNavigate } from "react-router";
 import { UserContext } from "../store/UserContext";
 
@@ -8,9 +8,9 @@ export default function SignIn() {
     const navigate = useNavigate();
     const { setIsSignedIn } = useContext(UserContext);
 
-    const initState = { success: false, message: "", error: null };
+    const initState: AuthResponse = { success: false, message: "" };
     const [state, formAction, isPending] = useActionState(
-        async (prevState: SignInResponse, formData: FormData) => {
+        async (prevState: AuthResponse, formData: FormData) => {
             const result = await authService.signIn(prevState, formData) ?? initState;
             if (result.success) {
                 setIsSignedIn(true);
@@ -48,7 +48,8 @@ export default function SignIn() {
             }
             <div className="space-y-4">
                 <p className="border-b border-gray-300">Use another service to sign in</p>
-                <button className="mx-4 border-1 tracking-wide rounded-lg w-1/3 py-2 flex items-center justify-center space-x-2 text-lg" type="button" onClick={authService.signInWithGoogle} >
+                <button className="mx-4 border-1 tracking-wide rounded-lg w-1/3 py-2 flex items-center justify-center space-x-2 text-lg" type="button"
+                    onClick={authService.signInWithGoogle} >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16px" height="16px">
                         <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
                         <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />

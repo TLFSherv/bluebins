@@ -21,23 +21,17 @@ export default function WeeklyCalendar({ inputs, setInput }:
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active
-        if (start.getDate() == inputs.displayDate[1]) cardNum = i;
+        if (start.getDate() == (inputs.date as Date).getDate()) cardNum = i;
         isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
-
         dayCards.push({
-            date: [WEEKDAYS[start.getDay()], start.getDate(), MONTHS[start.getMonth()], start.getFullYear()],
+            date: new Date(start),
             active: isActive
         });
     }
     const handleChange = (card: CardData) => {
-        var mm = (MONTHS.indexOf(card.date[2]) + 1).toString();
-        mm = mm.length < 2 ? "0" + mm : mm;
-        var dd = card.date[1].toString();
-        dd = dd.length < 2 ? "0" + dd : dd;
         setInput({
             type: "schedule",
-            displayDate: card.date,
-            date: `${card.date[3]}-${mm}-${dd}`,
+            date: card.date,
             frequency: inputs.frequency,
             makeDefault: inputs.makeDefault,
         });
@@ -49,9 +43,9 @@ export default function WeeklyCalendar({ inputs, setInput }:
                     <div key={key} onClick={() => handleChange(card)}
                         className={`rounded-lg ${card.active ? "bg-[#0088FF] text-white" : "bg-[#F3F6FB]"}`}>
                         <ol className="text-center w-[90px] h-[90px] flex flex-col justify-evenly">
-                            <li className="text-xs">{card.date[0]}</li>
-                            <li>{card.date[1]}</li>
-                            <li>{card.date[2]}</li>
+                            <li className="text-xs">{WEEKDAYS[card.date.getDay()]}</li>
+                            <li>{card.date.getDate()}</li>
+                            <li>{MONTHS[card.date.getMonth()]}</li>
                         </ol>
                     </div>
                 )}

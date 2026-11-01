@@ -59,7 +59,6 @@ export function useBookingHandler() {
     const setInput = (input: Location | Recycling | Schedule) => {
         // Set state for the correct Booking property object
         const key = KEY_MAP[input.type];
-        console.log(key);
         setBooking(prev => ({ ...prev, [key]: input }));
     };
     return { booking, setInput };

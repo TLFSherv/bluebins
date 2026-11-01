@@ -44,9 +44,9 @@ public class RepositoryTests : IntegrationTestBase
             NumberOfBags = 2,
             RecyclingItems = new List<RecyclingItem>
                 {
-                    new() {RecyclingId=1, MaterialType=MaterialTypes.aluminium, Quantity = 12},
-                    new() {RecyclingId=1, MaterialType=MaterialTypes.glass, Quantity = 5},
-                    new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 1},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.aluminium, Quantity = 2},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.glass, Quantity = 7},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
                 }
         };
         Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };

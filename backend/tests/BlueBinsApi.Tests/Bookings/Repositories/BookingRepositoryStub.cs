@@ -7,11 +7,11 @@ public class BookingRepositoryStub : IBookingRepository
 
     public Task<BookingView?> GetBooking(string userId)
     {
-        List<RecyclingItemView> recyclingItems = new()
+        Dictionary<MaterialTypes, int> materialQuantities = new()
         {
-            new() {MaterialType=MaterialTypes.aluminium, Quantity = 5},
-            new() {MaterialType=MaterialTypes.glass, Quantity = 2},
-            new() {MaterialType=MaterialTypes.glass, Quantity = 7},
+            [MaterialTypes.tin] = 5,
+            [MaterialTypes.aluminium] = 2,
+            [MaterialTypes.glass] = 7
         };
         var booking = new BookingView()
         {
@@ -19,7 +19,7 @@ public class BookingRepositoryStub : IBookingRepository
             Schedule = new() { Date = new DateOnly(2026, 8, 20) },
             DateCreated = DateTime.Today,
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
-            Recycling = new() { BookingId = 1, NumberOfBags = 2, RecyclingItems = recyclingItems }
+            Recycling = new() { BookingId = 1, NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         return Task.FromResult<BookingView?>(booking);
     }

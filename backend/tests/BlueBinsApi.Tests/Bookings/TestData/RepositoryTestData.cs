@@ -24,11 +24,11 @@ public class GetBookingByIdRepoTestData : IEnumerable<object?[]>
             {
                 BookingId = 1,
                 NumberOfBags = 2,
-                RecyclingItems = new List<RecyclingItemView>
+                MaterialQuantities = new()
                 {
-                    new() {MaterialType=MaterialTypes.aluminium, Quantity = 12},
-                    new() {MaterialType=MaterialTypes.glass, Quantity = 5},
-                    new() {MaterialType=MaterialTypes.tin, Quantity = 1},
+                    [MaterialTypes.tin] = 5,
+                    [MaterialTypes.aluminium] = 2,
+                    [MaterialTypes.glass] = 7
                 }
             }
         };
@@ -95,13 +95,12 @@ public class GetBookingRepoTestData : IEnumerable<object[]>
             {
                 BookingId = 1,
                 NumberOfBags = 2,
-                RecyclingItems = new List<RecyclingItemView>
+                MaterialQuantities = new()
                 {
-                    new() {MaterialType=MaterialTypes.aluminium, Quantity = 4},
-                    new() {MaterialType=MaterialTypes.glass, Quantity = 5},
-                    new() {MaterialType=MaterialTypes.tin, Quantity = 6},
+                    [MaterialTypes.tin] = 6,
+                    [MaterialTypes.aluminium] = 4,
+                    [MaterialTypes.glass] = 5
                 }
-
             },
             DateCreated = DateTime.Today.AsUtc()
         };

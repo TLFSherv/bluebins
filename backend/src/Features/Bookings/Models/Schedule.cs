@@ -6,14 +6,14 @@ public class Schedule : IEntity<int>
     public int Id { get; set; }
     public DateOnly Date { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public Frequency? Frequency { get; set; }
+    public Frequency Frequency { get; set; } = Frequency.Once;
     public DateOnly CollectionDate => GetCollectionDate();
     private DateOnly GetCollectionDate()
     {
-        if (Frequency is null || Frequency is global::Frequency.Once) return Date;
+        if (Frequency is global::Frequency.Once) return Date;
         DateOnly start = Date;
         DateOnly end = new DateOnly();
-        int numOfDays = (int)Frequency.Value * 7;
+        int numOfDays = (int)Frequency * 7;
         while (start <= end)
         {
             if (Frequency == global::Frequency.Monthly)

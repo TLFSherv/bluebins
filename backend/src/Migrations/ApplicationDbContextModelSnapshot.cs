@@ -378,7 +378,7 @@ namespace backend.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int?>("Frequency")
+                    b.Property<int>("Frequency")
                         .HasColumnType("integer")
                         .HasColumnName("frequency");
 

@@ -21,7 +21,9 @@ export default function WeeklyCalendar({ inputs, setInput }:
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active
-        if (start.getDate() == (inputs.date as Date).getDate()) cardNum = i;
+        if (inputs.date instanceof Date &&
+            start.getDate() == inputs.date.getDate())
+            cardNum = i;
         isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
         dayCards.push({
             date: new Date(start),

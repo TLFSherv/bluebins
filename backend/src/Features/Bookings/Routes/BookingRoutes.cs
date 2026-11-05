@@ -9,8 +9,8 @@ public static class BookingRoutes
         {
             var bookingApi = endpoints.MapGroup("/api/booking")
             .RequireAuthorization()
-            .AddEndpointFilterFactory(BookingFilters.LoggingFactory)
-            .AddEndpointFilterFactory(BookingFilters.ValidateFactory);
+            .AddEndpointFilterFactory(BookingFilters.ValidateFactory)
+            .AddEndpointFilterFactory(BookingFilters.LoggingFactory);
 
             // Get users active booking or booking template
             bookingApi.MapGet("/", async (HttpContext context, [FromServices] IBookingRepository repository) =>

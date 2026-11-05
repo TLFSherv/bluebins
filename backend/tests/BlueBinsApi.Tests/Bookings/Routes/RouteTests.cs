@@ -1,5 +1,6 @@
 using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 public class RouteTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -23,6 +24,16 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
         {
             var resultValue = await result.Content.ReadFromJsonAsync<int>();
             Assert.Equal(expectedValue, resultValue);
+        }
+        else
+        {
+            // Check the validation results
+            var problemDetails = await result.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+            Assert.NotNull(problemDetails);
+            Assert.Contains("Location.Latitude", problemDetails.Errors.Keys);
+            Assert.Contains("Location.Longitude", problemDetails.Errors.Keys);
+            Assert.Contains("'Location Latitude' must not be equal to '0'.", problemDetails.Errors["Location.Latitude"]);
+            Assert.Contains("'Location Longitude' must not be equal to '0'.", problemDetails.Errors["Location.Longitude"]);
         }
     }
 

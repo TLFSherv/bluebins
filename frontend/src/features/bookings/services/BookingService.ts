@@ -32,7 +32,7 @@ export const BookingService: IBookingService = {
             }
 
             const json = JSON.stringify(this.parseBooking(booking));
-            console.log(json);
+
             // Make API request
             const response = await fetch(`${this.backendUrl}/`,
                 {

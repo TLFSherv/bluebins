@@ -85,7 +85,7 @@ public class BookingFilters
                             logger.LogError("Failed to add booking");
                             return next;
                         }
-                        Console.WriteLine(result);
+
                         logger.LogInformation("Successfully added new booking with id {id}", result);
                         return result;
                     }

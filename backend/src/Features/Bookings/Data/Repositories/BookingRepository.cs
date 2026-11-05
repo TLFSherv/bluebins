@@ -23,7 +23,9 @@ public class BookingRepository : IBookingRepository
         .Include(x => x.Recycling)
         .ThenInclude(x => x.RecyclingItems)
         .AsNoTracking()
-        .FirstOrDefaultAsync(x => x.UserProfileId == userId && x.Status == BookingStatus.Scheduled);
+        .FirstOrDefaultAsync(x => x.UserProfileId == userId &&
+        (x.Status == BookingStatus.Scheduled ||
+        x.Status == BookingStatus.Draft));
 
         if (booking != null)
         {

@@ -72,18 +72,53 @@ public class RepositoryTests : IntegrationTestBase
     }
 
     [Theory]
-    [ClassData(typeof(AddBookingRepoTestData))]
-    public async Task AddUserBooking(BookingRequest request)
+    [ClassData(typeof(CreateOrUpdateBookingTestData))]
+    public async Task CreateOrUpdateBooking(bool isCreate, BookingRequest request)
     {
         context.Database.EnsureCreated();
         // Arrange
         UserProfile user = new() { Id = "123456" };
         context.Add(user);
+        // Add booking to test updating logic
+        if (!isCreate)
+        {
+            Location location = new()
+            {
+                Id = 1,
+                MapsId = "test",
+                Address = "old_address",
+                Parish = "old_parish",
+                Postcode = "old_postcode",
+                Latitude = 0,
+                Longitude = 0
+            };
+
+            Recycling recycling = new()
+            {
+                Id = 1,
+                NumberOfBags = 2,
+                RecyclingItems = new List<RecyclingItem>
+                {
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.aluminium, Quantity = 2},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.glass, Quantity = 7},
+                    new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
+                }
+            };
+            Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
+            Booking updateBooking = new(location, schedule)
+            {
+                UserProfileId = user.Id,
+                Status = BookingStatus.Scheduled,
+                Recycling = recycling,
+                DateCreated = DateTime.Today.AsUtc()
+            };
+            context.Add(updateBooking);
+        }
         context.SaveChanges();
         var repository = new BookingRepository(context, _mapper);
 
         // Act
-        var result = await repository.AddBooking(user.Id, request);
+        var result = await repository.CreateOrUpdateBooking(user.Id, request);
         Assert.IsType<int>(result);
         var booking = context.Bookings
         .Include(x => x.Location)

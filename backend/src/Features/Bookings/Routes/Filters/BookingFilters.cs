@@ -4,11 +4,10 @@ using FluentValidation;
 public enum RouteNames
 {
     GetBooking = 1,
-    AddBooking = 2,
-    GetBookingById = 3,
-    UpdateBooking = 4,
-    DeleteBooking = 5,
-    Unknown = 6
+    GetBookingById = 2,
+    CreateOrUpdateBooking = 3,
+    DeleteBooking = 4,
+    Unknown = 5
 };
 
 public class BookingFilters
@@ -28,7 +27,7 @@ public class BookingFilters
         return async (invocationContext) =>
        {
            // add validation filter for the add booking route
-           if (routeName == RouteNames.AddBooking)
+           if (routeName == RouteNames.CreateOrUpdateBooking)
            {
                // get validator from DI container
                var validator = context.ApplicationServices.GetRequiredService<IValidator<BookingRequest>>();
@@ -75,18 +74,18 @@ public class BookingFilters
                         logger.LogInformation("Successfully fetched booking with id {id}", input);
                         return result;
                     }
-                case RouteNames.AddBooking:
+                case RouteNames.CreateOrUpdateBooking:
                     {
                         var input = invocationContext.GetArgument<BookingRequest>(parameterPosition);
-                        logger.LogInformation("Adding booking new booking");
+                        logger.LogInformation("Saving booking data");
                         object? result = await next(invocationContext);
                         if (result is null)
                         {
-                            logger.LogError("Failed to add booking");
+                            logger.LogError("Failed to save booking data");
                             return next;
                         }
 
-                        logger.LogInformation("Successfully added new booking with id {id}", result);
+                        logger.LogInformation("Successfully saved data for booking with id {id}", result);
                         return result;
                     }
             }
@@ -108,7 +107,7 @@ public class BookingFilters
             }
             else if (parameters[i].ParameterType == typeof(BookingRequest))
             {
-                routeName = RouteNames.AddBooking;
+                routeName = RouteNames.CreateOrUpdateBooking;
                 parameterPosition = i;
                 break;
             }

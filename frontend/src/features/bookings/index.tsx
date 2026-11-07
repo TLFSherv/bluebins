@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import RecyclingForm from "./components/RecyclingForm"
 import { useBookingHandler } from "./hooks/useBookingHandler";
 import { BookingService } from "./services/BookingService"
 import { Toaster, toast } from "react-hot-toast";
+import type { Booking } from "./types/types";
 
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -22,18 +23,23 @@ export default function Booking() {
 
     const submitHandler = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const response = await BookingService.createBooking(booking);
+        const response = await BookingService.createUpdateBooking(booking);
         if (response.success) {
             toast.success(`Booking created successfully! ID: ${response.result}`);
         }
         else {
             var errors: string[] = [];
-            for (const [_, value] of Object.entries(response.error!)) {
-                if (value != undefined) {
-                    console.log(value);
-                    errors.push(...value);
+            if (response.error != null) {
+                for (const [_, value] of Object.entries(response.error)) {
+                    if (value != undefined) {
+                        errors.push(value[0]);
+                    }
                 }
             }
+            else {
+                errors[0] = response.message;
+            }
+
             toast.error(
                 () => (<div className="pl-2 space-y-1 relative">
                     <ul>
@@ -52,7 +58,7 @@ export default function Booking() {
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}
                 className="w-1/2 h-2 bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg" />
             <div onClick={() => toast.dismiss("validation")}>
-                <Toaster position="top-center" containerStyle={{ top: 80 }} />
+                <Toaster position="top-center" containerStyle={{ top: 80, fontSize: 12 }} />
             </div>
             <div className="overflow-hidden w-full mx-auto">
                 <div className="flex transition-transform" style={{ transform: `translateX(${translateX}px)`, gap: `${GAP}px` }}>

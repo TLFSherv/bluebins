@@ -7,8 +7,8 @@ export default function DateForm({ inputs, setInput }:
     const radioMap = {
         Once: "once",
         Weekly: "weekly",
-        Biweekly: "bi-weekly",
-        Triweekly: "tri-weekly",
+        Biweekly: "biweekly",
+        Triweekly: "triweekly",
         Monthly: "monthly"
     };
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => {
@@ -26,7 +26,7 @@ export default function DateForm({ inputs, setInput }:
                     className="border border-[#4AA5F6] rounded-lg block mx-auto text-center"
                     onChange={e => handleChange(e)}>
                     {radioLabels.map(label => (
-                        <option value={label}>{radioMap[label]}</option>
+                        <option selected={inputs.frequency == label} key={label} value={label}>{radioMap[label]}</option>
                     ))}
                 </select>
             </div>

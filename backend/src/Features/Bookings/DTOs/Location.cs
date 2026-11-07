@@ -1,6 +1,5 @@
-public record LocationRequest : IRequest<int>
+public record LocationRequest
 {
-    public int Id { get; set; }
     public required string Address { get; set; }
     public string? MapsId { get; set; }
     public required string Parish { get; set; }

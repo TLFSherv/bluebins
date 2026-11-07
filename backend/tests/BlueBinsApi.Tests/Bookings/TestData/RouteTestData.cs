@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Net;
-public class AddBookingRouteTestData : IEnumerable<object[]>
+public class CreateOrUpdateBookingRouteTestData : IEnumerable<object[]>
 {
     public IEnumerator<object[]> GetEnumerator()
     {

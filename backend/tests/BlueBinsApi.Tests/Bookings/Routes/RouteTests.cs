@@ -11,8 +11,8 @@ public class RouteTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Theory]
-    [ClassData(typeof(AddBookingRouteTestData))]
-    public async Task AddBookingRoute(BookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
+    [ClassData(typeof(CreateOrUpdateBookingRouteTestData))]
+    public async Task CreateOrUpdateBooking(BookingRequest req, HttpStatusCode httpStatusCode, int? expectedValue = null)
     {
         // Arrange
         HttpClient client = _fixture.CreateClient();

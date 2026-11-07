@@ -56,32 +56,15 @@ public static class BookingRoutes
                     return Results.Unauthorized();
                 }
 
-                var result = await repository.AddBooking(userId, request);
+                var result = await repository.CreateOrUpdateBooking(userId, request);
 
                 if (result == 0)
                 {
                     return Results.NotFound();
                 }
                 return Results.CreatedAtRoute("GetBookingById", routeValues: new { id = result }, value: result);
-            }).WithName("AddBooking");
+            }).WithName("CreateOrUpdateBooking");
 
-            // Update a booking
-            bookingApi.MapPut("/", async ([FromBody] BookingRequest request, HttpContext context, [FromServices] IBookingRepository respository) =>
-            {
-                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId == null)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var result = await respository.UpdateBooking(userId, request);
-
-                if (result == 0)
-                {
-                    return Results.NotFound();
-                }
-                return Results.Ok(result);
-            }).WithName("UpdateBooking");
         });
 
     }

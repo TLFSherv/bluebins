@@ -50,8 +50,6 @@ export function useBookingHandler() {
                 return;
             }
             setBooking(result.result ?? initBooking);
-            console.log(`Successfully got user booking`);
-            console.log(result);
         }
         getUserBooking();
     }, [])

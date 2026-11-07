@@ -68,8 +68,7 @@ export interface IBookingService {
     backendUrl: string
     validateBooking(booking: Booking): ValidationResponse
     getBooking(): Promise<BookingResponse<Booking>>
-    createBooking(booking: Booking): Promise<BookingResponse<string>>
-    updateBooking(booking: Booking): Promise<BookingResponse<string>>
+    createUpdateBooking(booking: Booking): Promise<BookingResponse<string>>
     parseBooking(booking: Booking): Booking
 };
 

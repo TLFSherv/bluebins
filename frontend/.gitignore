@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 index.css
 .env
+
+# Planner
+todo.txt

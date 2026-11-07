@@ -1,6 +1,6 @@
 public class BookingRepositoryStub : IBookingRepository
 {
-    public Task<int> AddBooking(string userId, BookingRequest bookingRequest)
+    public Task<int> CreateOrUpdateBooking(string userId, BookingRequest bookingRequest)
     {
         return Task.FromResult(1);
     }
@@ -33,8 +33,4 @@ public class BookingRepositoryStub : IBookingRepository
         return Task.FromResult<BookingView?>(null);
     }
 
-    public Task<int> UpdateBooking(string userId, BookingRequest bookingRequest)
-    {
-        throw new NotImplementedException();
-    }
 }

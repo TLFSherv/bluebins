@@ -140,7 +140,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity
             .HasMany(r => r.RecyclingItems) // recycling has many recycling items
             .WithOne()                          // a recycling item is only in one recycling
-            .HasForeignKey(c => c.RecyclingId);
+            .HasForeignKey(c => c.RecyclingId)
+            .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<RecyclingItem>(entity =>
         {

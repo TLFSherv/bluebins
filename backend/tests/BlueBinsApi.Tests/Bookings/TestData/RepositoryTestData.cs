@@ -43,7 +43,7 @@ public class GetBookingByIdRepoTestData : IEnumerable<object?[]>
     }
 }
 
-public class AddBookingRepoTestData : IEnumerable<object?[]>
+public class CreateOrUpdateBookingTestData : IEnumerable<object?[]>
 {
     public IEnumerator<object?[]> GetEnumerator()
     {
@@ -58,14 +58,17 @@ public class AddBookingRepoTestData : IEnumerable<object?[]>
                 {MaterialTypes.tin, 8},
             }
         };
-        ScheduleRequest schedule1 = new() { Id = 1, Date = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
-        ScheduleRequest schedule2 = new() { Id = 1, Date = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
+        ScheduleRequest schedule1 = new() { Date = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
+        ScheduleRequest schedule2 = new() { Date = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
         BookingRequest request1 = new() { Location = location, Recycling = quantity, Schedule = schedule1 };
         BookingRequest request2 = new() { Location = location, Recycling = quantity, Schedule = schedule1 };
         BookingRequest request3 = new() { Location = location, Recycling = quantity, Schedule = schedule2 };
-        yield return new object[] { request1 }; // request with no schedule
-        yield return new object[] { request2 }; // request with existing schedule
-        yield return new object[] { request3 }; // request with new schedule
+        yield return new object[] { true, request1 }; // request with no schedule
+        yield return new object[] { true, request2 }; // request with existing schedule
+        yield return new object[] { true, request3 }; // request with new schedule
+        yield return new object[] { false, request1 }; // request with no schedule
+        yield return new object[] { false, request2 }; // request with existing schedule
+        yield return new object[] { false, request3 }; // request with new schedule
     }
 
     IEnumerator IEnumerable.GetEnumerator()

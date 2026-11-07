@@ -23,9 +23,8 @@ export const BookingService: IBookingService = {
         }
         return { isValid: true };
     },
-    async createBooking(booking: Booking): Promise<BookingResponse<string>> {
+    async createUpdateBooking(booking: Booking): Promise<BookingResponse<string>> {
         try {
-            console.log(booking);
             const { isValid, errors } = this.validateBooking(booking);
             if (!isValid) {
                 return errors as BookingResponse<string>;
@@ -44,6 +43,7 @@ export const BookingService: IBookingService = {
                     credentials: "include"
                 }
             );
+
             const data = await response.json();
 
             // Verify the response
@@ -53,14 +53,14 @@ export const BookingService: IBookingService = {
                     return {
                         success: false,
                         message: data.title,
-                        error: data
+                        error: data.errors
                     };
                 }
                 throw new Error(data.detail || "Failed to create booking");
             }
             return {
                 success: true,
-                message: "Booking successfully created",
+                message: "Data saved successfully",
                 result: data
             };
         }
@@ -86,7 +86,6 @@ export const BookingService: IBookingService = {
                 }
             );
             const data = await response.json();
-
             if (!response.ok) {
                 if (response.status == 400) {
                     return {
@@ -114,68 +113,29 @@ export const BookingService: IBookingService = {
             };
         }
     },
-    async updateBooking(booking: Booking): Promise<BookingResponse<string>> {
-        try {
-            const { isValid, errors } = this.validateBooking(booking);
-            if (!isValid) {
-                return errors as BookingResponse<string>;
-            }
-            const response = await fetch(`${this.backendUrl}/`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(this.parseBooking(booking)),
-                    credentials: "include"
-                }
-            );
-            const data = await response.json();
-
-            if (!response.ok) {
-                if (response.status == 400)
-                    return {
-                        success: false,
-                        message: "Booking data is incorrect",
-                        error: data
-                    }
-                throw new Error(data.detail || "Failed to update booking");
-            }
-
-            return {
-                success: true,
-                message: "Booking successfully updated",
-                result: data
-            }
-
-        }
-        catch (error: any) {
-            if (error.message.includes("Server error")) {
-                throw error;
-            }
-            return {
-                success: false,
-                message: error.message,
-                error: null
-            };
-        }
-    },
     parseBooking(booking: Booking): Booking {
+        // Create a new object payload so you don't mutate the original state
+        const parsedBooking: Booking = {
+            ...booking,
+            schedule: {
+                ...booking.schedule
+            }
+        }
         // change schedule date from UTC string to date
         // or date to UTC string
         var date = booking.schedule.date;
-        if (typeof date == "string") {
-            const [year, month, day] = date.split('-').map(Number);
-            // Month is 0-indexed in JS Date (0 = January)
-            booking.schedule.date = new Date(year, month - 1, day);
-            return booking;
+        if (date instanceof Date) {
+            var mm = (date.getMonth() + 1).toString();
+            mm = mm.length < 2 ? "0" + mm : mm
+            var dd = (date.getDate()).toString();
+            dd = dd.length < 2 ? "0" + dd : dd;
+            parsedBooking.schedule.date = `${date.getFullYear()}-${mm}-${dd}`;
+            return parsedBooking;
         }
 
-        var mm = (date.getMonth() + 1).toString();
-        mm = mm.length < 2 ? "0" + mm : mm
-        var dd = (date.getDate()).toString();
-        dd = dd.length < 2 ? "0" + dd : dd;
-        booking.schedule.date = `${date.getFullYear()}-${mm}-${dd}`;
-        return booking;
+        const [year, month, day] = date.split('-').map(Number);
+        // Month is 0-indexed in JS Date (0 = January)
+        parsedBooking.schedule.date = new Date(year, month - 1, day);
+        return parsedBooking;
     }
 }

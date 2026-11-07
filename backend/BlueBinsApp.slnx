@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BlueBins.Api/BlueBins.Api.csproj" />
+  <Project Path="BlueBins.Application/BlueBins.Application.csproj" />
+  <Project Path="BlueBins.Core/BlueBins.Core.csproj" />
+  <Project Path="BlueBins.Infrastructure/BlueBins.Infrastructure.csproj" />
+</Solution>

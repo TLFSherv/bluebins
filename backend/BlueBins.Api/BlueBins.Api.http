@@ -1,0 +1,6 @@
+@BlueBins.Api_HostAddress = http://localhost:5129
+
+GET {{BlueBins.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

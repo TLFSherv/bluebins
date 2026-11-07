@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import RecyclingForm from "./components/RecyclingForm"
@@ -54,7 +54,7 @@ export default function Booking() {
 
     return (
         <form onSubmit={e => submitHandler(e)}
-            className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-8">
+            className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-6">
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}
                 className="w-1/2 h-2 bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg" />
             <div onClick={() => toast.dismiss("validation")}>

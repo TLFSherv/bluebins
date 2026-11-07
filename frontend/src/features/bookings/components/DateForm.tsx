@@ -21,7 +21,7 @@ export default function DateForm({ inputs, setInput }:
                 Date
             </h1>
             <div className="space-y-1">
-                <p className="text-lg text-center">When do you want us to collect your recycling?</p>
+                <p className="text-lg text-center">When do you want us to collect?</p>
                 <select name="frequency"
                     className="border border-[#4AA5F6] rounded-lg block mx-auto text-center"
                     onChange={e => handleChange(e)}>

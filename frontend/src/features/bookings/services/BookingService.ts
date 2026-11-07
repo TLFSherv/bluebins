@@ -137,5 +137,8 @@ export const BookingService: IBookingService = {
         // Month is 0-indexed in JS Date (0 = January)
         parsedBooking.schedule.date = new Date(year, month - 1, day);
         return parsedBooking;
+    },
+    hasBookingChanged(b1: Booking, b2: Booking): boolean {
+        return JSON.stringify(b1) != JSON.stringify(b2);
     }
 }

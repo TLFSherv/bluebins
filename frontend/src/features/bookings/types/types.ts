@@ -70,6 +70,7 @@ export interface IBookingService {
     getBooking(): Promise<BookingResponse<Booking>>
     createUpdateBooking(booking: Booking): Promise<BookingResponse<string>>
     parseBooking(booking: Booking): Booking
+    hasBookingChanged(b1: Booking, b2: Booking): boolean
 };
 
 

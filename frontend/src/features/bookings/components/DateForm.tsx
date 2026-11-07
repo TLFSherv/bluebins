@@ -22,11 +22,15 @@ export default function DateForm({ inputs, setInput }:
             </h1>
             <div className="space-y-1">
                 <p className="text-lg text-center">When do you want us to collect?</p>
-                <select name="frequency"
+                <select
+                    value={inputs.frequency}
+                    name="frequency"
                     className="border border-[#4AA5F6] rounded-lg block mx-auto text-center"
                     onChange={e => handleChange(e)}>
                     {radioLabels.map(label => (
-                        <option selected={inputs.frequency == label} key={label} value={label}>{radioMap[label]}</option>
+                        <option key={label} value={label}>
+                            {radioMap[label]}
+                        </option>
                     ))}
                 </select>
             </div>

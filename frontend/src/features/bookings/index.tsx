@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AddressForm from "./components/AddressForm"
 import DateForm from "./components/DateForm"
 import RecyclingForm from "./components/RecyclingForm"
@@ -10,6 +10,7 @@ import type { Booking } from "./types/types";
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const { booking, setInput } = useBookingHandler();
+    const bookingRef = useRef<Booking>(booking);
     const formComponents = [
         <AddressForm inputs={{ ...booking.location }} setInput={setInput} />,
         <DateForm inputs={{ ...booking.schedule }} setInput={setInput} />,
@@ -23,9 +24,15 @@ export default function Booking() {
 
     const submitHandler = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (!BookingService.hasBookingChanged(bookingRef.current, booking)) {
+            toast.error(`No changes have been made.`);
+            return;
+        }
+
         const response = await BookingService.createUpdateBooking(booking);
         if (response.success) {
             toast.success(`Booking created successfully! ID: ${response.result}`);
+            bookingRef.current = booking;
         }
         else {
             var errors: string[] = [];

@@ -1,3 +1,5 @@
+using Application.Dtos;
+
 public static class RecyclingExtensions
 {
     public static ICollection<RecyclingItem>? GetRecyclingItems(this RecyclingRequest? recycling)

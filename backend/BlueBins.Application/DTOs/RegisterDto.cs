@@ -1,3 +1,5 @@
+namespace Application.Dtos;
+
 public record RegisterRequest
 (
     string Email,

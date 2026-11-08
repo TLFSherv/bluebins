@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using Application.Dtos;
 
 public enum RouteNames
 {

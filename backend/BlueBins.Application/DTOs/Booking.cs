@@ -1,4 +1,6 @@
-public record BookingRequest : IRequest<int>
+namespace Application.Dtos;
+
+public record BookingRequest
 {
     public int Id { get; set; }
     public required LocationRequest Location { get; set; }

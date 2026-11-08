@@ -1,3 +1,5 @@
+namespace Application.Dtos;
+
 using System.Text.Json.Serialization;
 
 public record ScheduleRequest

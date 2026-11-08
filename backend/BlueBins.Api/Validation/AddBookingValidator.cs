@@ -1,4 +1,5 @@
 using System.Data;
+using Application.Dtos;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 public class AddBookingValidator : AbstractValidator<BookingRequest>

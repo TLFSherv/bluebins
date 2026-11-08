@@ -1,4 +1,5 @@
 using System.Net;
+using Application.Dtos;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 

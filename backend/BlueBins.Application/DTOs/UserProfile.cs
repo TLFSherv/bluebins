@@ -1,4 +1,6 @@
-public record UserProfileRequest : IRequest<int>
+namespace Application.Dtos;
+
+public record UserProfileRequest
 {
     public int Id { get; set; }
     public int? DefaultLocationId { get; set; }

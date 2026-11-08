@@ -1,3 +1,4 @@
+using Application.Dtos;
 using Microsoft.AspNetCore.Identity;
 
 public class AuthService : IAuthService

@@ -1,3 +1,5 @@
+namespace Application.Dtos;
+
 public record RecyclingItemRequest
 {
     public MaterialTypes MaterialType { get; set; }

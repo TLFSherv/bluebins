@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Application.Dtos;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

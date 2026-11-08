@@ -1,3 +1,4 @@
+using Application.Dtos;
 using AutoMapper;
 using FluentAssertions;
 using FluentAssertions.Extensions;

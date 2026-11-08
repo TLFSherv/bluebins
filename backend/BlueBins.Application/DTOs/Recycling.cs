@@ -1,4 +1,6 @@
-public record RecyclingRequest : IRequest<int>
+namespace Application.Dtos;
+
+public record RecyclingRequest
 {
     public int Id { get; set; } // the same as BookingId
     public int NumberOfBags { get; set; }

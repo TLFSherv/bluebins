@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 public static class BookingRoutes

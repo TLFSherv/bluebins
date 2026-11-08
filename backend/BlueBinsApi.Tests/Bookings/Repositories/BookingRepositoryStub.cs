@@ -1,3 +1,5 @@
+using Application.Dtos;
+
 public class BookingRepositoryStub : IBookingRepository
 {
     public Task<int> CreateOrUpdateBooking(string userId, BookingRequest bookingRequest)

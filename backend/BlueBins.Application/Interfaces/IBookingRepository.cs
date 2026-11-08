@@ -1,3 +1,5 @@
+using Application.Dtos;
+
 public interface IBookingRepository
 {
     public Task<BookingView?> GetBooking(string userId);

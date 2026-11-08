@@ -1,3 +1,5 @@
+namespace Application.Dtos;
+
 public record LocationRequest
 {
     public required string Address { get; set; }

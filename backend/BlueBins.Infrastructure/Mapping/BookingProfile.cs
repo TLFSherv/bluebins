@@ -1,3 +1,4 @@
+using Application.Dtos;
 using AutoMapper;
 
 public class BookingProfile : Profile

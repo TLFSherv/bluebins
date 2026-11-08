@@ -54,6 +54,8 @@ export default function WeeklyCalendar({ inputs, setInput }:
             </div>
             <div className="flex justify-end space-x-2 text-sm">
                 <input type="checkbox" name="makeDefault" checked={inputs.makeDefault}
+                    // make default checkbox disabled if frequency is Once
+                    disabled={inputs.frequency == "Once"}
                     onChange={() => setInput({
                         ...inputs,
                         makeDefault: !inputs.makeDefault

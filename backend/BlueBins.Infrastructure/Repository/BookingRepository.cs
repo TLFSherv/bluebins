@@ -30,6 +30,13 @@ public class BookingRepository : IBookingRepository
 
         if (booking != null)
         {
+            // If a draft bookings schedule date has passed, set the date to tomorrow and reset frequency to once
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            if (booking.Schedule.Date <= today)
+            {
+                booking.Schedule.Date = today.AddDays(1);
+                booking.Schedule.Frequency = Frequency.Once;
+            }
             return _mapper.Map<BookingView>(booking);
         }
 
@@ -101,6 +108,15 @@ public class BookingRepository : IBookingRepository
         var foundSchedule = await _context.Schedules
         .FirstOrDefaultAsync(x => x.Date == newBooking.Schedule.Date
         && x.Frequency == newBooking.Schedule.Frequency);
+
+        if (newBooking.Schedule.Frequency == Frequency.Monthly)
+        {
+            // compare the date
+        }
+        else
+        {
+            // compare the day of the week and frequency
+        }
 
         booking.ChangeLocationAndSchedule(
             foundLocation ?? newBooking.Location,

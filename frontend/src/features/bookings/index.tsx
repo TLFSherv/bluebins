@@ -61,13 +61,13 @@ export default function Booking() {
 
     return (
         <form onSubmit={e => submitHandler(e)}
-            className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto space-y-6">
+            className="flex-1 flex flex-col items-center justify-center h-full w-full mx-auto">
             <div style={{ width: (activeIndex + 1) / COUNT * itemWidth }}
                 className="w-1/2 h-2 bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% rounded-lg" />
             <div onClick={() => toast.dismiss("validation")}>
-                <Toaster position="top-center" containerStyle={{ top: 80, fontSize: 12 }} />
+                <Toaster position="top-center" containerStyle={{ top: 100, fontSize: 12 }} />
             </div>
-            <div className="overflow-hidden w-full mx-auto">
+            <div className="overflow-hidden w-full mx-auto mt-8">
                 <div className="flex transition-transform" style={{ transform: `translateX(${translateX}px)`, gap: `${GAP}px` }}>
                     {formComponents.map((component, i) => (
                         <div key={i} style={{ width: `${itemWidth}px` }} className="mx-2 object-cover shrink-0 border-2 border-[#2496FA] rounded-xl px-2 pt-8 pb-2 space-y-4">

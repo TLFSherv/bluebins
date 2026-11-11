@@ -4,37 +4,31 @@ using System.Text.Json.Serialization;
 public class Schedule
 {
     public int Id { get; set; }
-    public DateOnly Date { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public Frequency Frequency { get; set; } = Frequency.Once;
-    public DateOnly CollectionDate => GetCollectionDate();
-    private DateOnly GetCollectionDate()
+    public Frequency Frequency { get; private set; } = Frequency.Weekly;
+    public DayOfWeek? DayOfWeek { get; private set; }
+    public int? DayOfMonth { get; private set; }
+    public Schedule(Frequency frequency, DayOfWeek? dayOfWeek, int? dayOfMonth)
     {
-        if (Frequency is global::Frequency.Once) return Date;
-        DateOnly start = Date;
-        DateOnly end = new DateOnly();
-        int numOfDays = (int)Frequency * 7;
-        while (start <= end)
+        if (frequency == Frequency.Monthly && dayOfMonth == null)
         {
-            if (Frequency == global::Frequency.Monthly)
-            {
-                start.AddMonths(1);
-                continue;
-            }
-            start.AddDays(numOfDays);
+            throw new InvalidDataException("DayOfMonth cannot be null if frequency is monthly.");
         }
-        return start;
+        else if ((frequency == Frequency.Weekly ||
+        frequency == Frequency.Biweekly) && dayOfWeek == null)
+        {
+            throw new InvalidDataException("DayOfWeek cannot be null if frequency is weekly or bi-weekly");
+        }
+
+        DayOfWeek = dayOfWeek;
+        DayOfMonth = dayOfMonth;
+        Frequency = frequency;
     }
-
-
-
 }
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Frequency
 {
-    Once = 0,
-    Weekly = 1,
-    Biweekly = 2,
-    Triweekly = 3,
-    Monthly = 4
+    Weekly = 0,
+    Biweekly = 1,
+    Monthly = 2
 }

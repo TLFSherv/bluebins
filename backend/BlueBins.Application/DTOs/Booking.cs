@@ -3,8 +3,9 @@ namespace Application.Dtos;
 public record BookingRequest
 {
     public int Id { get; set; }
+    public required DateOnly BookingDate { get; set; }
     public required LocationRequest Location { get; set; }
-    public required ScheduleRequest Schedule { get; set; }
+    public ScheduleRequest? Schedule { get; set; }
     public required RecyclingRequest Recycling { get; set; }
 
 }
@@ -12,8 +13,9 @@ public record BookingRequest
 public record BookingView
 {
     public BookingStatus Status { get; set; }
+    public DateOnly BookingDate { get; set; }
     public required LocationView Location { get; set; }
-    public required ScheduleView Schedule { get; set; }
+    public ScheduleView? Schedule { get; set; }
     public required RecyclingView Recycling { get; set; }
     public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }

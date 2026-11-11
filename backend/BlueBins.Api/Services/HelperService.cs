@@ -1,3 +1,5 @@
+namespace Api.Services;
+
 using System.Security.Claims;
 
 public class HelperService : IHelperService

@@ -2,6 +2,7 @@ using Application.Dtos;
 using AutoMapper;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Infrastructure.Repository;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -35,8 +36,6 @@ public class RepositoryTests : IntegrationTestBase
             Address = "test_address",
             Parish = "test_parish",
             Postcode = "test_postcode",
-            Latitude = 0,
-            Longitude = 0
         };
 
         Recycling recycling = new()
@@ -50,10 +49,10 @@ public class RepositoryTests : IntegrationTestBase
                     new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
                 }
         };
-        Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
-        Booking booking = new(location, schedule)
+        Booking booking = new(location)
         {
             UserProfileId = user.Id,
+            BookingDate = new DateOnly(2026, 10, 2),
             Status = BookingStatus.Scheduled,
             Recycling = recycling,
             DateCreated = DateTime.Today.AsUtc()
@@ -80,7 +79,7 @@ public class RepositoryTests : IntegrationTestBase
         // Arrange
         UserProfile user = new() { Id = "123456" };
         context.Add(user);
-        // Add booking to test updating logic
+        // Add booking to test update booking logic
         if (!isCreate)
         {
             Location location = new()
@@ -90,8 +89,6 @@ public class RepositoryTests : IntegrationTestBase
                 Address = "old_address",
                 Parish = "old_parish",
                 Postcode = "old_postcode",
-                Latitude = 0,
-                Longitude = 0
             };
 
             Recycling recycling = new()
@@ -105,11 +102,13 @@ public class RepositoryTests : IntegrationTestBase
                     new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
                 }
             };
-            Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
-            Booking updateBooking = new(location, schedule)
+            Schedule schedule = new(Frequency.Biweekly, DayOfWeek.Monday, null);
+            Booking updateBooking = new(location)
             {
                 UserProfileId = user.Id,
+                BookingDate = new DateOnly(2026, 11, 20),
                 Status = BookingStatus.Scheduled,
+                Schedule = schedule,
                 Recycling = recycling,
                 DateCreated = DateTime.Today.AsUtc()
             };
@@ -130,7 +129,7 @@ public class RepositoryTests : IntegrationTestBase
 
         Assert.IsType<Booking>(booking);
         // Assert
-        Assert.Equal(request.Schedule.Date, booking.Schedule.Date);
+        Assert.Equal(request.BookingDate, booking.BookingDate);
         Assert.Equal(request.Location.Address, booking.Location!.Address);
         Assert.Equal(request.Schedule?.Frequency, booking.Schedule?.Frequency);
         Assert.Equal(request.Recycling.NumberOfBags, booking.Recycling.NumberOfBags);
@@ -150,8 +149,6 @@ public class RepositoryTests : IntegrationTestBase
             Address = "test_address",
             Parish = "test_parish",
             Postcode = "test_postcode",
-            Latitude = 0,
-            Longitude = 0
         };
 
         Recycling recycling = new()
@@ -160,15 +157,17 @@ public class RepositoryTests : IntegrationTestBase
             NumberOfBags = 2,
             RecyclingItems = new List<RecyclingItem>
                 {
-                    new() {MaterialType=MaterialTypes.aluminium, Quantity = 4, WeightKg=0, VolumeLiters=0, ContaminationPercent=0},
-                    new() {MaterialType=MaterialTypes.glass, Quantity = 5, WeightKg=0, VolumeLiters=0, ContaminationPercent=0},
-                    new() {MaterialType=MaterialTypes.tin, Quantity = 6, WeightKg=0, VolumeLiters=0, ContaminationPercent=0},
+                    new() {MaterialType=MaterialTypes.aluminium, Quantity = 4},
+                    new() {MaterialType=MaterialTypes.glass, Quantity = 5},
+                    new() {MaterialType=MaterialTypes.tin, Quantity = 6},
                 }
         };
-        Schedule schedule = new() { Date = new DateOnly(2026, 10, 2) };
-        Booking booking = new(location, schedule)
+        Schedule schedule = new(Frequency.Monthly, null, 14);
+        Booking booking = new(location)
         {
             UserProfileId = user1.Id,
+            BookingDate = new DateOnly(2026, 10, 2),
+            Schedule = schedule,
             Status = BookingStatus.Scheduled,
             Recycling = recycling,
             DateCreated = DateTime.Today.AsUtc()

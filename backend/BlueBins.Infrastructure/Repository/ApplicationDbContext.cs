@@ -73,6 +73,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasDefaultValue(BookingStatus.Scheduled)
             .HasColumnName("status");
 
+            entity.Property(e => e.BookingDate).HasColumnName("booking_date");
             entity.Property(e => e.DateCreated)
             .HasConversion(utcConverter)
             // .HasDefaultValueSql("now()")
@@ -126,7 +127,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.Id).HasName("schedule_pkey");
 
             entity.ToTable("schedule", "booking");
-            entity.Property(e => e.Date);
+            entity.Property(e => e.DayOfWeek).HasColumnName("day_of_week");
+            entity.Property(e => e.DayOfMonth).HasColumnName("day_of_month");
             entity.Property(e => e.Frequency).HasColumnName("frequency");
         });
 

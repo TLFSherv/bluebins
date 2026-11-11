@@ -1,3 +1,5 @@
+namespace Infrastructure.Repository;
+
 using Application.Dtos;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -28,14 +30,15 @@ public class BookingRepository : IBookingRepository
         (x.Status == BookingStatus.Scheduled ||
         x.Status == BookingStatus.Draft));
 
+        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
         if (booking != null)
         {
-            // If a draft bookings schedule date has passed, set the date to tomorrow and reset frequency to once
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            if (booking.Schedule.Date <= today)
+            // If a draft bookings booking date has passed, set the booking date to tomorrow
+            if (booking.Status == BookingStatus.Draft &&
+            booking.BookingDate <= today &&
+            booking.Schedule == null)
             {
-                booking.Schedule.Date = today.AddDays(1);
-                booking.Schedule.Frequency = Frequency.Once;
+                booking.BookingDate = today.AddDays(1);
             }
             return _mapper.Map<BookingView>(booking);
         }
@@ -53,6 +56,7 @@ public class BookingRepository : IBookingRepository
                 _mapper.Map<LocationView>(userProfile.DefaultLocation) : new(),
             Schedule = (userProfile.DefaultSchedule != null) ?
                 _mapper.Map<ScheduleView>(userProfile.DefaultSchedule) : new(),
+            BookingDate = today.AddDays(1),
             Recycling = new(),
             Status = BookingStatus.Draft
         };
@@ -105,22 +109,24 @@ public class BookingRepository : IBookingRepository
         var foundLocation = await _context.Locations
         .FirstOrDefaultAsync(x => x.Address == newBooking.Location.Address);
 
-        var foundSchedule = await _context.Schedules
-        .FirstOrDefaultAsync(x => x.Date == newBooking.Schedule.Date
-        && x.Frequency == newBooking.Schedule.Frequency);
-
-        if (newBooking.Schedule.Frequency == Frequency.Monthly)
+        if (newBooking.Schedule == null)
         {
-            // compare the date
+            booking.Schedule = null;
         }
         else
         {
-            // compare the day of the week and frequency
+            var foundSchedule = await _context.Schedules
+            .FirstOrDefaultAsync(x =>
+            x.Frequency == newBooking.Schedule.Frequency &&
+            x.DayOfMonth == newBooking.Schedule.DayOfMonth &&
+            x.DayOfWeek == newBooking.Schedule.DayOfWeek);
+
+            booking.Schedule = foundSchedule ?? newBooking.Schedule;
         }
 
-        booking.ChangeLocationAndSchedule(
-            foundLocation ?? newBooking.Location,
-            foundSchedule ?? newBooking.Schedule
+        booking.ChangeDateAndLocation(
+            newBooking.BookingDate,
+            foundLocation ?? newBooking.Location
         );
         // If we're adding a new booking add the booking to change tracker
         if (currBooking == null)
@@ -135,7 +141,7 @@ public class BookingRepository : IBookingRepository
         .Include(x => x.DefaultSchedule)
         .SingleAsync(x => x.Id == userId);
 
-        if (bookingRequest.Schedule.MakeDefault)
+        if (bookingRequest.Schedule != null && bookingRequest.Schedule.MakeDefault)
         {
             user.DefaultSchedule = booking.Schedule;
         }

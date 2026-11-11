@@ -16,7 +16,7 @@ public class AddBookingValidator : AbstractValidator<BookingRequest>
         RuleFor(x => x.Location.Details).MaximumLength(100);
 
         // validate schedule
-        RuleFor(x => x.Schedule.Date).GreaterThan(DateOnly.FromDateTime(DateTime.Now));
+        RuleFor(x => x.BookingDate).GreaterThan(DateOnly.FromDateTime(DateTime.Now));
 
         // validate recycling items
         RuleFor(x => x.Recycling.NumberOfBags).GreaterThan(0);

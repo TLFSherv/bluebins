@@ -3,24 +3,24 @@ public class Booking
     public int Id { get; set; }
     public string UserProfileId { get; set; }
     public int LocationId { get; set; }
-    public int ScheduleId { get; set; }
+    public int? ScheduleId { get; set; }
     public BookingStatus Status { get; set; } = BookingStatus.Draft;
     public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
+    public required DateOnly BookingDate { get; set; }
     public Location Location { get; private set; }
-    public Schedule Schedule { get; private set; }
+    public Schedule? Schedule { get; set; }
     public required Recycling Recycling { get; set; }
     private Booking() { }
 
-    public Booking(Location location, Schedule schedule)
+    public Booking(Location location)
     {
         Location = location ?? throw new ArgumentNullException(nameof(location));
-        Schedule = schedule ?? throw new ArgumentNullException(nameof(schedule));
         DateCreated = DateTime.UtcNow;
     }
 
-    // Changing the location requires a different collection date
-    public void ChangeLocationAndSchedule(Location location, Schedule schedule)
+    // Changing the location requires a different booking date
+    public void ChangeDateAndLocation(DateOnly bookingDate, Location location)
     {
         if (Status != BookingStatus.Scheduled && Status != BookingStatus.Draft)
         {
@@ -28,13 +28,13 @@ public class Booking
         }
 
         if (!string.Equals(Location.Parish, location.Parish, StringComparison.OrdinalIgnoreCase)
-        && Schedule.CollectionDate.Equals(schedule.CollectionDate))
+        && BookingDate.Equals(bookingDate))
         {
             throw new InvalidOperationException("A change of parish requires a new collection date");
         }
 
         Location = location;
-        Schedule = schedule;
+        BookingDate = bookingDate;
         DateModified = DateTime.UtcNow;
     }
 

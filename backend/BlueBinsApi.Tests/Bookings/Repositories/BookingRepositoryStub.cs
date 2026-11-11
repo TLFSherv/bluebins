@@ -18,7 +18,8 @@ public class BookingRepositoryStub : IBookingRepository
         var booking = new BookingView()
         {
             Status = BookingStatus.Scheduled,
-            Schedule = new() { Date = new DateOnly(2026, 8, 20) },
+            BookingDate = new DateOnly(2026, 8, 20),
+            Schedule = new() { Frequency = Frequency.Weekly, DayOfWeek = DayOfWeek.Wednesday },
             DateCreated = DateTime.Today,
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Recycling = new() { BookingId = 1, NumberOfBags = 2, MaterialQuantities = materialQuantities }

@@ -10,7 +10,7 @@ public class GetBookingByIdRepoTestData : IEnumerable<object?[]>
         {
 
             Status = BookingStatus.Scheduled,
-            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
+            BookingDate = new DateOnly(2026, 10, 2),
             DateCreated = DateTime.Today.AsUtc(),
             Location = new()
             {
@@ -18,8 +18,6 @@ public class GetBookingByIdRepoTestData : IEnumerable<object?[]>
                 Address = "test_address",
                 Parish = "test_parish",
                 Postcode = "test_postcode",
-                Latitude = 0,
-                Longitude = 0
             },
             Recycling = new()
             {
@@ -48,7 +46,7 @@ public class CreateOrUpdateBookingTestData : IEnumerable<object?[]>
 {
     public IEnumerator<object?[]> GetEnumerator()
     {
-        LocationRequest location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 };
+        LocationRequest location = new() { MapsId = "test", Address = "test_address", Parish = "new_parish", Postcode = "test_postcode" };
         RecyclingRequest quantity = new()
         {
             NumberOfBags = 2,
@@ -59,11 +57,11 @@ public class CreateOrUpdateBookingTestData : IEnumerable<object?[]>
                 {MaterialTypes.tin, 8},
             }
         };
-        ScheduleRequest schedule1 = new() { Date = new DateOnly(2026, 10, 1), MakeDefault = true, Frequency = Frequency.Weekly };
-        ScheduleRequest schedule2 = new() { Date = new DateOnly(2026, 10, 12), MakeDefault = false, Frequency = Frequency.Triweekly };
-        BookingRequest request1 = new() { Location = location, Recycling = quantity, Schedule = schedule1 };
-        BookingRequest request2 = new() { Location = location, Recycling = quantity, Schedule = schedule1 };
-        BookingRequest request3 = new() { Location = location, Recycling = quantity, Schedule = schedule2 };
+        ScheduleRequest schedule1 = new() { Frequency = Frequency.Weekly, DayOfWeek = DayOfWeek.Monday, MakeDefault = true };
+        ScheduleRequest schedule2 = new() { Frequency = Frequency.Monthly, DayOfMonth = 20, MakeDefault = false };
+        BookingRequest request1 = new() { BookingDate = new DateOnly(2026, 11, 14), Location = location, Recycling = quantity, Schedule = schedule1 };
+        BookingRequest request2 = new() { BookingDate = new DateOnly(2026, 11, 15), Location = location, Recycling = quantity };
+        BookingRequest request3 = new() { BookingDate = new DateOnly(2026, 11, 16), Location = location, Recycling = quantity, Schedule = schedule2 };
         yield return new object[] { true, request1 }; // request with no schedule
         yield return new object[] { true, request2 }; // request with existing schedule
         yield return new object[] { true, request3 }; // request with new schedule
@@ -82,19 +80,19 @@ public class GetBookingRepoTestData : IEnumerable<object[]>
 {
     public IEnumerator<object[]> GetEnumerator()
     {
+        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
         BookingView view1 = new()
         {
             Status = BookingStatus.Scheduled,
+            BookingDate = new DateOnly(2026, 10, 2),
             Location = new()
             {
                 MapsId = "test",
                 Address = "test_address",
                 Parish = "test_parish",
                 Postcode = "test_postcode",
-                Latitude = 0,
-                Longitude = 0
             },
-            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
+            Schedule = new() { Frequency = Frequency.Monthly, DayOfMonth = 14 },
             Recycling = new()
             {
                 BookingId = 1,
@@ -111,21 +109,21 @@ public class GetBookingRepoTestData : IEnumerable<object[]>
         BookingView view2 = new()
         {
             Status = BookingStatus.Draft,
+            BookingDate = today.AddDays(1),
             Location = new()
             {
                 MapsId = "test",
                 Address = "test_address",
                 Parish = "test_parish",
-                Postcode = "test_postcode",
-                Latitude = 0,
-                Longitude = 0
+                Postcode = "test_postcode"
             },
-            Schedule = new() { Date = new DateOnly(2026, 10, 2) },
+            Schedule = new() { Frequency = Frequency.Monthly, DayOfMonth = 14 },
             Recycling = new()
         };
         BookingView view3 = new()
         {
             Status = BookingStatus.Draft,
+            BookingDate = today.AddDays(1),
             Location = new(),
             Schedule = new(),
             Recycling = new()

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebPWrecover.Services;
 using FluentValidation;
+using Infrastructure.Repository;
+using Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

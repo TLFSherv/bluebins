@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { MATERIALS, type Recycling } from "../types/types";
 
-export default function RecyclingForm({ inputs, setInput }:
+export default function RecyclingForm({ input, setInput }:
     {
-        inputs: Recycling,
+        input: Recycling,
         setInput: (input: Recycling) => void
     }) {
     const [isMaterialsFormVisible, setIsMaterialsFormVisible] = useState<boolean>(false);
@@ -15,20 +15,20 @@ export default function RecyclingForm({ inputs, setInput }:
         const parsedValue = Number.parseInt(value, 10) || 0;
         const isClick = e.type === "click";
 
-        if (name in inputs) {
-            const currentValue = Number(inputs.numberOfBags) || 0;
+        if (name in input) {
+            const currentValue = Number(input.numberOfBags) || 0;
             let newValue = isClick ? parsedValue + currentValue : value;
             const validatedValue = Number.isInteger(newValue) ? Math.max(Number(newValue), 1) : newValue;
-            setInput({ ...inputs, [name]: validatedValue });
+            setInput({ ...input, [name]: validatedValue });
         }
         else {
-            const key = name as keyof typeof inputs.materialQuantities;
-            const currentQty = Number(inputs.materialQuantities[key]) || 0;
+            const key = name as keyof typeof input.materialQuantities;
+            const currentQty = Number(input.materialQuantities[key]) || 0;
             const newValue = isClick ? parsedValue + currentQty : value;
             const validatedValue = Number.isInteger(newValue) ? Math.max(Number(newValue), 0) : newValue;
 
-            const newMaterialRecycling = { ...inputs.materialQuantities, [name]: validatedValue };
-            setInput({ ...inputs, materialQuantities: newMaterialRecycling });
+            const newMaterialRecycling = { ...input.materialQuantities, [name]: validatedValue };
+            setInput({ ...input, materialQuantities: newMaterialRecycling });
         }
     }
 
@@ -48,7 +48,7 @@ export default function RecyclingForm({ inputs, setInput }:
                             name="numberOfBags"
                             className="form-control-1 w-[112px] h-[45px] text-center"
                             autoComplete="off"
-                            value={inputs.numberOfBags}
+                            value={input.numberOfBags}
                             onKeyDown={(e) => {
                                 // Block '-', '+', and 'e' / 'E'
                                 if (["-", "+", "e", "E"].includes(e.key)) {
@@ -79,7 +79,7 @@ export default function RecyclingForm({ inputs, setInput }:
                         className="quantity-btn w-[80px] h-[45px] rounded-lg"
                         onClick={(e) => handleChange(e)}>-</button>
                 </div>
-                {isMaterialsFormVisible && <MaterialsForm inputs={inputs} handleChange={handleChange} />}
+                {isMaterialsFormVisible && <MaterialsForm input={input} handleChange={handleChange} />}
             </div>
             <button type="button" className="pl-2" onClick={() => setIsMaterialsFormVisible(prev => !prev)}>
                 {isMaterialsFormVisible ? "- Hide contents" : "+ Add contents"}
@@ -88,9 +88,9 @@ export default function RecyclingForm({ inputs, setInput }:
     );
 }
 
-function MaterialsForm({ inputs, handleChange }:
+function MaterialsForm({ input, handleChange }:
     {
-        inputs: Recycling,
+        input: Recycling,
         handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>) => void
     }) {
     return (
@@ -104,7 +104,7 @@ function MaterialsForm({ inputs, handleChange }:
                             name={material}
                             className="form-control-1 w-[112px] h-[45px] text-center"
                             autoComplete="off"
-                            value={inputs.materialQuantities[material]}
+                            value={input.materialQuantities[material]}
                             onKeyDown={(e) => {
                                 // Block '-', '+', and 'e' / 'E'
                                 if (["-", "+", "e", "E"].includes(e.key)) {

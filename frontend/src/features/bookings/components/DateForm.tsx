@@ -1,19 +1,25 @@
-import type { Schedule, FREQUENCY } from "../types/types";
+import type { Booking, FREQUENCY, Schedule } from "../types/types";
 import WeeklyCalendar from "./WeeklyCalendar";
 
-export default function DateForm({ inputs, setInput }:
-    { inputs: Schedule, setInput: (input: Schedule) => void }) {
-    const radioLabels: typeof FREQUENCY[number][] = ["Once", "Weekly", "Biweekly", "Triweekly", "Monthly"];
+export default function DateForm({ input, setInput }:
+    {
+        input: Booking,
+        setInput: (input: Booking | Schedule) => void
+    }) {
+    const radioLabels: typeof FREQUENCY[number][] = ["Once", "Weekly", "Biweekly", "Monthly"];
     const radioMap = {
         Once: "once",
         Weekly: "weekly",
         Biweekly: "biweekly",
-        Triweekly: "triweekly",
         Monthly: "monthly"
     };
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => {
         var value = e.target.value as typeof FREQUENCY[number];
-        setInput({ ...inputs, frequency: value });
+        if (value == "Once") {
+            setInput({ ...input, schedule: null });
+            return;
+        }
+        setInput({ frequency: value, makeDefault: false, type: "schedule" });
     }
     return (
         <div className="space-y-6">
@@ -23,7 +29,7 @@ export default function DateForm({ inputs, setInput }:
             <div className="space-y-1">
                 <p className="text-lg text-center">When do you want us to collect?</p>
                 <select
-                    value={inputs.frequency}
+                    value={input.schedule?.frequency || radioMap.Once}
                     name="frequency"
                     className="border border-[#4AA5F6] rounded-lg block mx-auto text-center"
                     onChange={e => handleChange(e)}>
@@ -35,7 +41,7 @@ export default function DateForm({ inputs, setInput }:
                 </select>
             </div>
             <div className="space-y-2">
-                <WeeklyCalendar inputs={inputs} setInput={setInput} />
+                <WeeklyCalendar input={input} setInput={setInput} />
             </div>
         </div>
     );

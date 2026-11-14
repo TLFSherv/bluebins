@@ -12,7 +12,6 @@ public class BookingProfile : Profile
             [MaterialTypes.glass] = 0,
         };
         // Used in booking repository
-        CreateMap<BookingRequest, Booking>();
         CreateMap<LocationRequest, Location>();
         CreateMap<ScheduleRequest, Schedule>();
         CreateMap<RecyclingRequest, Recycling>()
@@ -23,7 +22,8 @@ public class BookingProfile : Profile
         CreateMap<Location, LocationView>();
         CreateMap<Schedule, ScheduleView>();
         CreateMap<Recycling, RecyclingView>()
-        .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Id))
+        .ForMember(dest => dest.BookingId,
+        opt => opt.MapFrom(src => src.Id))
         .ForMember(dest => dest.MaterialQuantities,
             opt => opt.MapFrom(src =>
              src.RecyclingItems == null ? defaultMaterialQuantities

@@ -7,16 +7,36 @@ public class Booking
     public BookingStatus Status { get; set; } = BookingStatus.Draft;
     public DateTime? DateCreated { get; set; }
     public DateTime? DateModified { get; set; }
-    public required DateOnly BookingDate { get; set; }
+    public DateOnly BookingDate { get; set; }
     public Location Location { get; private set; }
     public Schedule? Schedule { get; set; }
     public required Recycling Recycling { get; set; }
     private Booking() { }
 
-    public Booking(Location location)
+    public Booking(DateOnly bookingDate, Location location, Schedule? schedule)
     {
+        BookingDate = bookingDate;
         Location = location ?? throw new ArgumentNullException(nameof(location));
         DateCreated = DateTime.UtcNow;
+
+        /*
+         In the future you can add the ability
+         for the schedule start date to be different from booking date,
+         and in that case, it's just a matter of replacing the booking state date
+         with the schedule date. The Schedule table does not need to change.
+         */
+        if (schedule != null)
+        {
+            if (schedule.Frequency == Frequency.Monthly)
+            {
+                schedule.DayOfMonth = BookingDate.Day;
+            }
+            else
+            {
+                schedule.DayOfWeek = BookingDate.DayOfWeek;
+            }
+        }
+        Schedule = schedule;
     }
 
     // Changing the location requires a different booking date

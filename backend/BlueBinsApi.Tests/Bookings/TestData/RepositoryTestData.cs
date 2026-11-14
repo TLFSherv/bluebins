@@ -57,8 +57,8 @@ public class CreateOrUpdateBookingTestData : IEnumerable<object?[]>
                 {MaterialTypes.tin, 8},
             }
         };
-        ScheduleRequest schedule1 = new() { Frequency = Frequency.Weekly, DayOfWeek = DayOfWeek.Monday, MakeDefault = true };
-        ScheduleRequest schedule2 = new() { Frequency = Frequency.Monthly, DayOfMonth = 20, MakeDefault = false };
+        ScheduleRequest schedule1 = new() { Frequency = Frequency.Weekly, MakeDefault = true };
+        ScheduleRequest schedule2 = new() { Frequency = Frequency.Monthly, MakeDefault = false };
         BookingRequest request1 = new() { BookingDate = new DateOnly(2026, 11, 14), Location = location, Recycling = quantity, Schedule = schedule1 };
         BookingRequest request2 = new() { BookingDate = new DateOnly(2026, 11, 15), Location = location, Recycling = quantity };
         BookingRequest request3 = new() { BookingDate = new DateOnly(2026, 11, 16), Location = location, Recycling = quantity, Schedule = schedule2 };
@@ -92,7 +92,7 @@ public class GetBookingRepoTestData : IEnumerable<object[]>
                 Parish = "test_parish",
                 Postcode = "test_postcode",
             },
-            Schedule = new() { Frequency = Frequency.Monthly, DayOfMonth = 14 },
+            Schedule = new() { Frequency = Frequency.Monthly },
             Recycling = new()
             {
                 BookingId = 1,
@@ -117,7 +117,7 @@ public class GetBookingRepoTestData : IEnumerable<object[]>
                 Parish = "test_parish",
                 Postcode = "test_postcode"
             },
-            Schedule = new() { Frequency = Frequency.Monthly, DayOfMonth = 14 },
+            Schedule = new() { Frequency = Frequency.Monthly },
             Recycling = new()
         };
         BookingView view3 = new()

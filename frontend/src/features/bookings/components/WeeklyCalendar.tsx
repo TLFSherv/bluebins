@@ -1,8 +1,8 @@
-import { type CardData, type Schedule } from "../types/types";
+import { type CardData, type Booking, type Schedule } from "../types/types";
 import { WEEKDAYS, MONTHS } from "../types/types";
 
-export default function WeeklyCalendar({ inputs, setInput }:
-    { inputs: Schedule, setInput: (input: Schedule) => void }) {
+export default function WeeklyCalendar({ input, setInput }:
+    { input: Booking, setInput: (input: Booking) => void }) {
     const start = new Date();
     // automatically adjusts for edge cases like shorter months
     const newDate = new Date()
@@ -14,29 +14,24 @@ export default function WeeklyCalendar({ inputs, setInput }:
 
     const dayCards: CardData[] = [];
 
-    const frequencyGaps = { "Once": numOfDays + 1, "Weekly": 7, "Biweekly": 14, "Triweekly": 21, "Monthly": numOfDays };
+    const frequencyGaps = { "Once": numOfDays + 1, "Weekly": 7, "Biweekly": 14, "Monthly": numOfDays };
     let cardNum = -1;
     let isActive = false;
     for (let i = 0; i < numOfDays - 1; i++) {
         start.setDate(start.getDate() + 1);
         // When a frequency radio button is selected  
         // make the chosen date and the next set of dates active
-        if (inputs.date instanceof Date &&
-            start.getDate() == inputs.date.getDate())
+        if (input.bookingDate instanceof Date &&
+            start.getDate() == input.bookingDate.getDate())
             cardNum = i;
-        isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[inputs.frequency] == 0);
+        isActive = (cardNum >= 0 && (i - cardNum) % frequencyGaps[input.schedule?.frequency || "Once"] == 0);
         dayCards.push({
             date: new Date(start),
             active: isActive
         });
     }
     const handleChange = (card: CardData) => {
-        setInput({
-            type: "schedule",
-            date: card.date,
-            frequency: inputs.frequency,
-            makeDefault: inputs.makeDefault,
-        });
+        setInput({ ...input, bookingDate: card.date });
     }
     return (
         <div className="w-full space-y-4" >
@@ -53,12 +48,12 @@ export default function WeeklyCalendar({ inputs, setInput }:
                 )}
             </div>
             <div className="flex justify-end space-x-2 text-sm">
-                <input type="checkbox" name="makeDefault" checked={inputs.makeDefault}
+                <input type="checkbox" name="makeDefault" checked={input.schedule?.makeDefault || false}
                     // make default checkbox disabled if frequency is Once
-                    disabled={inputs.frequency == "Once"}
+                    disabled={input.schedule == null}
                     onChange={() => setInput({
-                        ...inputs,
-                        makeDefault: !inputs.makeDefault
+                        ...input,
+                        schedule: { ...input.schedule, makeDefault: !input.schedule?.makeDefault } as Schedule
                     })} />
                 <label>
                     Make my default

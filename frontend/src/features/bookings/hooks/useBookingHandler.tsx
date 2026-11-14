@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { type Booking, type Location, type Recycling, type Schedule } from "../types/types";
+import { type Booking, type Recycling, type Location, type Schedule } from "../types/types";
 import { BookingService } from "../services/BookingService";
 import toast from "react-hot-toast";
 
 const initBooking: Booking = {
+    bookingDate: new Date(2026, 11, 26),
     location: {
         type: "location",
         address: "",
@@ -14,12 +15,7 @@ const initBooking: Booking = {
         longitude: 1,
         makeDefault: false
     },
-    schedule: {
-        type: "schedule",
-        date: new Date(2026, 10, 26),
-        frequency: "Once",
-        makeDefault: false
-    },
+    schedule: null,
     recycling: {
         type: "recycling",
         numberOfBags: 1,
@@ -33,9 +29,9 @@ const initBooking: Booking = {
 
 const KEY_MAP = {
     location: "location",
-    recycling: "recycling",
     schedule: "schedule",
-} as const;
+    recycling: "recycling"
+}
 
 export function useBookingHandler() {
     const [booking, setBooking] = useState<Booking>(initBooking);
@@ -54,10 +50,14 @@ export function useBookingHandler() {
         getUserBooking();
     }, [])
 
-    const setInput = (input: Location | Recycling | Schedule) => {
+    const setInput = (input: Location | Recycling | Schedule | Booking) => {
         // Set state for the correct Booking property object
-        const key = KEY_MAP[input.type];
-        setBooking(prev => ({ ...prev, [key]: input }));
+        if ("type" in input) {
+            const key = KEY_MAP[input.type];
+            setBooking(prev => ({ ...prev, [key]: input }));
+            return;
+        }
+        setBooking(input);
     };
     return { booking, setInput };
 }

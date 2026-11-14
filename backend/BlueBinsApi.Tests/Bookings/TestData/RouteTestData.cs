@@ -15,13 +15,13 @@ public class CreateOrUpdateBookingRouteTestData : IEnumerable<object[]>
         {
             BookingDate = DateOnly.FromDateTime(DateTime.Today).AddDays(2),
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test", Latitude = -36.11m, Longitude = 21.44m },
-            Schedule = new() { Frequency = Frequency.Weekly, DayOfWeek = DayOfWeek.Tuesday, MakeDefault = false },
+            Schedule = new() { Frequency = Frequency.Weekly, MakeDefault = false },
             Recycling = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
         BookingRequest request2 = new()
         {
             BookingDate = DateOnly.FromDateTime(DateTime.Today).AddDays(2),
-            Schedule = new() { Frequency = Frequency.Biweekly, DayOfWeek = DayOfWeek.Thursday },
+            Schedule = new() { Frequency = Frequency.Biweekly },
             Location = new() { MapsId = "test", Address = "a", Parish = "", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Recycling = new() { NumberOfBags = 2, MaterialQuantities = materialQuantities }
         };
@@ -51,7 +51,7 @@ public class GetBookingRouteTestData : IEnumerable<object?[]>
         {
             Status = BookingStatus.Scheduled,
             BookingDate = new DateOnly(2026, 8, 20),
-            Schedule = new() { Frequency = Frequency.Weekly, DayOfWeek = DayOfWeek.Wednesday },
+            Schedule = new() { Frequency = Frequency.Weekly },
             DateCreated = DateTime.Today,
             Location = new() { MapsId = "test", Address = "test_address", Parish = "test_parish", Postcode = "test_postcode", Latitude = 0, Longitude = 0 },
             Recycling = new() { BookingId = 1, NumberOfBags = 2, MaterialQuantities = materialQuantities }

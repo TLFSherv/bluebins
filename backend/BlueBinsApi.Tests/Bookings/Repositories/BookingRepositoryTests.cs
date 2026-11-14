@@ -49,10 +49,9 @@ public class RepositoryTests : IntegrationTestBase
                     new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
                 }
         };
-        Booking booking = new(location)
+        Booking booking = new(new DateOnly(2026, 10, 2), location, null)
         {
             UserProfileId = user.Id,
-            BookingDate = new DateOnly(2026, 10, 2),
             Status = BookingStatus.Scheduled,
             Recycling = recycling,
             DateCreated = DateTime.Today.AsUtc()
@@ -102,13 +101,11 @@ public class RepositoryTests : IntegrationTestBase
                     new() {RecyclingId=1, MaterialType=MaterialTypes.tin, Quantity = 5},
                 }
             };
-            Schedule schedule = new(Frequency.Biweekly, DayOfWeek.Monday, null);
-            Booking updateBooking = new(location)
+            Schedule schedule = new() { Frequency = Frequency.Biweekly };
+            Booking updateBooking = new(new DateOnly(2026, 11, 20), location, schedule)
             {
                 UserProfileId = user.Id,
-                BookingDate = new DateOnly(2026, 11, 20),
                 Status = BookingStatus.Scheduled,
-                Schedule = schedule,
                 Recycling = recycling,
                 DateCreated = DateTime.Today.AsUtc()
             };
@@ -132,6 +129,13 @@ public class RepositoryTests : IntegrationTestBase
         Assert.Equal(request.BookingDate, booking.BookingDate);
         Assert.Equal(request.Location.Address, booking.Location!.Address);
         Assert.Equal(request.Schedule?.Frequency, booking.Schedule?.Frequency);
+        if (request.Schedule != null)
+        {
+            if (request.Schedule.Frequency == Frequency.Weekly)
+                Assert.Equal(request.BookingDate.DayOfWeek, booking.Schedule?.DayOfWeek);
+            else if (request.Schedule.Frequency == Frequency.Monthly)
+                Assert.Equal(request.BookingDate.Day, booking.Schedule?.DayOfMonth);
+        }
         Assert.Equal(request.Recycling.NumberOfBags, booking.Recycling.NumberOfBags);
     }
 
@@ -162,12 +166,10 @@ public class RepositoryTests : IntegrationTestBase
                     new() {MaterialType=MaterialTypes.tin, Quantity = 6},
                 }
         };
-        Schedule schedule = new(Frequency.Monthly, null, 14);
-        Booking booking = new(location)
+        Schedule schedule = new() { Frequency = Frequency.Monthly };
+        Booking booking = new(new DateOnly(2026, 10, 2), location, schedule)
         {
             UserProfileId = user1.Id,
-            BookingDate = new DateOnly(2026, 10, 2),
-            Schedule = schedule,
             Status = BookingStatus.Scheduled,
             Recycling = recycling,
             DateCreated = DateTime.Today.AsUtc()

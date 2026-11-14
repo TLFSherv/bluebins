@@ -12,8 +12,8 @@ public record BookingRequest
 
 public record BookingView
 {
-    public BookingStatus Status { get; set; }
     public DateOnly BookingDate { get; set; }
+    public BookingStatus Status { get; set; }
     public required LocationView Location { get; set; }
     public ScheduleView? Schedule { get; set; }
     public required RecyclingView Recycling { get; set; }

@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { type Location } from "../types/types";
 
-export default function AddressForm({ inputs, setInput }: {
-    inputs: Location,
+export default function AddressForm({ input, setInput }: {
+    input: Location,
     setInput: (input: Location) => void
 }) {
     const [isFullAddressFormVisible, setIsFullAddressFormVisible] = useState<boolean>(false);
     const [isAdditionalInfoVisible, setIsAdditionalInfoVisible] = useState<boolean>(false);
     let isShowingMore = isAdditionalInfoVisible || isFullAddressFormVisible;
-    const { address, details, postcode, parish, makeDefault } = inputs;
+    const { address, details, postcode, parish, makeDefault } = input;
     const handleChange = (e: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
         React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => {
         const target = e.target;
@@ -19,7 +19,7 @@ export default function AddressForm({ inputs, setInput }: {
             value != value;
         }
 
-        setInput({ ...inputs, [name]: value });
+        setInput({ ...input, [name]: value });
     }
     return (
         <div>
@@ -59,7 +59,7 @@ export default function AddressForm({ inputs, setInput }: {
 
                             <label className="form-label bg-default -translate-y-8 translate-x-1 text-black rounded-md p-1 text-lg">Additional information</label>
                         </div>}
-                    {isFullAddressFormVisible && <FullAddressForm inputs={{ postcode, parish }}
+                    {isFullAddressFormVisible && <FullAddressForm input={{ postcode, parish }}
                         handleChange={handleChange} />}
                 </div>
             </div>
@@ -75,8 +75,8 @@ export default function AddressForm({ inputs, setInput }: {
     );
 }
 
-function FullAddressForm({ inputs, handleChange }: {
-    inputs: { postcode: string, parish: string },
+function FullAddressForm({ input, handleChange }: {
+    input: { postcode: string, parish: string },
     handleChange: (event: React.ChangeEvent<HTMLInputElement, HTMLInputElement> |
         React.ChangeEvent<HTMLTextAreaElement, HTMLTextAreaElement>) => void
 }) {
@@ -87,7 +87,7 @@ function FullAddressForm({ inputs, handleChange }: {
                     type="text"
                     name="postcode"
                     className="form-control-1 w-[100px]"
-                    value={inputs.postcode}
+                    value={input.postcode}
                     onChange={e => handleChange(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Postcode</label>
             </div>
@@ -96,7 +96,7 @@ function FullAddressForm({ inputs, handleChange }: {
                     type="text"
                     name="parish"
                     className="form-control-1 w-[150px]"
-                    value={inputs.parish}
+                    value={input.parish}
                     onChange={e => handleChange(e)} />
                 <label className="form-label bg-default -translate-y-8 translate-x-1 text-black text-lg rounded-md p-1">Parish</label>
             </div>

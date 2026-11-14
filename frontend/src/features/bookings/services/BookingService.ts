@@ -31,6 +31,7 @@ export const BookingService: IBookingService = {
             }
 
             const json = JSON.stringify(this.parseBooking(booking));
+            console.log(json);
 
             // Make API request
             const response = await fetch(`${this.backendUrl}/`,
@@ -117,25 +118,22 @@ export const BookingService: IBookingService = {
         // Create a new object payload so you don't mutate the original state
         const parsedBooking: Booking = {
             ...booking,
-            schedule: {
-                ...booking.schedule
-            }
         }
-        // change schedule date from UTC string to date
+        // change booking date from UTC string to date
         // or date to UTC string
-        var date = booking.schedule.date;
+        var date = booking.bookingDate;
         if (date instanceof Date) {
             var mm = (date.getMonth() + 1).toString();
             mm = mm.length < 2 ? "0" + mm : mm
             var dd = (date.getDate()).toString();
             dd = dd.length < 2 ? "0" + dd : dd;
-            parsedBooking.schedule.date = `${date.getFullYear()}-${mm}-${dd}`;
+            parsedBooking.bookingDate = `${date.getFullYear()}-${mm}-${dd}`;
             return parsedBooking;
         }
 
         const [year, month, day] = date.split('-').map(Number);
         // Month is 0-indexed in JS Date (0 = January)
-        parsedBooking.schedule.date = new Date(year, month - 1, day);
+        parsedBooking.bookingDate = new Date(year, month - 1, day);
         return parsedBooking;
     },
     hasBookingChanged(b1: Booking, b2: Booking): boolean {

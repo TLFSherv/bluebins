@@ -14,7 +14,7 @@ export const LocationSchema = z.object({
 
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"] as const;
-export const FREQUENCY = ["Once", "Weekly", "Biweekly", "Triweekly", "Monthly"] as const;
+export const FREQUENCY = ["Once", "Weekly", "Biweekly", "Monthly"] as const;
 
 // Validates strictly "YYYY-MM-DD"
 const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
@@ -22,10 +22,9 @@ const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
 });
 
 export const ScheduleSchema = z.object({
-    type: z.literal("schedule").readonly(),
-    date: z.union([z.date(), dateOnlySchema]),
     frequency: z.literal(FREQUENCY),
-    makeDefault: z.boolean()
+    makeDefault: z.boolean(),
+    type: z.literal("schedule").readonly()
 });
 
 export const MATERIALS = ["tin", "aluminium", "glass"] as const;
@@ -37,8 +36,9 @@ export const RecyclingSchema = z.object({
 })
 
 export const BookingSchema = z.object({
+    bookingDate: z.union([z.date(), dateOnlySchema]),
     location: LocationSchema,
-    schedule: ScheduleSchema,
+    schedule: ScheduleSchema.nullable(),
     recycling: RecyclingSchema
 })
 export type CardData = { date: Date, active: boolean };

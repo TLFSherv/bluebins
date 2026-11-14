@@ -77,6 +77,17 @@ public class BookingRepository : IBookingRepository
     }
     public async Task<int> CreateOrUpdateBooking(string userId, BookingRequest bookingRequest)
     {
+        // Map the request
+        Location newLocation = _mapper.Map<Location>(bookingRequest.Location);
+        Recycling newRecycling = _mapper.Map<Recycling>(bookingRequest.Recycling);
+        Schedule? newSchedule = (bookingRequest.Schedule != null) ?
+         new() { Frequency = bookingRequest.Schedule.Frequency } : null;
+
+        Booking newBooking = new Booking(bookingRequest.BookingDate, newLocation, newSchedule)
+        {
+            UserProfileId = userId,
+            Recycling = newRecycling
+        };
 
         // Check for current active booking
         Booking? currBooking = null;
@@ -85,10 +96,6 @@ public class BookingRepository : IBookingRepository
         (x.Status == BookingStatus.Scheduled ||
         x.Status == BookingStatus.Draft))
         .Select(x => x.Id).SingleOrDefaultAsync();
-
-        // Map the request
-        var newBooking = _mapper.Map<Booking>(bookingRequest);
-        newBooking.UserProfileId = userId;
 
         if (bookingId != 0)
         {
@@ -102,32 +109,42 @@ public class BookingRepository : IBookingRepository
             // Replace recycling data
             currBooking.Recycling = newBooking.Recycling;
         }
-
+        // If currBooking is not null update it
+        // else proceed to create new booking
         var booking = currBooking ?? newBooking;
 
         // Check if the location and schedule already exist
         var foundLocation = await _context.Locations
         .FirstOrDefaultAsync(x => x.Address == newBooking.Location.Address);
 
+        booking.ChangeDateAndLocation(newBooking.BookingDate,
+        foundLocation ?? newBooking.Location);
+
+
         if (newBooking.Schedule == null)
         {
+            // Need this line in case booking is currBooking
             booking.Schedule = null;
         }
         else
         {
-            var foundSchedule = await _context.Schedules
-            .FirstOrDefaultAsync(x =>
-            x.Frequency == newBooking.Schedule.Frequency &&
-            x.DayOfMonth == newBooking.Schedule.DayOfMonth &&
-            x.DayOfWeek == newBooking.Schedule.DayOfWeek);
+            Schedule? foundSchedule;
+            if (bookingRequest.Schedule?.Frequency == Frequency.Monthly)
+            {
+                foundSchedule = await _context.Schedules
+                .FirstOrDefaultAsync(x => x.DayOfMonth == newBooking.Schedule.DayOfMonth);
+            }
+            else
+            {
+                foundSchedule = await _context.Schedules
+                .FirstOrDefaultAsync((x) =>
+                x.Frequency == newBooking.Schedule.Frequency &&
+                x.DayOfWeek == newBooking.Schedule.DayOfWeek);
+            }
 
             booking.Schedule = foundSchedule ?? newBooking.Schedule;
         }
 
-        booking.ChangeDateAndLocation(
-            newBooking.BookingDate,
-            foundLocation ?? newBooking.Location
-        );
         // If we're adding a new booking add the booking to change tracker
         if (currBooking == null)
         {
@@ -141,7 +158,7 @@ public class BookingRepository : IBookingRepository
         .Include(x => x.DefaultSchedule)
         .SingleAsync(x => x.Id == userId);
 
-        if (bookingRequest.Schedule != null && bookingRequest.Schedule.MakeDefault)
+        if (bookingRequest.Schedule?.MakeDefault == true)
         {
             user.DefaultSchedule = booking.Schedule;
         }

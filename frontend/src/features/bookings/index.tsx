@@ -12,9 +12,9 @@ export default function Booking() {
     const { booking, setInput } = useBookingHandler();
     const bookingRef = useRef<Booking>(booking);
     const formComponents = [
-        <AddressForm inputs={{ ...booking.location }} setInput={setInput} />,
-        <DateForm inputs={{ ...booking.schedule }} setInput={setInput} />,
-        <RecyclingForm inputs={{ ...booking.recycling }} setInput={setInput} />];
+        <AddressForm input={booking.location} setInput={setInput} />,
+        <DateForm input={booking} setInput={setInput} />,
+        <RecyclingForm input={booking.recycling} setInput={setInput} />];
     const COUNT = formComponents.length;
     const GAP = 4;
     const SCREEN = window.screen.width;

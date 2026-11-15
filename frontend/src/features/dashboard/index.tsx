@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
 import { NavMenu } from "./components/NavMenu"
+import { BookingTimeline } from "./components/BookingTimeline"
 
 export default function Dashboard() {
     return (
-        <div>
+        <div className="space-y-4">
             <NavMenu />
+            <BookingTimeline />
         </div>
     )
 }

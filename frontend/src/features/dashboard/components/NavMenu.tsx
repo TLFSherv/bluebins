@@ -26,7 +26,7 @@ export function NavMenu() {
                     axis="y"
                     values={navItems}
                     onReorder={setNavItems}
-                    className="space-y-1 w-3/4 text-center list-none"
+                    className="w-3/4 text-center list-none"
                 >
                     {navItems.map((item, index) => (
                         <Reorder.Item

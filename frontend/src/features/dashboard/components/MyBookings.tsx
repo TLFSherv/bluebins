@@ -2,10 +2,13 @@ import { BookingTimeline } from "./BookingTimeline"
 
 export default function MyBookings() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-10">
             <BookingTimeline />
-            <div className="w-[90%] mx-auto space-y-4 font-inter text-sm">
-                <h1 className="text-2xl">Booking #31</h1>
+            <div className="w-[90%] mx-auto space-y-4 font-inter">
+                <div className="flex space-x-4 items-center">
+                    <h1 className="text-2xl">Booking #31</h1>
+                    <button className="bg-[#5CDA02] rounded-xl text-sm text-white px-3 h-6 tracking-wider cursor-pointer">track</button>
+                </div>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-5">
                     <div className="col-span-2 grid grid-cols-subgrid">
                         <div className="space-y-1">
@@ -34,9 +37,9 @@ export default function MyBookings() {
                         <p><span className="font-medium">Glass quantity:</span> not given</p>
                     </div>
                 </div>
-                <div className="space-x-8 font-inter text-sm">
-                    <button className="bg-[#F07070] text-white p-2">Delete</button>
-                    <button className="bg-[#FF8001]/62 text-white p-2">Cancel</button>
+                <div className="space-x-6">
+                    <button className="bg-[#F07070] text-white p-2 cursor-pointer">Delete</button>
+                    <button className="bg-[#FF8001]/62 text-white p-2 cursor-pointer">Cancel</button>
                 </div>
             </div >
         </div >

@@ -1,11 +1,11 @@
 import { NavMenu } from "./components/NavMenu"
-import { BookingTimeline } from "./components/BookingTimeline"
+import MyBookings from "./components/MyBookings"
 
 export default function Dashboard() {
     return (
-        <div className="space-y-4">
+        <div className="space-y-8 mb-4">
             <NavMenu />
-            <BookingTimeline />
+            <MyBookings />
         </div>
     )
 }

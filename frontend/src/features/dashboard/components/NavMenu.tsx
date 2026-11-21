@@ -5,8 +5,7 @@ export function NavMenu() {
     const [navItems, setNavItems] = useState([
         "My bookings",
         "My recycling",
-        "My points",
-        "My neighbours"
+        "My points"
     ]);
 
     const handleItemClick = (clickedItem: string) => {

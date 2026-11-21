@@ -42,18 +42,18 @@ export function BookingTimeline() {
     }, [isDragging]);
 
     var bookings = [
-        { id: "31", date: "Oct 10 2026" },
-        { id: "32", date: "Oct 10 2026" },
-        { id: "33", date: "Oct 10 2026" },
-        { id: "34", date: "Oct 10 2026" },
-        { id: "35", date: "Oct 10 2026" },
-        { id: "36", date: "Oct 10 2026" },
-        { id: "37", date: "Oct 10 2026" },
-        { id: "38", date: "Oct 10 2026" },
-        { id: "39", date: "Oct 10 2026" },
-        { id: "40", date: "Oct 10 2026" },
-        { id: "41", date: "Oct 10 2026" },
-        { id: "42", date: "Oct 10 2026" }];
+        { id: "31", date: "10/10/2026" },
+        { id: "32", date: "10/10/2026" },
+        { id: "33", date: "10/10/2026" },
+        { id: "34", date: "10/10/2026" },
+        { id: "35", date: "10/10/2026" },
+        { id: "36", date: "10/10/2026" },
+        { id: "37", date: "10/10/2026" },
+        { id: "38", date: "10/10/2026" },
+        { id: "39", date: "10/10/2026" },
+        { id: "40", date: "10/10/2026" },
+        { id: "41", date: "10/10/2026" },
+        { id: "42", date: "10/10/2026" }];
     return (
         <div className="relative space-y-6 text-sm">
             <div ref={scrollWindowRef} className="flex space-x-12 mx-auto w-4/5 overflow-x-hidden" >

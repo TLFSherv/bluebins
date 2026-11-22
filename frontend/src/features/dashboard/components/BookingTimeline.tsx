@@ -1,11 +1,28 @@
 import { useEffect, useState, useRef } from "react";
+import { type BookingDates } from "../types/types";
+import { DashboardService } from "../services/DashboardServices";
+import { toast } from "react-hot-toast";
 
 export function BookingTimeline() {
-    const [selectedBooking, setSelectedBooking] = useState<string>();
+    const [bookingDates, setBookingDates] = useState<BookingDates[]>([]);
+    const [selectedBooking, setSelectedBooking] = useState<number>();
     const [isDragging, setIsDragging] = useState(false);
     const sliderRef = useRef<HTMLDivElement>(null);
     const sliderBarRef = useRef<HTMLDivElement>(null);
     const scrollWindowRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const displayBookingDates = async () => {
+            const response = await DashboardService.getBookingDates();
+            if (response.success) {
+                setBookingDates(response.result ?? [])
+            }
+            else {
+                // show error to user
+                toast.error(response.message);
+            }
+        }
+        displayBookingDates();
+    }, []);
 
     useEffect(() => {
         const slider = sliderRef.current;
@@ -41,29 +58,16 @@ export function BookingTimeline() {
 
     }, [isDragging]);
 
-    var bookings = [
-        { id: "31", date: "10/10/2026" },
-        { id: "32", date: "10/10/2026" },
-        { id: "33", date: "10/10/2026" },
-        { id: "34", date: "10/10/2026" },
-        { id: "35", date: "10/10/2026" },
-        { id: "36", date: "10/10/2026" },
-        { id: "37", date: "10/10/2026" },
-        { id: "38", date: "10/10/2026" },
-        { id: "39", date: "10/10/2026" },
-        { id: "40", date: "10/10/2026" },
-        { id: "41", date: "10/10/2026" },
-        { id: "42", date: "10/10/2026" }];
     return (
         <div className="relative space-y-6 text-sm">
             <div ref={scrollWindowRef} className="flex space-x-12 mx-auto w-4/5 overflow-x-hidden" >
-                {bookings.map(b => <label>
-                    #{b.id}
+                {bookingDates.map(bd => <label>
+                    #{bd.bookingId}
                     <p
-                        onClick={() => setSelectedBooking(b.id)}
+                        onClick={() => setSelectedBooking(bd.bookingId)}
                         style={{ writingMode: "vertical-rl" }}
-                        className={`px-2 py-1 cursor-pointer ${selectedBooking == b.id ? "bg-[#3CC4FA]/50" : "bg-[#D9D9D9]"}`}>
-                        {b.date}
+                        className={`px-2 py-1 cursor-pointer ${selectedBooking == bd.bookingId ? "bg-[#3CC4FA]/50" : "bg-[#D9D9D9]"}`}>
+                        {bd.bookingDate}
                     </p>
                 </label>)}
             </div >

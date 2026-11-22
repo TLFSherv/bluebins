@@ -10,6 +10,7 @@ import type { Booking } from "./types/types";
 export default function Booking() {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const { booking, setInput } = useBookingHandler();
+    // Store booking to check if it changed each time user selects done
     const bookingRef = useRef<Booking>(booking);
     const formComponents = [
         <AddressForm input={booking.location} setInput={setInput} />,

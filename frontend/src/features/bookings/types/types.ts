@@ -36,6 +36,7 @@ export const RecyclingSchema = z.object({
 })
 
 export const BookingSchema = z.object({
+    bookingId: z.int(),
     bookingDate: z.union([z.date(), dateOnlySchema]),
     location: LocationSchema,
     schedule: ScheduleSchema.nullable(),
@@ -67,7 +68,7 @@ export type ValidationResponse = {
 export interface IBookingService {
     backendUrl: string
     validateBooking(booking: Booking): ValidationResponse
-    getBooking(): Promise<BookingResponse<Booking>>
+    getCurrentBooking(): Promise<BookingResponse<Booking>>
     createUpdateBooking(booking: Booking): Promise<BookingResponse<string>>
     parseBooking(booking: Booking): Booking
     hasBookingChanged(b1: Booking, b2: Booking): boolean

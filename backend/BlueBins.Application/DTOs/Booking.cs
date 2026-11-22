@@ -12,6 +12,7 @@ public record BookingRequest
 
 public record BookingView
 {
+    public int BookingId { get; set; }
     public DateOnly BookingDate { get; set; }
     public BookingStatus Status { get; set; }
     public required LocationView Location { get; set; }

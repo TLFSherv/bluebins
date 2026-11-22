@@ -40,7 +40,7 @@ export function useBookingHandler() {
         const getUserBooking = async () => {
             // Check cache if current booking is there 
             // If cache is empty get booking from api
-            const result = await BookingService.getBooking();
+            const result = await BookingService.getCurrentBooking();
             if (!result.success) {
                 toast.error(result.message);
                 return;

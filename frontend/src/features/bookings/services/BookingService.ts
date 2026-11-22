@@ -75,7 +75,7 @@ export const BookingService: IBookingService = {
             };
         }
     },
-    async getBooking(): Promise<BookingResponse<Booking>> {
+    async getCurrentBooking(): Promise<BookingResponse<Booking>> {
         try {
             const response = await fetch(`${this.backendUrl}/`,
                 {
